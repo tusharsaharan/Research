@@ -783,6 +783,13 @@ Research/
 
 ## Setup and Execution (Quick Start)
 
+<<<<<<< HEAD
+=======
+### Cascade routing research (live study)
+The active routing study — router fine-tuning, difficulty scoring, conformal calibration, graded datasets and the full status report — lives at `backend/experiments/cascade_routing/` (report: `cascade_full_report.pdf`; pipeline scripts: `backend/scripts/router_track/`).
+
+## Setup & Execution
+>>>>>>> 224d609237fcc67b5b83e029a9406e9fb7f51329
 **Frontend:**
 ```bash
 npm install

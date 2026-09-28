@@ -49,3 +49,4 @@ data/*.sqlite-wal
 .env
 # Lockfile: bun is canonical for this template (tanstack_start_ts_current); npm lock is ignored
 package-lock.json
+backend/experiments/cascade_routing/data/cascade.db

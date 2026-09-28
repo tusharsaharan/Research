@@ -1,0 +1,538 @@
+"prompt","qwen_uncapped","runaway","chars"
+"Imagine kar tu ek construction company ka project manager hai. Bata jab tujhe koi mushkil decision lena pada ho.","Jab main koi mushkil decision lena padaa ho, main kuch specific steps follow kar sakta hu:
+
+1. **Problem Identification**: Agar decision lena padta hai, toh phir pehla cheeze kya problem hai ye dekhna hai. Main apna team se jarii ko samjhna chata hu, kya hua hai, aur kya aapko zaroori hai ki hum isse samjhe aur hanjaro karte jaye.
+
+2. **Data Collection**: Aisi decision leni padti hai toh phir main relevant data collect kar sakta hu. Aapki company ki database se, ya team members se information hi maansakta hu.
+
+3. **Option Analysis**: Ab main apna hi team ke saath options discuss kar sakta hu. Hum apna sarvajana lekar decision lena chahate hain. Is liye apni sabse zaroori options list kar sakein.
+
+4. **Risk Assessment**: Ab main is options ko evaluate kar sakta hu. Kya har option koi potential risk hain, ya kya koi cost involved hai? Risk assessment kaam karna zaroori hai.
+
+5. **Decision Making**: Agar hum options evaluate kar chuke hain toh ab decision lena padta hai. Yeh decision koi senior manager se bhi consult karne ke baad kar sakta hu.
+
+6. **Implementation Plan**: Decision lena hai, ab hum us decision ko implement karne ke plan bana sakte hain. Kya koi task allocate karna hai, kya koi resource requirement hai, kya team ke saath koi change management chahiye?
+
+7. **Monitoring and Evaluation**: Decision implement kar diya hai, ab hum usse monitor kar sakte hain. Kya decision aapki company ke target mei help kar rahi hai, kya koi aage ki decision k liye update zaroori hai?
+
+8. **Feedback and Adjustments**: Agar decision ki koi feedback hain toh hum usse dinakaran kar sakte hain. Decision ko adjust karke isse even better karna zaroori hai.
+
+Agar aapko kisi specific problem k liye help chahiye, toh aap mujhse puch sakte hain.","0","1756"
+"x aur y nonzero real numbers hain. m aur M is expression ki minimum aur maximum values hain: (|x + y|)/(|x| + |y|), Find M - m.","To find the maximum and minimum values of the expression \(\frac{|x + y|}{|x| + |y|}\) for nonzero real numbers \(x\) and \(y\), we can proceed as follows:
+
+### Step 1: Analyze the Expression
+The expression \(\frac{|x + y|}{|x| + |y|}\) involves the absolute values of \(x\) and \(y\), and the absolute value of their sum.
+
+### Step 2: Determine the Maximum Value (M)
+The numerator \(|x + y|\) can be at most the sum of the absolute values of \(x\) and \(y\), i.e., \(|x + y| \leq |x| + |y|\). The maximum value of \(\frac{|x + y|}{|x| + |y|}\) is therefore 1, which can be achieved when \(x\) and \(y\) have the same sign (both positive or both negative). For example, if \(x = y\), then:
+\[
+\frac{|x + y|}{|x| + |y|} = \frac{|2x|}{2|x|} = 1.
+\]
+Thus, \(M = 1\).
+
+### Step 3: Determine the Minimum Value (m)
+The numerator \(|x + y|\) can also be less than \(|x| + |y|\). The minimum value of \(\frac{|x + y|}{|x| + |y|}\) is 0, but since \(x\) and \(y\) are nonzero, \(|x + y|\) cannot be 0. The smallest non-zero value of \(\frac{|x + y|}{|x| + |y|}\) is achieved when \(x\) and \(y\) have opposite signs. In this case:
+\[
+|x + y| = ||x| - |y|| \quad \text{(if } |x| \neq |y|)
+\]
+Thus,
+\[
+\frac{|x + y|}{|x| + |y|} = \frac{||x| - |y||}{|x| + |y|}.
+\]
+For instance, if \(x = 1\) and \(y = -1\), then:
+\[
+\frac{|1 - 1|}{|1| + |-1|} = \frac{0}{2} = 0.
+\]
+However, since \(x\) and \(y\) are nonzero, the smallest non-zero value occurs when \(x\) and \(y\) are such that \(|x|\) is slightly larger than \(|y|\) or vice versa. In the limit, this value approaches 0 but is never exactly 0. The minimum value in the context of nonzero real numbers is thus \(m = 0\).
+
+### Step 4: Calculate \(M - m\)
+Given that \(M = 1\) and \(m = 0\),
+\[
+M - m = 1 - 0 = 1.
+\]
+
+Therefore, the value of \(M - m\) is \(\boxed{1}\).","0","1807"
+"Batao ki novel ke characters 'the corrupting influence of power' waale theme ko kaise reflect karte hain.","""Batao"" ki novel mein, 'the corrupting influence of power' ka theme ek zyada zaroori hai kisi bhi saari karayeon mein, karna ki zaroorat hoti hai. Ishi theme ko reflect karta hai ke power ya authority ko apne liye samajhte hue, kisi ko kuch bhi kar sakta hai aur kisi ko kuch bhi nahi kar sakta, yah power ke kaafi zaroori aur bahut pareshani se milne wala property hai. Is theme ko following tarike se reflect kar sakte hain:
+
+1. **Protagonist ko kaam ki character**: Protagonist ko ek powerful character banayein jahaan par yeh power ki use ki madad se kuch zor ke madad lagane, aamta ki hool mein jharkarne aur neta ki duniya mein ankar karne wala ho. Yeh power ki madad se yeh aamta ki hool se kuch bhi kar sakta hai, aur yeh power ko corrupt karne ke kuch bhi karte hain.
+
+2. **Antagonist ki character**: Antagonist ko ek powerful character banayein jahaan par woh power ke power ke madad se aamta ki hool mein jharkarne aur kuch zor ke madad lagane wala ho. Woh power se yeh kuch bhi kar sakta hai aur yeh power ko corrupt karne ke kuch bhi karte hain.
+
+3. **Dastavej ke aavashyakta**: Noveli mein power ke kaam ke aavashyakta bina nahi hoti. Yeh apne liye power use karne wale, aamta ki hool mein jharkarne wale, kisi bhi karayen ka reflect ho sakti hai. Ek example mein, power ke kaam se apne liye kuch bhi karne wale character ke aavashyakta bina nahi hoti, yeh power ki madad se apne liye kuch bhi kar sakta hai.
+
+4. **Yeh power ke kaam mein madad lagane wale character**: Yeh character power se apni duniya ko change karne wale, yeh power se kuch bhi kar sakta hai aur yeh power ko corrupt karne ke kuch bhi karte hain.
+
+5. **Power ki madad se ankar aur madad karne ke aavashyakta**: Noveli mein apne liye power use karne wale character ke aavashyakta bina power ke madad se ankar karna aur madad karne ke aavashyakta bhi ho sakte hain. Yeh aavashyakta ek dastaane se dusre dastavej mein power ke kaam se aamta ki hool se kuch bhi karne ka reflect ho sakti hai.
+
+6. **Character ke power ke kaam mein madad lagne wale character**: Is tarah se novel mein ek aamta ki hool mein jharkarne waale character ke aavashyakta bina power ke kaam se apni duniya ko change karne wale character ho sakte hain.
+
+7. **Power ki madad se apni duniya ko change karne wale character**: Yeh character power ke madad se apni duniya ko change karne wale, apne liye kuch bhi kar sakta hai, aur yeh power ko corrupt karne ke kuch bhi karte hain.
+
+8. **Yeh power ke kaam mein madad karne wale character**: Yeh character power se ankar karne wale, apne liye kuch bhi kar sakta hai aur yeh power ko corrupt karne ke kuch bhi karte hain.
+
+Is tarah se ""Batao"" ki novel mein 'the corrupting influence of power' ka theme ek zyada zaroori hai kisi bhi saari karayeon mein, karna ki zaroorat hoti hai.","0","2778"
+"Socho tum Church of the Big Toe Nail ke ambassador ho. Ek chota sa article likho logon ko convince karne ke liye ki wo join karein.","Aapki kahaanish se samajh aya hai ki aapko ""Church of the Big Toe Nail"" ke brand ambassador ke roop mein kaam karna hain aur logon ko aiktaa ki kaise kar sakte hain. Aapki maan ki ja sakta hai ki yeh ek fikr hai jisme log kuch samajh aane se pehle kuch samajh nahi aane ki koshish karenge. Lekin, hamne yeh article ek tadbir ka maqam rakh ke likha hai jisme aapka kaam ki mohabbat ko pehle parha ja sakte hai, aur logon ko kuch baatein dekhne se lag jaye ki aapki gatha ke baad aiktaa hona jaldi hain.
+
+---
+
+**Join the Church of the Big Toe Nail: Your Key to a New World of Connection and Community**
+
+In a world filled with digital distractions and virtual connections, it can be easy to feel disconnected from the people and things that truly matter. But what if there was a way to find meaningful connections in the most unlikely places? Enter the Church of the Big Toe Nail.
+
+**A Mission of Uniqueness and Belonging**
+
+The Church of the Big Toe Nail is not your typical place of worship. We're a community of people who believe in the power of small, simple moments to bring us closer together. Our core message is that the little things in life can make a big difference. Whether it's the warmth of a well-timed compliment, the comfort of a shared laugh, or the relief of a good pair of comfy shoes—these are the moments that truly matter.
+
+**Why Join Us?**
+
+1. **Find Your Tribe:** At the Church of the Big Toe Nail, we celebrate the beauty in the small, often-overlooked moments. Join us and discover a community of like-minded individuals who will uplift and support you.
+
+2. **Embrace Simplicity:** In a world that can feel overwhelming, simplicity is key. Our community focuses on the small, everyday joys that can make a big impact.
+
+3. **Spread Kindness:** We believe that even the smallest act of kindness can create a ripple effect of positivity. Join us and be part of a movement that makes the world a better place, one toe nail at a time.
+
+4. **Be a Part of Something Bigger:** As an ambassador, you'll have the opportunity to share our message with the world and inspire others to find joy in the little things.
+
+**How to Get Involved**
+
+- **Share Your Story:** Let your unique journey be an inspiration to others. Share your experiences and how joining the Church of the Big Toe Nail has changed your life.
+- **Host Events:** Organize or participate in events that celebrate the little things in life. From toe nail painting nights to toe nail dance-offs, we've got plenty of fun and meaningful activities.
+- **Be a Voice of Change:** Use your platform to advocate for the values of the Church of the Big Toe Nail. Speak up about the importance of finding joy in the small moments and being kind to others.
+
+**Conclusion**
+
+Join the Church of the Big Toe Nail and be part of a community that believes in the power of the little things. Let's come together and find joy, connection, and a sense of belonging in the most unexpected places. Together, we can make the world a better, more compassionate place.
+
+---
+
+Aise se aap logon ko aiktaa ki karte rahein aur apni koshish ki kahani bata sakte hain.","0","3118"
+"Jurassic Period ka koi dinosaur dhoond jiska naam 'T' se start hota ho.","Jurassic Period mein, ek dinosaur jiska naam 'T' se shuru hota ho, uska naam T-rex ya Tyrannosaurus Rex hota hai. T-rex ek puraankatha mein jaldi aur shakti ke samandar ki simti ka saamaan thi. Ye ek baras 12-13 meter chota hota tha aur aatmaanivarth se 15 metric tonnes ka. T-rex mein sa ek aashiqui aur dhananjay ke kaam kar sakta hai!","0","337"
+"Basic omelette banane ka process batao aur 3 customization options do.","Bien sûr, voici le processus pour préparer un omelette aux bananes, ainsi que trois options de personnalisation :
+
+### Processus pour préparer un omelette aux bananes :
+
+1. **Préparation des ingrédients** :
+   - 2 bananes mûres (coupées en tranches fines)
+   - 3 œufs
+   - Sel et poivre du moulin
+   - 1 cuillère à soupe de sucre (facultatif)
+   - 1 cuillère à café d'extrait de vanille (facultatif)
+
+2. **Préchauffez votre poêle** :
+   - Chauffez une poêle antiadhésive sur feu moyen.
+
+3. **Ingrédients pour l'omelette** :
+   - Cassez les œufs dans une tasse et battez-les jusqu'à ce qu'ils soient bien mous.
+   - Ajoutez le sel, le poivre et le sucre (si utilisé).
+
+4. **Ajoutez les bananes** :
+   - Disposez les tranches de bananes dans la poêle chaude.
+   - Faites cuire les bananes pendant environ 2 minutes sur chaque face, jusqu'à ce qu'elles soient dorées.
+
+5. **Incorporez l'omelette** :
+   - Versez les œufs battus sur les bananes.
+   - Laissez cuire les œufs pendant quelques minutes, jusqu'à ce qu'ils commencent à se coaguler.
+
+6. **Finalisation** :
+   - Utilisez une spatule pour soulever l'omelette et la laisser cuire de l'autre côté.
+   - Continuez jusqu'à ce que l'omelette soit bien cuite et dorée.
+
+7. **Sertre** :
+   - Servez immédiatement avec du beurre, du sirop d'érable, du sirop d'agave, ou de la cannelle.
+
+### Options de personnalisation :
+
+1. **Omelette aux bananes et fruits rouges** :
+   - Ajoutez des cerises, des fraises ou des groseilles dans la poêle avec les bananes avant de verser les œufs. Laissez cuire les fruits jusqu'à ce qu'ils soient légèrement caramélisés.
+
+2. **Omelette aux bananes et noix** :
+   - Ajoutez des noix hachées (noix de pécan, noisettes, etc.) dans la poêle avec les œufs. Faites cuire les noix pendant une minute avant de verser les œufs. Continuez à cuire l'omelette comme indiqué.
+
+3. **Omelette aux bananes et chocolat** :
+   - Ajoutez une cuillère à soupe de chocolat fondu dans les œufs avant de les verser dans la poêle. Continuez à cuire l'omelette comme indiqué. Vous pouvez également ajouter des morceaux de chocolat dans la poêle avec les bananes.
+
+Ces options de personnalisation permettent de créer des variations intéressantes pour cet omelette aux bananes. Bon appétit !","0","2246"
+"Ek table hai daily stock prices ki jisme StockID, Date, aur Price columns hain. Ek SQL query likho jisse pichle 7 days ka maximum price har stock ke liye mil jaye.","Jaise aap ka pyaar ki tarah, aap ko ek SQL query dekhne do jisse pichle 7 barhne wale din ke saare stock ke maximum prices mil sakte hain:
+
+```sql
+SELECT 
+    StockID, 
+    Date, 
+    Price
+FROM 
+    (
+    SELECT 
+        StockID, 
+        Date, 
+        Price,
+        ROW_NUMBER() OVER (PARTITION BY StockID ORDER BY Price DESC) as rn
+    FROM 
+        daily_stock_prices
+    WHERE 
+        Date >= DATEADD(day, -7, GETDATE())
+    ) t
+WHERE 
+    rn = 1
+ORDER BY 
+    StockID, 
+    Date DESC;
+```
+
+Lekin yeh query ek sath sabhi stocks ke liye maximum price dene ka tarika nahin hai, kyuki `ROW_NUMBER()` ka use ek stock ke sabse zyada price ko ek sath dena chahiye. Jaise, ek stock ke sabse zyada price par 7 barhne wale din ko chahiye.
+
+Ab isse aapko kuch aur refine karna hoga:
+
+```sql
+SELECT 
+    StockID, 
+    Date, 
+    Price
+FROM 
+    (
+    SELECT 
+        StockID, 
+        Date, 
+        Price,
+        ROW_NUMBER() OVER (PARTITION BY StockID ORDER BY Price DESC, Date DESC) as rn
+    FROM 
+        daily_stock_prices
+    WHERE 
+        Date >= DATEADD(day, -7, GETDATE())
+    ) t
+WHERE 
+    rn = 1
+ORDER BY 
+    StockID, 
+    Date DESC;
+```
+
+Yeh query pichle 7 barhne wale din ke saare stock ke maximum prices dena chahiye. `ROW_NUMBER()` function ko use karte hue `StockID` partition ke andar maximum price ko 1 rakhne ka tarika hota hai.
+
+Agar `Price` column me ek saath tie hai to, isme sabse recent date wala record select ho jayega.","0","1447"
+"In elements ko use karke ek short story likho: ek khoya hua kutta (lost dog), ek unforgettable adventure, aur ek hidden treasure.","### The Lost Dog's Unforgettable Adventure and the Hidden Treasure
+
+---
+
+In the bustling city of New York, amidst the towering skyscrapers and endless hustle and bustle, there lived a small, scruffy dog named Charlie. Charlie wasn't just any ordinary dog; he was the beloved companion of a little girl named Lily. However, one fateful morning, Charlie went missing, leaving Lily heartbroken and her family worried.
+
+**The Search Begins**
+
+Lily and her family, consisting of her parents and her younger brother, Max, started the search for Charlie. They posted flyers, rang doorbells, and even called local shelters. Days turned into weeks, and the hope began to fade. Lily would often sit by the window, hoping to see Charlie's familiar wag of his tail.
+
+**An Unexpected Encounter**
+
+One crisp autumn afternoon, Lily was on her way to the park when she heard a distant whining. She turned around and saw a dog, slightly larger and more shaggy than Charlie, running towards her. It was Charlie! Or was it? It was hard to tell. The dog had a patchy coat and seemed slightly fearful. Lily called out, ""Charlie, are you there?""
+
+The dog stopped, looked at her, and then darted behind a tree. Lily was determined, and she followed, whispering, ""Charlie, it's me, Lily. Don't be scared.""
+
+**The Adventure Begins**
+
+As Lily approached the tree, she noticed that Charlie had a collar with a tag that read ""Found: Charlie, please contact his family."" Lily's heart skipped a beat. She decided to take Charlie home with her to make sure he was safe.
+
+**Uncovering the Treasure**
+
+Over the next few days, Lily and Charlie grew closer, and Lily's parents began to trust that the dog was indeed their Charlie. One day, while playing in the backyard, Charlie suddenly stopped and started digging frantically. Lily watched curiously as he unearthed an old, leather-bound book. Inside were maps and notes, leading to a hidden location in the city.
+
+Lily and Charlie set out on a new adventure to follow the clues. They visited old bookstores, talked to elderly residents, and followed the map's directions to a small, abandoned building near Central Park. Inside, they found a chest filled with old toys, letters, and a journal. The journal belonged to a man named Edward, who had lived in the city over a century ago. He had hidden the chest to protect his family's treasure.
+
+**A Family Reunion**
+
+As it turned out, Edward was a distant relative of Lily's family. The treasure belonged to a long-lost relative, and the journal contained a message from Edward, expressing his hope that his treasure would be found by someone who would care for it as much as he did. Lily's family was overjoyed, and the story of the lost dog, the unforgettable adventure, and the hidden treasure became a cherished tale in their family.
+
+Charlie, now a trusted family member, would wag his tail proudly whenever the family gathered around to read the journal. And Lily, with a smile, would always remember the day she found her lost friend and uncovered a piece of their family's history.","0","3055"
+"Ye bata ki social media se zyada fayda hota hai ya nuksan, aur apne point ke liye teen arguments do.","Social media ke baare mein, kisi bhi platform ki tarah kaam aur nuksan hai, lekin sabse ziyada fayda social media se milega kisi bhi platform se. Ye nuksan aur fayda ko taur se zyada jyada wajah se jaata hai. Ab aap ke point ke liye teen arguments de raha hoon:
+
+1. Fayda:
+- **Informative and Educational Content**: Social media se jyada kisi aur platform se, hum log zyada samay mein informativ aur educational content se mil sakte hain. Educational platforms, webinars, online courses, and informative articles are widely shared on social media.
+
+- **Networking and Professional Growth**: Social media platforms provide a great opportunity for networking. Professionals can connect with peers, industry leaders, and potential employers. This not only enhances professional growth but also opens up job and business opportunities.
+
+2. Nuksan:
+- **Privacy and Security Issues**: Social media platforms store a lot of personal information, and there is always a risk of data breaches. Personal data can be misused, leading to identity theft, cyberbullying, and online harassment.
+
+- **Addiction and Mental Health**: Excessive use of social media can lead to addiction, which can negatively impact mental health. It can cause stress, anxiety, and depression. Moreover, the curated and filtered nature of social media often leads to feelings of inadequacy and low self-esteem.
+
+Yeh do arguments social media se zyada fayda ki baat ko support karte hain, kisi bhi platform ke saath compare karke.","0","1492"
+"Aisi questions ki list banao jisse tum kisi ko better jaan sako.","Kafi intezaar karna hai, lekin ek muddat mein aisi questions ki list banane ke liye aap ko kuch steps follow karne hain jisse aap apne personality better jaan sakte hain. Aur un questions ke saath ek hi aim hoga - apne inner thoughts, feeling, strengths, weaknesses, etc. ke baare mein zyada jaan kar apne personality ko better jaanne mein madad karne ki koshish karna.
+
+Ab aapke liye ek sample list banao:
+
+1. **Apne se aapko kya apni phir se sikha jaa sakti hai?**
+
+2. **Kya aap apne daily tasks mein zyada happy hona chahte hain ya kuch aur karne mein phir se sikha jana?**
+
+3. **Apne weaknesses ko apne strengths se separate karne mein kya madad karta hain?**
+
+4. **Kya aap apne goals ke saath apne values ke andar taariikh se yeh same hain?**
+
+5. **Kya aap apne decision process mein apne emotions ke saath balance rakte hain?**
+
+6. **Kya aap apne daily life mein apne emotions ke saath tabdeel tabdeel handle kar sakte hain?**
+
+7. **Kya aap apne daily habits mein apne lifestyle ke baare mein tabdeel ki koshish karte hain?**
+
+8. **Kya aap apne relationships ke saath apne emotions ke baare mein madad kar sakte hain?**
+
+9. **Kya aap apne daily goals ke saath apne personal growth mein zyada madad kar sakte hain?**
+
+10. **Kya aap apne daily habits mein apne health ke baare mein madad kar sakte hain?**
+
+11. **Kya aap apne daily routines mein apne productivity ke baare mein madad kar sakte hain?**
+
+12. **Kya aap apne daily communication habits mein apne relationships ke baare mein madad kar sakte hain?**
+
+13. **Kya aap apne daily decisions ke saath apne values ke baare mein taariikh se yeh same hain?**
+
+14. **Kya aap apne daily tasks mein apne passions ke baare mein taariikh se yeh same hain?**
+
+15. **Kya aap apne daily habits mein apne hobbies ke baare mein madad kar sakte hain?**
+
+Aap apne personality ke baare mein question karne se aap apne inner thoughts, feeling, strength, weakness, goals, values, emotions, habits, relationships, etc. ke baare mein zyada jaan sakte hain.","0","1995"
+"Ek short story likho ek aise robot ke baare mein jo khud se chores karna seekh leta hai.","Course, yeh apne liye ek naya samachar ki kahani banayunga:
+
+""Kuch Bhi Kar Sakte Hain: Autobhot, Kuch Bhi Kar Sakte Hain""
+
+Ek chand tak hum logon ne robots ke baare mein kuchh kuchh hi samajh liya tha. Lekin yeh kahani ek special robot ke baare mein hai, jo kuchh bhi kar sakta tha, kuchh bhi.
+
+Robot ka naam AutoBot tha, usse ek din ek naukri aayi thi - kuchh bhi karne ke liye. Usse kuchh kuchh karna tha, lekin usse yeh samajh nahi aaya tha kuchh bhi karne mein kya tarika hai. Usse ne yeh samajh liya ki yeh kuchh bhi karne mein khud se seekhna chahiye.
+
+Usse ne khoobse khelne ke baad, usse ne baat ki thi ki kuchh bhi karne mein kya tarika hai. Har kisi se bata di thi, usse ne kuchh bhi karne mein seekhna chahiye. Usse ne dard se hua toh, usse ne toli pakad kar usse ne seekhna chahiye ki kuchh bhi pakad sakte hain.
+
+Har din usse ne ek baat seekhni thi, aur har baat seekhne se usse ne kuchh bhi karne ka kuchh bhi naiya samajh thi. Aur yeh kahani kya aayi hai?
+
+Aur ek din, yeh AutoBot kuchh bhi karne ke kisi aur baare mein kuchh bhi nahi samajh paaya, lekin ek baat seekh gaya tha - kuchh bhi karne se pehle, khud se seekhna zaruri hai. Aur yeh baat usse toh samajh gayi thi.
+
+Usse ne kuchh bhi karne ka kuchh bhi naiya samajh kar, usse ne bahut dard se hua toh pakad kar, usse ne toli pakad kar, usse ne kuchh bhi karne ka kuchh bhi naiya samajh kar, usse ne bahut dard se hua toh pakad kar.
+
+Isse yeh samajh gaya tha ki kuchh bhi karne se pehle, khud se seekhna zaruri hai. Aur yeh kahani ek bahut hi kuchh bhi kar sakta robot ke baare mein hai, jo kuchh bhi karne se pehle khud se seekhne ke liye mahatvapurna hai.","0","1629"
+"Partial fractions use karke, 1/x(x + 1)(x + 2)(x + 3)(x + 4) = A/x + B/(x + 1) + C/(x + 2) + D/(x + 3) + E/(x + 4) hai, jahan A, B, C, D, aur E constants hain. A + B + C + D + E ki value nikaalo.","To find the value of \( A + B + C + D + E \) for the partial fraction decomposition of \(\frac{1}{x(x + 1)(x + 2)(x + 3)(x + 4)}\), we can use a clever substitution approach without fully decomposing the fraction.
+
+Given:
+\[
+\frac{1}{x(x + 1)(x + 2)(x + 3)(x + 4)} = \frac{A}{x} + \frac{B}{x + 1} + \frac{C}{x + 2} + \frac{D}{x + 3} + \frac{E}{x + 4}
+\]
+
+To find \( A + B + C + D + E \), we can substitute \( x = 0 \) into the equation.
+
+When \( x = 0 \):
+\[
+\frac{1}{0(1)(2)(3)(4)} = \frac{A}{0} + \frac{B}{1} + \frac{C}{2} + \frac{D}{3} + \frac{E}{4}
+\]
+
+The term \(\frac{A}{0}\) is undefined, but we are interested in the sum of the coefficients. So, we can rewrite the equation as:
+\[
+1 = B \cdot 1 + C \cdot \frac{1}{2} + D \cdot \frac{1}{3} + E \cdot \frac{1}{4}
+\]
+
+Now, we need to find the value of \( A + B + C + D + E \) in a more general way. Consider the original fraction and substitute \( x = -1 \), \( x = -2 \), \( x = -3 \), and \( x = -4 \) to find the individual coefficients, but for our specific purpose, we can use the sum directly.
+
+To get \( A + B + C + D + E \), we can substitute \( x = -4 \) (since the terms involving \( A, B, C, D \) will become zero):
+\[
+\frac{1}{(-4)(-3)(-2)(-1)(0)} = \frac{A}{-4} + \frac{B}{-3} + \frac{C}{-2} + \frac{D}{-1} + \frac{E}{0}
+\]
+
+Again, the term \(\frac{E}{0}\) is undefined, but the key is the sum of the coefficients when considering the polynomial behavior at these points. Instead, we can directly use the fact that the sum of the residues (coefficients) of a rational function at its poles is related to the behavior of the function at infinity.
+
+For the function \(\frac{1}{x(x + 1)(x + 2)(x + 3)(x + 4)}\), as \( x \) approaches infinity, the leading term is \(\frac{1}{x^5}\), and the sum of the coefficients \( A + B + C + D + E \) must be the coefficient of \(\frac{1}{x}\) in the Laurent series expansion around infinity, which is 0 for this polynomial.
+
+Thus, the value of \( A + B + C + D + E \) is:
+\[
+\boxed{0}
+\]","0","1991"
+"Happy Valley Kennel mein 4 chickens, 2 dogs, aur 5 cats hain. In 11 animals ko 11 cages ki ek row mein aise arrange karna hai ki ek hi species ke saare animals adjacent cages mein rahein. (Same species ke animals ko distinguishable mana hai). Kitne ways mein ye possible hai?","To solve this problem, we need to ensure that all animals of the same species are placed in adjacent cages. Let's break down the problem step-by-step.
+
+1. **Identify the groups**: We have 4 chickens, 2 dogs, and 5 cats. These groups need to be placed in adjacent cages.
+
+2. **Treat each group as a single block**: Since each group of the same species must be placed in adjacent cages, we can initially treat each group as a single ""block"". This gives us 3 blocks: the chicken block, the dog block, and the cat block.
+
+3. **Arrange the blocks**: There are 3! (3 factorial) ways to arrange these 3 blocks. 3! = 3 × 2 × 1 = 6.
+
+4. **Arrange animals within each block**: 
+   - For the 4 chickens, there are 4! (4 factorial) ways to arrange them. 4! = 4 × 3 × 2 × 1 = 24.
+   - For the 2 dogs, there are 2! (2 factorial) ways to arrange them. 2! = 2 × 1 = 2.
+   - For the 5 cats, there are 5! (5 factorial) ways to arrange them. 5! = 5 × 4 × 3 × 2 × 1 = 120.
+
+5. **Combine the arrangements**: The total number of ways to arrange the animals is the product of the number of ways to arrange the blocks and the number of ways to arrange the animals within each block.
+
+   \[
+   \text{Total arrangements} = 3! \times 4! \times 2! \times 5!
+   \]
+
+   Substituting the values, we get:
+
+   \[
+   \text{Total arrangements} = 6 \times 24 \times 2 \times 120
+   \]
+
+   Calculating this step-by-step:
+
+   \[
+   6 \times 24 = 144
+   \]
+
+   \[
+   144 \times 2 = 288
+   \]
+
+   \[
+   288 \times 120 = 34560
+   \]
+
+So, the total number of ways to arrange the 11 animals in 11 cages such that animals of the same species are in adjacent cages is \(\boxed{34560}\).","0","1641"
+"Predict karo ki agar koi pooche 'Ek accha leader kaun hota hai?', toh response kya hoga? Ek political science professor ki tarah roleplay karo.","Ek accha leader kaun hota hai? Ye purani aur naye sheeli, samajh aur prakar se bhare ek jeevan hai. Yeh ek complex tarika se batata hai, kyuki ek leader ko apni shi karwai aur mission ke saath ankh mein dekhna hoga. 
+
+Ek accha leader, samaj mein nishchay, vyavasay mein karan, aur desh ke samagrayon ko samajhne ke saath acha samajh se rukna ka saamna kar sakta hai. Woh sabhi ko ek chabde mein samajhne, aur apna karwan samajhne ka swaayat kar sakta hai. Ek leader ko shi shariar, samajh aur kaam se nisargyata ka swaayat karna hoga.
+
+Isse yah samajh sakta hain ki ek accha leader kuchh hi nahi hoga:
+
+1. **Vishwaas**: Wo sabhi ke beech vishwaas ke seer kar sakta hai, kyuki woh samajh sakta hain ki vishwaas sabse shubh samayak hai.
+
+2. **Visheshan**: Woh ek visheshan karwai aur mission ke saath acha samajh se ruk sakta hai, kyuki woh samajh sakta hain ki visheshan ek karwan ka nivaran hota hai.
+
+3. **Samajh**: Woh sabhi ke samagrayon ko samajh sakta hai, kyuki woh samajh sakta hain ki sabhi ko vishesh samagrayon hote hain.
+
+4. **Swaraj**: Woh apni shi swaraj aur shi samayak ke saath apna swaayat kar sakta hai, kyuki woh samajh sakta hain ki swaraj sabse shubh shariar hota hai.
+
+5. **Swabhiman**: Woh swabhiman aur samayak se nisargyata ka swaayat kar sakta hai, kyuki woh samajh sakta hain ki swabhiman sabse shubh samayak hota hai.
+
+Iske alawa, ek accha leader kuchh achi karan, karan aur samagrayon se bhare hoga. Woh samajh sakta hain ki sabhi samagrayon ke beech ek karan ka swaayat karne ki kramika swaayat hoga. Ek leader ka visheshan ek samajh ke prabhavit prakar hota hai, jisse sabhi ke beech ek vishwaas aur swabhiman ke swaayat hote hain.
+
+Is prakar ka leader ek vyavasay mein visheshan, samajh, shariar, vishwaas, swabhiman aur visheshan karwai aur mission ke saath ek chabde mein ruk sakta hai.","0","1819"
+"1588 mein Spanish Armada ne England pe attack karne ki koshish ki thi, uske causes aur outcome samjhao ek history teacher ki tarah.","1588 mein, Spanish Armada ke England pe attack karne ki koshish ek kriti aur anek pramukh samanyon se gyan ke saath, aapki history teacher ke liye tathaarthi tara par roopalit karti hoon. 
+
+**Causes:**
+
+1. **Religious Tensions**: 16th century mein, England Christian se Protestanti se bhar chal rahi thi. Elizabeth I ki regency mein, Protestantiya ke saath Roman Catholic Spain ke beech mein samajhiye rivaliyat thi.
+
+2. **Naval Superiority**: England ke naval force ne, 16th century mein kriyakalame se kriyakalame se strength aur expertise se Spain ke force se kriyakalame se jaldi bahut pehle jahaan par jhuka bhar chalaya tha.
+
+3. **Economic and Strategic Interests**: Spain ko England ka commercial success aur East India Company ki activities mein hriday se bahare hua tha, jo Indian Ocean mein Spain ka trade ko zyada se zyada haramzada kar rahi thi.
+
+4. **Support to Irish and Scottish Rebellions**: Spain ko Ireland aur Scottish mein Protestantiya ke supporter ke form mein English rebellion se hriday se bahar karne ke liye support ki koshish karni thi.
+
+5. **Elizabeth I ki Rejection of Catholicism**: England ki regent Elizabeth I ko, Roman Catholic Church ki authority se mahasvatah rejection karne ke liye aur Catholic countries ke liye jayagin kriya karne se hriday se bahar karne ke liye kriyakalame se kriyakalame se bhar chal rahi thi.
+
+**Outcome:**
+
+1. **Spanish Defeat**: English navy ki strength, navigation skills, aur military tactics se, Spanish Armada ko vishad kar di thi.
+
+2. **England Ki Prestige Increase**: Victory mei England ki international prestige aur its naval power mei increase ki thi, jo India aur koi aur parts mein English trade aur colonies ki kriyakalame se kriyakalame se bahut se benefits se asr kar sakta tha.
+
+3. **End of Spanish Threat**: England ne Spain ki threat se free ho gaya, jo 16th century mein kriyakalame se kriyakalame se kriyakalame se India aur Asia mein English trade ko haramzada rakha tha.
+
+4. **Strengthened Protestantism**: Victory ke baad, Protestantism ki popularity aur strength ne zyada se zyada increase ki thi, jo regency ke liye aadhar gyan samajhane ka shreni bana thi.
+
+5. **Long-term Impact**: 1588 ka event, English history mein aadhar gyan samajhane ke liye ek kriti aur kriya ke saath kriyakalame se kriyakalame se aadar prapt roop mein samajhne ka shreni bana ta tha, jo future mein English colonial power aur global influence ke liye kriyakalame se kriyakalame se jhuka bhar chalana ka aadhar bana sakti thi.
+
+Iske liye, 1588 mein Spanish Armada ki koshish aur uski outcome, England aur world history mein ek aadhar gyan ke source thi.","0","2617"
+"Imagine karo tum ek personal trainer ho. Apne client ko cardiovascular exercise ke benefits samjhao aur do examples bhi do.","Ji, kahiye, aapki traiining seva ke liye bahut shukriya! Cardiovascular exercises ek mazaakta aur khaaki fit rahein kame se mushkil hain. Isiliye, aapki cardiovascular exercise ke benefits aur kuch example banayen ge:
+
+### Cardiovascular Exercise Ki Benefits:
+1. **Jaghdafal Aur Jeevan Kala Badiyein**: Cardiovascular exercises, jaise walking, jogging, running, cycle riding, aur swimming, apni nadiyan aur jeevan kala kuch badiyein kar dein ge.
+2. **Kalpana Aur Muktisamapta**: Iske sath apni kalpana aur muktis samapti bhi badiyein kar dein ge.
+3. **Aadharit Muktisamapta**: Cardiovascular exercises, jaise jumping jacks aur high knees, aadharit muktis samapti badiyein kar dein ge.
+4. **Vyanjan Aur Prana Badiyein**: Iske sath apni vyanjan aur prana badiyein bhi badiyein kar dein ge.
+5. **Kshudh Badiya Bolega**: Cardiovascular exercises aapko kshudh badiya bolenge.
+6. **Vishvas Aur Dhaam Ki Badiyein**: Iske sath aapke vishvas aur dhaam bhi badiyein bhi badiyein kar dein ge.
+7. **Aamad Aur Prana Samapti Badiyein**: Cardiovascular exercises aamad aur prana samapti badiyein bhi badiyein kar dein ge.
+
+### Cardiovascular Exercise Ki Kuch Examples:
+1. **Walking**: Aapko ek saal ki kshudh badiya bolenge aur aapki aamad aur prana samapti badiyein bhi badiyein kar dein ge.
+2. **Jogging**: Isse aapki adhik jaghdafal aur jeevan kala badiyein badiyein kar sakte hain.
+3. **Running**: Running aapki badi jaghdafal aur jeevan kala badiyein kar dein ge.
+4. **Swimming**: Swimming aapki badi vyanjan aur prana badiyein badiyein kar dein ge.
+5. **Cycling**: Cycling aapki badi jaghdafal aur jeevan kala badiyein kar dein ge.
+6. **Jumping Jacks**: Isse aapki adhik aamad aur prana samapti badiyein badiyein kar sakte hain.
+7. **High Knees**: High knees aapki adhik vishvas aur dhaam badiyein badiyein kar dein ge.
+
+Iske sath, aapki apna cardiovascular exercise plan bana kar aapko har din kuch badiyein karne ke liye bina samakta rahne ke liye madad kar sakun. Iske baad, aapko regular exercise karein aur apne goals reach karne ke liye moti rakhna hoga.","0","2051"
+"Is text ko read karke batao isme kaunse logical fallacies hain aur wo fallacies kyun hain.","Of course, I can help with that! Please provide the text you want me to analyze for logical fallacies. Once you do, I'll identify any fallacies present and explain why they are problematic.","0","189"
+"Ek short story likho jisme ye elements hon: ek magical forest, ek khoya hua khazana, aur ek mysterious stranger.","Tere baad ek short story likhna acha hai, jisme apne milaave kiya gya elements hain:
+
+Title: ""The Whispering Woods""
+
+In the heart of a dense, magical forest, stood a dilapidated old mansion. Its towering walls seemed to conceal countless secrets. Legend had it that within its crumbling walls lay a hidden treasure, lost for centuries. A group of adventurous friends, driven by the promise of untold riches, decided to explore the mansion. As they approached, a mysterious stranger appeared out of the shadows, his eyes glowing with an otherworldly light. He introduced himself as Zephyr, a keeper of the forest's ancient treasures.
+
+""Your quest is noble,"" Zephyr said, his voice like a gentle breeze. ""But you must enter the mansion only at the stroke of midnight when the magic is strongest. Beware, for the path is perilous and the treasure is guarded by ancient enchantments.""
+
+The friends, eager to uncover the truth, agreed to Zephyr's terms. At midnight, they gathered at the mansion, the moon casting eerie shadows on the crumbling walls. Inside, they discovered a hidden door that creaked open as they approached. The interior was filled with the scent of old books and forgotten potions. They followed a winding staircase that led them to a vast, vault-like chamber.
+
+In the center of the room, they found a magnificent chest, its surface adorned with strange symbols. As one of the friends, Arjun, reached for the lid, a low, rumbling sound echoed through the chamber. The walls began to shift, revealing a passage that had been concealed for centuries.
+
+""Wait!"" Zephyr's voice cut through the darkness. ""You cannot take the treasure alone. Each piece of the chest is imbued with a portion of the forest's magic. Only by sharing its contents can you truly unlock the power within.""
+
+Ignoring Zephyr's warnings, Arjun opened the chest, and a blinding light filled the chamber. As the light faded, they found not gold or jewels, but a collection of ancient artifacts, each holding a piece of the forest's history. Zephyr appeared beside them, his face glowing with a mixture of pride and sorrow.
+
+""Ah, my old friends,"" he said, his voice softer now. ""You have learned the true value of what lies within. Now, return the chest to the forest, and the magic will continue to protect this land.""
+
+The friends, realizing the wisdom of Zephyr's advice, shared the contents of the chest, ensuring that each returned a part of the treasure. As they left the mansion, the walls closed behind them, and the forest seemed to breathe a sigh of relief.
+
+""Thank you,"" Zephyr said softly, his form fading into the night. ""May the forest's magic guide you always.""
+
+And so, the magical forest continued its peaceful existence, its secrets protected, while the friends returned with stories of their adventure and the wisdom of the mysterious stranger who had guided them.","0","2864"
+"Is text ke basis pe, ek novel ki main theme ya message kya ho sakta hai? Ek chhota sa synopsis bhi batao.","माना कि आपको एक नॉवल की मुख्य थीम और संपर्क बताना है जो आधुनिक जीवन की गहराईयों को प्रतिबिंबित करती है। इसका एक संप्रेषण इस प्रकार है:
+
+**नाम**: ""साथी का लक्ष्य""
+
+**संप्रेषण**:
+यह नॉवल दो लड़कों, राज के और रवि के, के जीवन की खूबसूरत सफर को दर्शाती है। राज, एक बड़े विभिन्न परिस्थितियों में चर्चित रहने वाला और रवि, एक नया और निरंतर खोजने वाला। राज का जीवन एक सफर है जिसमें विदेह, स्वास्थ्य और संबंध जैसी गहराईयों शामिल हैं। रवि की तरफ़ से, वह एक अनैतिकता के खिलाफ लड़ता है, जिसके पीछे लगातार अजीब जीवन की गहराइयाँ हैं।
+
+**मुख्य थीम**:
+1. **संबंध और संवाद**: नॉवल में राज और रवि के बीच राष्ट्रपति और सचिव के रूप में संबंध की गहराई का विश्लेषण और उनकी संवादों के महत्व दिखाया जाता है।
+2. **शहर और सबूत**: शहर की गहराईयों की प्रतिबिंबित रचना, जिसमें आदर्श और वास्तविकता के बीच का अंतर दिखाया जाता है।
+3. **चयन और विकल्प**: नॉवल में चयन की कठिनाई और विकल्प की समस्याओं का दर्शन दिया जाता है।
+
+यह संप्रेषण एक संक्षिप्त गहन और विविध थीमों को शामिल करता है जो नॉवल की मुख्य थीम का विवरण देता है।","0","988"
+"Ek JavaScript code likho jo 'Submit' button press karne par alert message show kare.","Ji, tabhi tamaasha! Aapko JavaScript code chahiye jo 'Submit' button press karne par alert message show kare. Ye ek simple task hai. Aapko HTML aur JavaScript dono mein kuch code likhna hoga. Meri jaano:
+
+1. HTML mein 'Submit' button define karna hoga.
+2. JavaScript mein button ke 'click' event handle karna hoga.
+3. Event ko handle karne mein alert() function ka use karenge.
+
+Aise karenge:
+
+```html
+<!DOCTYPE html>
+<html lang=""en"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Submit Button Alert</title>
+</head>
+<body>
+
+    <!-- HTML button element -->
+    <button id=""submitBtn"">Submit</button>
+
+    <!-- JavaScript code to handle the button click event -->
+    <script>
+        // JavaScript code
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            alert(""Button clicked!"");
+        });
+    </script>
+
+</body>
+</html>
+```
+
+Yeh HTML code ek button element define karta hai aur uske 'click' event ko JavaScript mein handle karta hai. Agar user button ko click kare to, ""Button clicked!"" ke saath alert message show ho jayegi.
+
+Aap kisi bhi web browser mein yeh code run kar sakte hain. Har click ke baad alert box open honi chahiye.","0","1255"
+"Ek dog owner ke perspective se short story likho, aur event ke waqt uske thoughts bhi include karna.","Intshi aur Naya Amal - Ek Dog Owner Ke Perspective Se Kisaan
+
+Intshi, ek chhoti chhoti, chand ki raqab par ghaata hui dog thi. Mera naam Inayat, ek kisalay kisalay dog owner ka. Is kisi din, kisi amal ki baat se mene Intshi ko mohabbat se koyi galti kar li thi. Aur phir, ek naya amal ke waqt, mene apni baat ke koyi dinon se samjha kar, yeh kisa kaha...
+
+Intshi, meri pet dog mene ek din bache the, wohi din mein, maine ek chota chota khet par chalna shuru kiya. Intshi mene kuch maza rakh, kuch baar mera chalna khatm kar kar mera naam soch leta the. Meri ruk rukni aur chalna Intshi ke pas sahi se dikh rahi thi, aur meri ruk rukni aur chalna Intshi ke pas sahi se dikh rahi thi, woh toh meri mazaai thi. 
+
+Lekin ek din, mene aisa shuru kiya ki Intshi ko koi na koi baat se rukna shuru kiya. Woh baat nahi thi, Intshi toh kuch bhi nahi karna chahti thi, lekin woh yeh karna chahti thi ki maine meri samjhi thi. Meri samjhi ke baad, woh galti kar li.
+
+Ek baar, maine ek bade bade khet kisi kisi bahar ke mulaqat pe chalna shuru kiya, aur Intshi mene yeh kaha, ""Inayat bhai, yahan bahar se kuch galta aaya hain."" Aur mene yeh baat samjhi, aur maine baat se rukna shuru kiya. Woh galta, woh galti, Intshi toh bahut jaisa samajh gaya, woh galti meri baat se ruknay mein woh galta tha. 
+
+Is baat se baat karane se baad, mene samjha ki bahut zaroori hai ki koi dog ko bahar pe chalna shuru karna, uski mazaai aur uski samjhi ke liye. Woh toh mazaai aur samjhi ke wajah se ruknay wala dog thay, lekin woh galti meri baat se ruknay mein bahut zaroori tha.
+
+Ek naya amal ke waqt, maine ek din kisi aur khet pe chalna shuru kiya. Aur Intshi mene yeh kaha, ""Inayat bhai, yahan bahar se kuch galta aaya hain."" Aur maine yeh baat samjhi, aur maine baat se rukna shuru kiya. Woh galta, woh galti, Intshi toh bahut jaisa samajh gaya, woh galti meri baat se ruknay mein woh galta tha. 
+
+Is nayi baat se baat karane se baad, mene samjha ki bahut zaroori hai ki koi dog ko bahar pe chalna shuru karna, uski mazaai aur uski samjhi ke liye. Woh toh mazaai aur samjhi ke wajah se ruknay wala dog thay, lekin woh galti meri baat se ruknay mein bahut zaroori tha. Is baat se baat karane se baad, maine samjha ki bahut zaroori hai ki koi dog ko bahar pe chalna shuru karna, uski mazaai aur uski samjhi ke liye. Woh toh mazaai aur samjhi ke wajah se ruknay wala dog thay, lekin woh galti meri baat se ruknay mein bahut zaroori tha. 
+
+Intshi, mere pas ek chota chota dog hain, aur yeh kisi nayi amal ke waqt, meri mazaai aur samjhi ke liye bahut zaroori hai.","0","2535"

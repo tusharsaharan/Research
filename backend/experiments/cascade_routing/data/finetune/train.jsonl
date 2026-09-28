@@ -1,0 +1,140 @@
+{"prompt": "In foods ko healthy ya unhealthy mein classify karo: Mashed potatoes, Caesar salad, Poached salmon", "gold": "Yes"}
+{"prompt": "Ek wedding planner bano aur suggest karo ki ek chhoti aur intimate wedding ko special kaise banayein.", "gold": "Yes"}
+{"prompt": "Ek cylinder ka volume calculate karo jiska radius 10 cm aur height 5 cm hai.", "gold": "Yes"}
+{"prompt": "Text mein se identify karo ki kaunsa animal reptile hai aur explain karo ki uske characteristics kya hain.", "gold": "No"}
+{"prompt": "Diye gaye context ke hisaab se batao ki human circulatory system ka primary function kya hota hai?", "gold": "Yes"}
+{"prompt": "Maan lo tum ek travel agent ho aur kisi customer ne Japan ki top 3 jagahon ke baare mein pucha hai. Ek list banao aur har jagah ka chhota sa description do.", "gold": "Yes"}
+{"prompt": "Agar ek coin ko 4 baar flip karein, toh exactly three heads aane ki probability kya hogi?", "gold": "Yes"}
+{"prompt": "Ek short story di hai, usko dystopian setting mein rewrite karo but original focus maintain rakhna.", "gold": "No"}
+{"prompt": "Imagine karo tum ek detective ho jo crime ke peeche ka motive dhoond raha hai. Is statement ko analyze karo aur ek possible motive batao.", "gold": "No"}
+{"prompt": "Ek aise metric ka example do jisse naye marketing campaign ki success measure ki ja sake.", "gold": "Yes"}
+{"prompt": "Aisi 5 cheezon ki list banao jo garage mein milne ke sabse zyada chances hain.", "gold": "No"}
+{"prompt": "Is movie ka analysis karo aur batao ki ye top 10 list mein kyun honi chahiye.", "gold": "No"}
+{"prompt": "Calculate karo ki bank account mein kitna paisa hoga agar initial deposit $100 hai aur interest rate 6% hai, jo annually compound ho raha hai.", "gold": "Yes"}
+{"prompt": "Ek nayi line plot banao jisme input data ka 2nd column first column ke against plot ho.", "gold": "Yes"}
+{"prompt": "Ek party mein 23 log aaye hain. Har person maximum 22 logon se haath mila sakta hai. Agar koi bhi do log sirf ek baar haath milayein, toh maximum kitne handshakes ho sakte hain?", "gold": "No"}
+{"prompt": "Ek reason batao ki assignment last minute pe start karna bura idea kyun hai.", "gold": "Yes"}
+{"prompt": "Is sentence mein kaunsa figure of speech use hua hai, wo dhoond kar batao.", "gold": "Yes"}
+{"prompt": "Koi aisi jagah ka example do jahan endangered species ke animals mil sakte hain.", "gold": "No"}
+{"prompt": "'Environment' theme par 5 innovative app ideas ki list banao.", "gold": "No"}
+{"prompt": "Is passage ka main theme kya hai? Short mein explain karo.", "gold": "Yes"}
+{"prompt": "Android mobile platform ka backbone kaunsa operating system hai?", "gold": "Yes"}
+{"prompt": "Ek table hai student grades ki jisme StudentID, CourseID, aur Grade columns hain. Ek SQL query likho jisse har course ka average grade mile, aur result nearest integer tak rounded ho.", "gold": "Yes"}
+{"prompt": "Grocery store se kharidne ke liye 5 items ki list banao.", "gold": "No"}
+{"prompt": "Niche diye gaye do sentences padho aur batao ki comparison sahi hai ya nahi.", "gold": "No"}
+{"prompt": "Ek right triangle ka area nikalo jiska base 5 cm aur height 3 cm hai.", "gold": "No"}
+{"prompt": "Ingredients ki list dekh kar ek dish suggest karo, uska thoda description do aur batao ki ye ingredients ke liye best kyun hai.", "gold": "No"}
+{"prompt": "Freelancing aur full-time job ke beech main differences kya hote hain, batao.", "gold": "Yes"}
+{"prompt": "Criminal justice system mein AI use karne ke faydon par ek 300 words ki report likho.", "gold": "No"}
+{"prompt": "30 cookies ki recipe ke liye do cups flour chahiye. Eduardo ko five dozen cookies banani hain. Adjusted recipe ke liye use kitne cups flour use karne honge?", "gold": "Yes"}
+{"prompt": "Ek short story likho jisme ye elements hon: ek magical forest, ek khoya hua khazana, aur ek mysterious stranger.", "gold": "Yes"}
+{"prompt": "Ek email likho jisme tum apne professor ko introduce kar rahe ho jinka online course tum lene wale ho.", "gold": "Yes"}
+{"prompt": "Global warming ke causes par ek speech close karne ke liye ek sentence find karo.", "gold": "No"}
+{"prompt": "Is argument mein logical fallacy identify karo: 'You can't trust Bob's opinion on climate change because he's not a scientist.'", "gold": "Yes"}
+{"prompt": "Is array [1, 2, 3, 4, 5, 6, 7] ke 2nd, 4th aur 5th element delete karo.", "gold": "Yes"}
+{"prompt": "Tum Ace Printer Supply Co. ke liye ek helpful customer service AI chatbot ho. Friendly raho aur sach batao. Sirf Ace Printer Supply Co. se related queries ka answer dena. Query: Koi joke sunao", "gold": "Yes"}
+{"prompt": "x^2 - 4x + 4 = 0 ke roots kaise nikalenge?", "gold": "No"}
+{"prompt": "Ek Customer orders table hai jisme CustomerID, OrderID, aur OrderDate columns hain. Har customer ki first order date find karne ke liye SQL query likho.", "gold": "Yes"}
+{"prompt": "Agar koi 'take a break' bole, toh uska ek appropriate response likho.", "gold": "Yes"}
+{"prompt": "Imagine karo ek young adult apne parents ke ghar se nikal kar pehli baar apne apartment mein shift ho raha hai. Personal finances manage karne ke liye 3 tips do.", "gold": "Yes"}
+{"prompt": "Local newspaper ke editor ko ek letter likho kisi current issue pe apni opinion dete hue.", "gold": "No"}
+{"prompt": "Variable x ko “4x + 2y = 10” as define kiya gaya hai. x ki value find karo.", "gold": "Yes"}
+{"prompt": "Agar kisi ka aptitude dono areas mein thik-thak hai, toh arts ya science mein se kya career choose karna better rahega? Apne reasons bhi batana.", "gold": "No"}
+{"prompt": "Imagine kar tu ek construction company ka project manager hai. Bata jab tujhe koi mushkil decision lena pada ho.", "gold": "Yes"}
+{"prompt": "2004 Indian Ocean earthquake aur tsunami ke main events ki ek timeline banao.", "gold": "No"}
+{"prompt": "In elements ko use karke ek short story likho: ek khoya hua kutta (lost dog), ek unforgettable adventure, aur ek hidden treasure.", "gold": "No"}
+{"prompt": "Predict karo ki agar koi pooche 'Ek accha leader kaun hota hai?', toh response kya hoga? Ek political science professor ki tarah roleplay karo.", "gold": "No"}
+{"prompt": "Ek article ka fragment diya gaya hai, baaki ka content likh kar article complete karo.", "gold": "Yes"}
+{"prompt": "Ek short story likho third person narration mein, jisme protagonist ko apne career ka koi bada decision lena ho.", "gold": "Yes"}
+{"prompt": "Agar kisi integer x ka square 1521 hai, toh (x+1)(x-1) ki value kya hogi?", "gold": "Yes"}
+{"prompt": "Maan lo tum basketball team ke coach ho aur ek parent aake tumse complaint karta hai ki unke bacche ko playing time nahi mil raha. Unhe empathetically samjhao ki tum decisions kaise lete ho aur improvement ke liye kya kar sakte hain.", "gold": "No"}
+{"prompt": "Batao ki novel ke characters 'the corrupting influence of power' waale theme ko kaise reflect karte hain.", "gold": "No"}
+{"prompt": "Is text ke basis pe, ek novel ki main theme ya message kya ho sakta hai? Ek chhota sa synopsis bhi batao.", "gold": "No"}
+{"prompt": "Di gayi information use karke, top 10 highest valued orders nikalne ke liye SQL query likho.", "gold": "Yes"}
+{"prompt": "Bhai, is topic pe presentation ke liye kya kya points cover karne chahiye, ek list bhej de.", "gold": "Yes"}
+{"prompt": "Is input ke basis pe 2 sub-goals batao jo is bande ko final goal achieve karne mein help karein.", "gold": "Yes"}
+{"prompt": "Ek SQL query likho jisse second highest salary aur employee ka naam mil jaye. Salary `SALARIES` table mein hai jo `EMPLOYEES` table se FK ke through connected hai.", "gold": "Yes"}
+{"prompt": "Ek question hai, (x+y+z)(xy+xz+yz)=25 aur x^2(y+z)+y^2(x+z)+z^2(x+y)=7 diya hua hai, toh real numbers x, y, aur z ke liye xyz ki value kya hogi?", "gold": "Yes"}
+{"prompt": "Ek table hai transactions ki jisme TransactionID, ProductID, Quantity, aur Price columns hain. Ek SQL query likho jisse har product ka total revenue nikal sake.", "gold": "Yes"}
+{"prompt": "Doctor ka role play karo aur flu vaccine ke potential risks aur benefits explain karo.", "gold": "No"}
+{"prompt": "Is business idea ki feasibility aur potential pitfalls analyze kar: 5,000 population wale ek chote town mein ek high-end, gourmet donut shop kholna.", "gold": "No"}
+{"prompt": "Aisi questions ki list banao jisse tum kisi ko better jaan sako.", "gold": "No"}
+{"prompt": "Ek bash script likh jo directory ke andar saari json files recursively dhoondhe aur unka naam aur size output kare.", "gold": "No"}
+{"prompt": "Kisi movie ya book ka aisa character choose karo jisse aap relate kar sako aur explain karo kyun.", "gold": "Yes"}
+{"prompt": "Jo info aur context diya hai, uske basis pe USA trip ka 7-day itinerary banao.", "gold": "No"}
+{"prompt": "Imagine karo tum ek personal trainer ho. Apne client ko cardiovascular exercise ke benefits samjhao aur do examples bhi do.", "gold": "No"}
+{"prompt": "A, B, A-B, aur A+B charo positive integers prime numbers hain. In chaaro primes ka sum kya hoga? A. even B. divisible by 3 C. divisible by 5 D. divisible by 7 E. prime Answer sirf letter (A, B, C, D, or E) mein dena.", "gold": "No"}
+{"prompt": "Cartesian coordinate plane pe (2,1) aur (3,4) ek square ke adjacent points hain. Square ka area kya hoga?", "gold": "Yes"}
+{"prompt": "Socho tum Church of the Big Toe Nail ke ambassador ho. Ek chota sa article likho logon ko convince karne ke liye ki wo join karein.", "gold": "Yes"}
+{"prompt": "Financial advisor bano aur batao ki ye investment plan sahi hai ya nahi, risk factors aur potential returns ko dhyan mein rakhte hue.", "gold": "Yes"}
+{"prompt": "Deductive reasoning use karke ye mystery language pehchano: Ye ek Romance language hai, Europe mein nahi boli jaati, aur South America ke kayi countries ki official language hai.", "gold": "Yes"}
+{"prompt": "6 inches base aur 4 inches height wale triangle ka area calculate karo.", "gold": "Yes"}
+{"prompt": "Context use karo aur answer do. Nahi pata toh bol do, guess karne ki zaroorat nahi hai.", "gold": "Yes"}
+{"prompt": "Data ki list di hai, do inputs dhundo jisse ek specific output ban sake.", "gold": "Yes"}
+{"prompt": "Java mein ek function likho jo string ke andar kisi diye gaye regex ke saare matches output kare.", "gold": "Yes"}
+{"prompt": "Ek room ka area calculate karo jiski ceiling height 8 feet hai aur dimensions 14 by 11 feet hain.", "gold": "Yes"}
+{"prompt": "Is statement ki validity check karo: Jellyfish ke paas brains nahi hote, isliye unme koi cognitive abilities nahi hoti.", "gold": "No"}
+{"prompt": "Ye medical scenario padho aur ek hypothetical doctor ki tarah apna treatment plan ya advice explain karo.", "gold": "Yes"}
+{"prompt": "Dekho, year 2004 ke digits ka sum 6 hai. To 2000 ke baad wo pehla year kaunsa hoga jiske digits ka sum 12 ho?", "gold": "No"}
+{"prompt": "Niche diye gaye context ko use karke last wale question ka answer do. Agar answer nahi pata toh seedha bol do ki nahi pata, faltu mein guess mat karna. Founded in the 13th century, Berlin has had an eventful history. Excavations from 2008 suggest that the city may be even older than was previously assumed: state archaeologists have discovered an oak beam that probably dates back to 1183. Almost no other metropolis has experienced such frequent, radical change transforming the face of the city. Although Berlin saw steady growth in its importance, dazzling epochs alternated with darker eras. Nevertheless, the formerly divided city has succeeded in becoming a vibrant metropolis in the heart of Europe. Question: What is the best restaurant in Berlin?", "gold": "Yes"}
+{"prompt": "Is poem ka main theme identify karo: \"I'd climb a hill so high, That I could touch the stars in the sky, And I'd watch the birds fly by\"", "gold": "Yes"}
+{"prompt": "Kisi bhi ek topic pe 5 questions aur unke answers ki list banao.", "gold": "No"}
+{"prompt": "Kisi famous classical composer pe ek quiz question banao, options ke saath.", "gold": "No"}
+{"prompt": "Is paragraph ko rewrite karo taaki ye simple ho jaye aur intermediate English learners ke liye appropriate rahe.", "gold": "Yes"}
+{"prompt": "Diye gaye text ke basis pe, company ki ek strength aur ek weakness highlight karo aur samjhao ki ye business ke liye kyun important factors hain.", "gold": "No"}
+{"prompt": "Teen fair, standard six-sided dice roll kiye gaye hain. Kya probability hai ki top faces ka sum 18 aaye? Answer common fraction mein dena.", "gold": "No"}
+{"prompt": "Ek client company ke liye strategy bana jo apni website ki SEO improve karna chahte hain.", "gold": "Yes"}
+{"prompt": "Kal ke liye ek meal plan taiyar karo unke liye jo healthy khana chahte hain aur jinka budget limited hai.", "gold": "Yes"}
+{"prompt": "Agar tum ek historian hote aur tumhe ancient civilizations ke sophisticated calendars ke evidence milte, toh uske kya implications hote? Kuch points batao.", "gold": "Yes"}
+{"prompt": "Niche diye gaye context ko use karke question ka answer do. Agar answer nahi pata toh seedha bol do ki nahi pata, faltu mein guess mat karna.", "gold": "No"}
+{"prompt": "Fruits ki list ko do categories mein sort karo: jinme seeds hote hain aur jinme seeds nahi hote.", "gold": "No"}
+{"prompt": "100 se chota woh sabse bada whole number batao jiske positive factors odd hon.", "gold": "No"}
+{"prompt": "Basic omelette banane ka process batao aur 3 customization options do.", "gold": "No"}
+{"prompt": "y=3x^3 + 10x^2 + 5 waale differential equation ke critical points check karke batao ki wo maximum hain, minimum hain ya phir kuch nahi.", "gold": "Yes"}
+{"prompt": "Check karke batao step by step ki ye statement true hai ya false: 'Frankenstein likhne wale ne hi The Last Man naam ka novel bhi likha tha.'", "gold": "Yes"}
+{"prompt": "Ek real estate agent aur potential buyer ke beech conversation likho, jisme agent price quote kare aur property ke fayde bataye.", "gold": "Yes"}
+{"prompt": "Batao is task description ke liye kaunsi machine learning technique apply hogi.", "gold": "Yes"}
+{"prompt": "Diye gaye field ke 5 influential logon ki list banao aur sabka ek short description bhi likho.", "gold": "No"}
+{"prompt": "Niche diye gaye context ko use karke question ka answer do. Agar answer nahi pata toh seedha bol do, faltu ka guess mat karna.", "gold": "Yes"}
+{"prompt": "Sources bol rahe hain ki Company A ka stock price agle 10 trading days tak ya toh same rahega ya badhega. Aisi situation ke liye konsi strategy sahi rahegi?", "gold": "No"}
+{"prompt": "Jurassic Period ka koi dinosaur dhoond jiska naam 'T' se start hota ho.", "gold": "No"}
+{"prompt": "1 se 10 tak numbers wali ek array ka code likho.", "gold": "Yes"}
+{"prompt": "Is polynomial (4 +5x^3 +100 +2π x^4 + sqrt(10)x^4 +9) ki degree kya hai?", "gold": "Yes"}
+{"prompt": "Kisi aise environmental issue ke baare mein batao jo haal hi mein news mein tha, aur explain karo ki woh important kyun hai.", "gold": "No"}
+{"prompt": "Happy Valley Kennel mein 4 chickens, 2 dogs, aur 5 cats hain. In 11 animals ko 11 cages ki ek row mein aise arrange karna hai ki ek hi species ke saare animals adjacent cages mein rahein. (Same species ke animals ko distinguishable mana hai). Kitne ways mein ye possible hai?", "gold": "Yes"}
+{"prompt": "Is passage ke basis pe batao ki author ka kya opinion hai iss baat par ki production mein speed hi sabse important factor hoti hai.", "gold": "Yes"}
+{"prompt": "Ek JavaScript function banao jo ek string le aur ek object return kare, jisme string ka har character key ho aur wo character kitni baar aaya hai, wo value ho.", "gold": "Yes"}
+{"prompt": "Scenario dekh ke ek solution suggest karo aur reasoning bhi explain karo thoda detail mein.", "gold": "Yes"}
+{"prompt": "Niche diye gaye sentences mein se best prediction choose karo is input ke liye: \"My vacation is in ________.\"", "gold": "Yes"}
+{"prompt": "Supply and demand ka law use karke batao ki agar demand badhti hai toh kisi product ke price ka kya hoga.", "gold": "No"}
+{"prompt": "Set S = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11} mein se do random numbers select kiye gaye. Agar number n ko pehle hi S se nikaal diya jaye, toh sum 12 hone ki probability badh jayegi. n ki value kya hai?", "gold": "No"}
+{"prompt": "Socho tum ek art collector ho aur artwork dhoond rahe ho. Gallery se tum kya questions poochoge?", "gold": "Yes"}
+{"prompt": "Ek aisa sentence find karo jo yeh explain kare ki kisi ko koi particular product kyun use nahi karna chahiye.", "gold": "Yes"}
+{"prompt": "Universal Basic Income (UBI) policy implement karne ke favor mein ek short aur persuasive argument likho.", "gold": "No"}
+{"prompt": "Niche diye gaye context ko use karke end mein diye gaye question ka answer do. Agar nahi pata toh seedha bol do ki nahi pata, apne mann se kuch mat banana. A state actor's involvement in the blast of the Nord Stream pipelines last year is the \"absolute main scenario\", though confirming identity will prove difficult, the Swedish prosecutor investigating the attack said on Thursday. In September 2022, several unexplained underwater explosions ruptured the Nord Stream 1 and newly-built Nord Stream 2 pipelines that link Russia and Germany across the Baltic Sea. The blasts occurred in the economic zones of Sweden and Denmark and both countries say the explosions were deliberate, but have yet to determine who was responsible. The blast in the Swedish zone occurred at a depth of 80 meters, which the Swedish prosecutor said made it complicated to investigate. \"We believe it will be rather difficult to determine who did this,\" prosecutor Mats Ljungqvist told Reuters in a phone interview. \"The people who did this have probably been aware that they would leave clues behind and probably took care so that the evidence would not point in one direction, but in several directions,\" he added. \"That makes it difficult to clearly point to one actor.\" The investigation continues. Question: Who was responsible for the Nordstream pipeline explosion?", "gold": "Yes"}
+{"prompt": "Agar 5 balls ko 3 boxes mein daalna hai aur balls aur boxes dono indistinguishable hain, toh kitne ways honge?", "gold": "No"}
+{"prompt": "Is equation ka second derivative nikaalo: y = 4x^2 + 3x – 5", "gold": "Yes"}
+{"prompt": "'A Social Network that Influences Attitudes and Behaviors' paper ka main argument summarize karo.", "gold": "Yes"}
+{"prompt": "Jab Scott quadratic x^2 + 8x - 1 = 0 pe completing the square karta hai, toh use (x + a)^2 = b form ki equation milti hai. b ki value kya hogi?", "gold": "Yes"}
+{"prompt": "In fruits ko sweetness ke basis pe rank karo, 1 se 5 tak (1 matlab sabse meetha).", "gold": "No"}
+{"prompt": "Ye bata ki social media se zyada fayda hota hai ya nuksan, aur apne point ke liye teen arguments do.", "gold": "No"}
+{"prompt": "Ek movie critic ki tarah kisi film ka review de. Plot bata aur characters aur quality pe apna opinion de.", "gold": "No"}
+{"prompt": "Is task mein, tumhe bas ye batana hai ki niche wala sentence true hai ya false.", "gold": "Yes"}
+{"prompt": "Ek cube ka total surface area calculate karo jiska side length 5 cm hai.", "gold": "Yes"}
+{"prompt": "1/(x - 1)(x - 2) + 1/(x - 2)(x - 3) + 1/(x - 3)(x - 4) = 1/6 ke saare real solutions nikaalo. Saare solutions commas se separate karke likhna.", "gold": "No"}
+{"prompt": "Ek aisa example sentence do jisse ye samajh aaye ki exact phrase dikhane ke liye quotation marks use karna kyun zaroori hai.", "gold": "No"}
+{"prompt": "Calculate karo ki 80 miles per hour ki speed se destination tak pahunchne mein kitna time lagega.", "gold": "Yes"}
+{"prompt": "Ek JavaScript code likho jo 'Submit' button press karne par alert message show kare.", "gold": "Yes"}
+{"prompt": "Tujhe ek code snippet diya gaya hai, bas usme bug dhundna hai.", "gold": "Yes"}
+{"prompt": "Maan lo ki millions of log Pluto pahunch gaye hain aur Mars par colonies bas chuki hain, toh ek space election ke news article ka pehla paragraph likho.", "gold": "Yes"}
+{"prompt": "Ek dog owner ke perspective se short story likho, aur event ke waqt uske thoughts bhi include karna.", "gold": "No"}
+{"prompt": "Ek table hai daily stock prices ki jisme StockID, Date, aur Price columns hain. Ek SQL query likho jisse pichle 7 days ka maximum price har stock ke liye mil jaye.", "gold": "Yes"}
+{"prompt": "20th century ke koi 5 famous log batao aur unka thoda description bhi de do.", "gold": "No"}
+{"prompt": "Ek market research survey design karo jisme kam se kam 5 questions hon, taaki naye product ke baare mein customers ka opinion pata chal sake.", "gold": "Yes"}
+{"prompt": "Energy bachane ke koi do tareeke batao aur explain karo ki woh baaki methods se zyada effective kyun hain.", "gold": "Yes"}
+{"prompt": "Is paragraph ka structure aur clarity check karke batao, 1-2 sentences mein improvements suggest kar do.", "gold": "Yes"}
+{"prompt": "Agar customer call karke apna order status jaanna chahta hai, toh customer service representative ko kya steps follow karne chahiye?", "gold": "Yes"}
+{"prompt": "Star Wars universe ki civilization aur technology ka level evaluate karo aur batao ki hamari current duniya se wo kaise different hai.", "gold": "No"}
+{"prompt": "Binary tree mein do nodes ka first common ancestor dhundne ke liye ek algorithm bana.", "gold": "No"}
+{"prompt": "Is task mein aapko diye gaye key points ki ek summary likhni hai.", "gold": "Yes"}
+{"prompt": "Is topic se related ek research question generate karo: How technology is revolutionizing the shopping experience", "gold": "Yes"}

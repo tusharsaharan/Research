@@ -1,0 +1,8 @@
+{
+  "type": "choice",
+  "instructions": "Can a small cheap language model handle this request correctly on its own, or does it need an expensive premium model?",
+  "criteria": {
+    "Yes": "simple routine request a small model handles well",
+    "No": "needs a premium model: hard reasoning, code, expert advice, or high-stakes accuracy"
+  }
+}

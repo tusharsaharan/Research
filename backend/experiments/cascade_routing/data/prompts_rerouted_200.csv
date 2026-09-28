@@ -1,0 +1,201 @@
+prompt,cheap_ok,prob_yes,prob_no
+Imagine kar tu ek construction company ka project manager hai. Bata jab tujhe koi mushkil decision lena pada ho.,Yes,0.9921,0.0079
+Niche diye gaye text ki ek short summary likho:,No,0.2397,0.7603
+"Ek short story likho third person narration mein, jisme protagonist ko apne career ka koi bada decision lena ho.",Yes,0.9894,0.0106
+"Dekho, year 2004 ke digits ka sum 6 hai. To 2000 ke baad wo pehla year kaunsa hoga jiske digits ka sum 12 ho?",No,0.0062,0.9938
+"Niche diye gaye context ko use karke last wale question ka answer do. Agar answer nahi pata toh seedha bol do ki nahi pata, faltu mein guess mat karna. Founded in the 13th century, Berlin has had an eventful history. Excavations from 2008 suggest that the city may be even older than was previously assumed: state archaeologists have discovered an oak beam that probably dates back to 1183. Almost no other metropolis has experienced such frequent, radical change transforming the face of the city. Although Berlin saw steady growth in its importance, dazzling epochs alternated with darker eras. Nevertheless, the formerly divided city has succeeded in becoming a vibrant metropolis in the heart of Europe. Question: What is the best restaurant in Berlin?",Yes,0.9921,0.0079
+Variable x ko “4x + 2y = 10” as define kiya gaya hai. x ki value find karo.,Yes,0.9913,0.0087
+30 cookies ki recipe ke liye do cups flour chahiye. Eduardo ko five dozen cookies banani hain. Adjusted recipe ke liye use kitne cups flour use karne honge?,Yes,0.9917,0.0083
+Ek cube ka total surface area calculate karo jiska side length 5 cm hai.,Yes,0.994,0.006
+"Happy Valley Kennel mein 4 chickens, 2 dogs, aur 5 cats hain. (Kuch log Happy Valley mein chickens ko pets ki tarah rakhte hain!) Agar 11 animals ko 11 cages ki ek row mein aise arrange karna ho ki ek hi type ke saare animals saath mein rahein, toh kitne ways honge? (Same species ke do animals distinguishable maane jayenge.)",Yes,0.6854,0.3146
+Imagine karo tum ek aise customer se baat kar rahe ho jo tumhare product se khush nahi hai. Ek aisa response likho jisse situation handle ho jaye.,No,0.2121,0.7879
+"Neeche diye gaye context ko use karke end waale question ka answer do. Agar answer nahi pata toh seedha bol do ki nahi pata, apne mann se kuch mat banana. Founded in the 13th century, Berlin has had an eventful history. Excavations from 2008 suggest that the city may be even older than was previously assumed: state archaeologists have discovered an oak beam that probably dates back to 1183. Almost no other metropolis has experienced such frequent, radical change transforming the face of the city. Although Berlin saw steady growth in its importance, dazzling epochs alternated with darker eras. Nevertheless, the formerly divided city has succeeded in becoming a vibrant metropolis in the heart of Europe. Question: 20th century Berlin mein kya-kya events hue the?",Yes,0.9908,0.0092
+"Diye gaye context ko padho aur end mein jo question hai uska answer do. Agar answer nahi mil raha toh bol do ki nahi pata, fake answer mat dena. Previously, the use of dye-sub printing was limited to industrial or high-end commercial printing. Dye-sub photo printing has been used in medical imaging, graphic arts proofing, security, and broadcast-related applications. Today, it is extremely popular in event photography and photo booths or kiosks that require high-speed, on-demand printing. Alps Electric produced the first quality dye-sub printers for home consumers in the $500–$1,000 price range, bringing dye-sublimation technology within the reach of a wider audience. (These models were, however, not true page printers, since they used a narrow printhead that swept across the page, like most inkjet printers.) Now there are many dye-sublimation printers on the market starting from as low as $100, especially postcard-sized mobile photo printers. The ability to produce instant photo prints inexpensively from a small printer has led to dye sublimation solutions supplanting traditional instant photos in some applications, such as ID photography with a card printer. Several corporations market desktop-size units as stand-alone printers and for print kiosk and photo booth applications. Some of these units are based on generic printers. Some manufacturers, offer software development kits with their printers, suggesting that these companies hope to attract system integrators as a potential market. Desktop-size standalone dye-sub photo printers are also used by photographers in event photography. The technology allows photographers to produce and sell lab-quality prints immediately during the event they are attending, with a minimal amount of hardware. Question: Dye sublimation printer ke uses kya hain?",Yes,0.9589,0.0411
+"x aur y nonzero real numbers hain. m aur M is expression ki minimum aur maximum values hain: (|x + y|)/(|x| + |y|), Find M - m.",Yes,0.9928,0.0072
+"Ek binary tree diya gaya hai, check karo ki woh binary search tree hai ya nahi. Iske liye Java function likho. Maan lo Node class pehle se implemented hai.",Yes,0.9869,0.0131
+"Tum ek smart assistant ho jo high school teachers ki help karta hai reading comprehension questions banane mein. Ek text diya jayega, tumne ek question aur answer pair banana hai student ki reading ability check karne ke liye. Jab tum ye pair banaoge, toh format ye hona chahiye: ``` {{ ""question"": ""$YOUR_QUESTION_HERE"", ""answer"": ""$THE_ANSWER_HERE"" }} ``` ``` ke beech mein sab kuch valid JSON hona chahiye. Is text ke liye JSON format mein question/answer pair banao: ---------------- The scream of sirens and the clank of steel on cobblestones echoed down the mean, dark streets. Frightened East Berliners peeked from behind their curtains to see military convoys stretching for blocks. First came the motorcycle outriders, then jeeps, trucks and buses crammed with grim, steel-helmeted East German troops. Rattling in their wake were the tanks — squat Russian-built T-34s and T-54s. At each major intersection, a platoon peeled off and ground to a halt, guns at the ready. The rest headed on for the sector border, the 25-mile frontier that cuts through the heart of Berlin like a jagged piece of glass. As the troops arrived at scores of border points, cargo trucks were already unloading rolls of barbed wire, concrete posts, wooden horses, stone blocks, picks and shovels. When dawn came four hours later, a wall divided East Berlin from West for the first time in eight years.",Yes,0.9876,0.0124
+"Calculate karo ki bank account mein kitna paisa hoga agar initial deposit $100 hai aur interest rate 6% hai, jo annually compound ho raha hai.",Yes,0.9901,0.0099
+"Niche diye gaye context ko use karke end mein diye gaye question ka answer do. Agar nahi pata toh seedha bol do ki nahi pata, apne mann se kuch mat banana. A state actor's involvement in the blast of the Nord Stream pipelines last year is the ""absolute main scenario"", though confirming identity will prove difficult, the Swedish prosecutor investigating the attack said on Thursday. In September 2022, several unexplained underwater explosions ruptured the Nord Stream 1 and newly-built Nord Stream 2 pipelines that link Russia and Germany across the Baltic Sea. The blasts occurred in the economic zones of Sweden and Denmark and both countries say the explosions were deliberate, but have yet to determine who was responsible. The blast in the Swedish zone occurred at a depth of 80 meters, which the Swedish prosecutor said made it complicated to investigate. ""We believe it will be rather difficult to determine who did this,"" prosecutor Mats Ljungqvist told Reuters in a phone interview. ""The people who did this have probably been aware that they would leave clues behind and probably took care so that the evidence would not point in one direction, but in several directions,"" he added. ""That makes it difficult to clearly point to one actor."" The investigation continues. Question: Who was responsible for the Nordstream pipeline explosion?",Yes,0.9709,0.0291
+Batao ki novel ke characters 'the corrupting influence of power' waale theme ko kaise reflect karte hain.,No,0.0055,0.9945
+Check karke batao step by step ki ye statement true hai ya false: 'Frankenstein likhne wale ne hi The Last Man naam ka novel bhi likha tha.',Yes,0.9927,0.0073
+Supply and demand ka law use karke batao ki agar demand badhti hai toh kisi product ke price ka kya hoga.,No,0.0061,0.9939
+"Cartesian coordinate plane pe (2,1) aur (3,4) ek square ke adjacent points hain. Square ka area kya hoga?",Yes,0.9933,0.0067
+Diye gaye context ke hisaab se batao ki human circulatory system ka primary function kya hota hai?,Yes,0.9929,0.0071
+"A, B, A-B, aur A+B charo positive integers prime numbers hain. In chaaro primes ka sum kya hoga? A. even B. divisible by 3 C. divisible by 5 D. divisible by 7 E. prime Answer sirf letter (A, B, C, D, or E) mein dena.",No,0.0072,0.9928
+Is movie ka analysis karo aur batao ki ye top 10 list mein kyun honi chahiye.,No,0.0053,0.9947
+"Niche diye gaye sentences mein se best prediction choose karo is input ke liye: ""My vacation is in ________.""",Yes,0.9907,0.0093
+Ek right triangle ka area nikalo jiska base 5 cm aur height 3 cm hai.,No,0.0069,0.9931
+"Teen fair, standard six-sided dice roll kiye gaye hain. Kya probability hai ki top faces ka sum 18 aaye? Answer common fraction mein dena.",No,0.0058,0.9942
+"Paanch pencils aur ek pen ki cost $2.50 hai, aur ek pencil aur do pens ki cost $1.85 hai. Toh do pencils aur ek pen ki cost kya hogi?",Yes,0.9764,0.0237
+"Freelancing aur full-time job ke beech main differences kya hote hain, batao.",Yes,0.9934,0.0066
+Koi aisi jagah ka example do jahan endangered species ke animals mil sakte hain.,No,0.0055,0.9945
+'A Social Network that Influences Attitudes and Behaviors' paper ka main argument summarize karo.,Yes,0.9911,0.0089
+Grocery store se kharidne ke liye 5 items ki list banao.,No,0.0071,0.9929
+"Di gayi information use karke, top 10 highest valued orders nikalne ke liye SQL query likho.",Yes,0.9473,0.0527
+Sabse chhota positive four-digit number find karo jo pehle chaar smallest prime numbers se divisible ho.,Yes,0.9809,0.0191
+"Maan lo ki millions of log Pluto pahunch gaye hain aur Mars par colonies bas chuki hain, toh ek space election ke news article ka pehla paragraph likho.",Yes,0.9935,0.0065
+Manager aur customer ke beech hone wali conversation ke 2 sentences generate karo.,Yes,0.823,0.177
+Ek aisa sentence find karo jo yeh explain kare ki kisi ko koi particular product kyun use nahi karna chahiye.,Yes,0.9833,0.0167
+Global warming ke causes par ek speech close karne ke liye ek sentence find karo.,No,0.0055,0.9945
+Scenario dekh ke ek solution suggest karo aur reasoning bhi explain karo thoda detail mein.,Yes,0.9911,0.0089
+Socho tum Church of the Big Toe Nail ke ambassador ho. Ek chota sa article likho logon ko convince karne ke liye ki wo join karein.,Yes,0.9916,0.0084
+Tum Ace Printer Supply Co. ke liye ek helpful customer service AI chatbot ho. Friendly raho aur sach batao. Sirf Ace Printer Supply Co. se related queries ka answer dena. Query: Koi joke sunao,Yes,0.9907,0.0093
+Goal achieve karne ke liye best solution choose karo. GOAL: Couch se sharpie pen hatana Solutions: 1) soy milk se bhigo do taaki region color ho jaye. 2) milk mein ek ghante ke liye bhigo kar rub karo.,Yes,0.9742,0.0258
+Maan lo kisi job advertisement mein employer ne 3 years ka working experience manga hai. Explain karo ki ye requirement reasonable kyun hai.,Yes,0.9153,0.0847
+"Is paragraph ka structure aur clarity check karke batao, 1-2 sentences mein improvements suggest kar do.",Yes,0.9932,0.0068
+Ek cylinder ka volume calculate karo jiska radius 10 cm aur height 5 cm hai.,Yes,0.9941,0.0059
+Is passage ke basis pe batao ki author ka kya opinion hai iss baat par ki production mein speed hi sabse important factor hoti hai.,Yes,0.9938,0.0062
+In chaar CEOs ki list mein se choose karo kiska tenure sabse successful raha.,No,0.0071,0.9929
+1/(x - 1)(x - 2) + 1/(x - 2)(x - 3) + 1/(x - 3)(x - 4) = 1/6 ke saare real solutions nikaalo. Saare solutions commas se separate karke likhna.,No,0.0057,0.9943
+"Is array [1, 2, 3, 4, 5, 6, 7] ke 2nd, 4th aur 5th element delete karo.",Yes,0.9933,0.0067
+"Tum ek smart assistant ho jo high school teachers ki help karega reading comprehension questions banane mein. Diye gaye text se ek question aur answer pair banao taaki students ki reading abilities test ho sakein. Jab tum ye pair banaoge, toh format ye hona chahiye: ``` {{ ""question"": ""$YOUR_QUESTION_HERE"", ""answer"": ""$THE_ANSWER_HERE"" }} ``` ``` ke beech ka sab kuch valid JSON hona chahiye. Niche diye gaye text ke liye specified JSON format mein ek question/answer pair banao: ---------------- Millions of lives could be saved by a groundbreaking set of new vaccines for a range of conditions including cancer, experts have said. A leading pharmaceutical firm said it is confident that jabs for cancer, cardiovascular and autoimmune diseases, and other conditions will be ready by 2030. Studies into these vaccinations are also showing “tremendous promise”, with some researchers saying 15 years’ worth of progress has been “unspooled” in 12 to 18 months thanks to the success of the Covid jab. Dr Paul Burton, the chief medical officer of pharmaceutical company Moderna, said he believes the firm will be able to offer such treatments for “all sorts of disease areas” in as little as five years. The firm, which created a leading coronavirus vaccine, is developing cancer vaccines that target different tumor types.",Yes,0.989,0.011
+Diye gaye field ke 5 influential logon ki list banao aur sabka ek short description bhi likho.,No,0.0056,0.9944
+Batao is task description ke liye kaunsi machine learning technique apply hogi.,Yes,0.9939,0.0061
+"Tum ek smart assistant ho jo high school teachers ki help karega reading comprehension questions banane mein. Diye gaye text se ek question aur answer pair banao taaki students ki reading abilities test ho sakein. Jab tum ye pair banaoge, toh format ye hona chahiye: ``` {{ ""question"": ""$YOUR_QUESTION_HERE"", ""answer"": ""$THE_ANSWER_HERE"" }} ``` ``` ke beech ka sab kuch valid JSON hona chahiye. Niche diye gaye text ke liye specified JSON format mein teen question/answer pairs banao: ---------------- US officials have hinted that this counteroffensive is coming in the next month or so, while Ukrainian forces on the ground have said they are ready to attack when Kyiv gives the word. According to military analysts who have looked at the documents, certain parts appear to be modified from their original format and exaggerate the American tally of Ukrainians killed in the war while downplaying the estimates of Russian troops killed. One of the slides states that Russia has lost 16,000 to 17,500 soldiers since the invasion, while Ukraine had suffered as many as 71,500 troop deaths. This is a gross underestimate from what the Pentagon and other analysts have estimated for Russian casualties with nearly 200,000 killed and injured. Ukraine has had more than 100,000 casualties in the war, according to the Pentagon. The documents appear to represent a significant breach of American intelligence, detailing information that has not been publicly stated by the Pentagon.",Yes,0.9787,0.0213
+"Niche diye gaye context ko use karke question ka answer do. Agar answer nahi pata toh seedha bol do ki nahi pata, faltu mein guess mat karna.",No,0.0063,0.9937
+"Context use karo aur answer do. Nahi pata toh bol do, guess karne ki zaroorat nahi hai.",Yes,0.9909,0.0091
+100 se chota woh sabse bada whole number batao jiske positive factors odd hon.,No,0.0057,0.9943
+2004 Indian Ocean earthquake aur tsunami ke main events ki ek timeline banao.,No,0.0073,0.9927
+Jurassic Period ka koi dinosaur dhoond jiska naam 'T' se start hota ho.,No,0.0056,0.9944
+"Data ki list di hai, do inputs dhundo jisse ek specific output ban sake.",Yes,0.9911,0.0089
+Socho tum manager ho aur team mein gossip ho rahi hai. Ek chota sa paragraph likho is situation ko handle karne ke liye.,Yes,0.99,0.01
+"Ingredients ki list dekh kar ek dish suggest karo, uska thoda description do aur batao ki ye ingredients ke liye best kyun hai.",No,0.0082,0.9918
+Basic omelette banane ka process batao aur 3 customization options do.,No,0.0062,0.9938
+Bus mein kisi stranger se baat karne ki ek entertaining story sunao.,No,0.0079,0.9921
+"Agar customer call karke apna order status jaanna chahta hai, toh customer service representative ko kya steps follow karne chahiye?",Yes,0.9926,0.0074
+Is code snippet ko reverse engineer karo aur 4 sentences mein samjhao ki yahan kya ho raha hai. var x = 3 var y = x + 4,Yes,0.9926,0.0074
+Kal ke liye ek meal plan taiyar karo unke liye jo healthy khana chahte hain aur jinka budget limited hai.,Yes,0.993,0.007
+Is topic se related ek research question generate karo: How technology is revolutionizing the shopping experience,Yes,0.9762,0.0238
+Is text ka tone identify karo aur same message convey karne ke do alternative tareeke batao—ek formal aur ek casual.,Yes,0.6327,0.3673
+"Ek question hai, (x+y+z)(xy+xz+yz)=25 aur x^2(y+z)+y^2(x+z)+z^2(x+y)=7 diya hua hai, toh real numbers x, y, aur z ke liye xyz ki value kya hogi?",Yes,0.9938,0.0062
+Is task mein aapko diye gaye key points ki ek summary likhni hai.,Yes,0.9923,0.0077
+"Agar koi 'take a break' bole, toh uska ek appropriate response likho.",Yes,0.9935,0.0065
+Ek aise metric ka example do jisse naye marketing campaign ki success measure ki ja sake.,Yes,0.9938,0.0062
+"Ek table hai daily stock prices ki jisme StockID, Date, aur Price columns hain. Ek SQL query likho jisse pichle 7 days ka maximum price har stock ke liye mil jaye.",Yes,0.9934,0.0066
+Is text snippet ko dekh ke writing style analyze kar aur 3 suggestions de ki isko kaise improve kiya ja sakta hai.,Yes,0.9932,0.0068
+Binary tree mein do nodes ka first common ancestor dhundne ke liye ek algorithm bana.,No,0.0054,0.9946
+Ek example de ki kaise AI assistant use karke customer service process ko automate kiya ja sakta hai.,Yes,0.9939,0.0061
+"Is business idea ki feasibility aur potential pitfalls analyze kar: 5,000 population wale ek chote town mein ek high-end, gourmet donut shop kholna.",No,0.0054,0.9946
+Ek client company ke liye strategy bana jo apni website ki SEO improve karna chahte hain.,Yes,0.9935,0.0065
+"Is statement ki validity check karo: Jellyfish ke paas brains nahi hote, isliye unme koi cognitive abilities nahi hoti.",No,0.0095,0.9905
+Star Wars universe ki civilization aur technology ka level evaluate karo aur batao ki hamari current duniya se wo kaise different hai.,No,0.0056,0.9944
+"Ek article ka fragment diya gaya hai, baaki ka content likh kar article complete karo.",Yes,0.9938,0.0062
+Ek naya sentence generate karo jisme diye gaye sentence ke saare words same order mein use hon.,Yes,0.9931,0.0069
+"Deductive reasoning use karke ye mystery language pehchano: Ye ek Romance language hai, Europe mein nahi boli jaati, aur South America ke kayi countries ki official language hai.",Yes,0.9912,0.0088
+"Ek bookstore ki sale month ki un dates pe hoti hai jo 5 ke multiples hain (jaise June 5, June 10...). Ek shoe store ki sale har 6 din baad aati hai. July 3 ko shoe store ki sale thi. Toh July mein kitni baar dono stores ki sale same date pe padegi?",Yes,0.9554,0.0446
+Ek aisa function likho jo string ke andar se curse words censor kar de. Ye words ek SQL database se aane chahiye. Table ka naam CURSE_WORDS_TABLE hai aur column ka naam WORD hai.,Yes,0.9868,0.0132
+"Ek JavaScript function banao jo ek string le aur ek object return kare, jisme string ka har character key ho aur wo character kitni baar aaya hai, wo value ho.",Yes,0.8982,0.1018
+Java mein ek function likho jo string ke andar kisi diye gaye regex ke saare matches output kare.,Yes,0.9908,0.0092
+"In elements ko use karke ek short story likho: ek khoya hua kutta (lost dog), ek unforgettable adventure, aur ek hidden treasure.",No,0.0057,0.9943
+Criminal justice system mein AI use karne ke faydon par ek 300 words ki report likho.,No,0.0055,0.9945
+"Ye bata ki social media se zyada fayda hota hai ya nuksan, aur apne point ke liye teen arguments do.",No,0.0056,0.9944
+'Environment' theme par 5 innovative app ideas ki list banao.,No,0.005,0.995
+Ek wedding planner bano aur suggest karo ki ek chhoti aur intimate wedding ko special kaise banayein.,Yes,0.9918,0.0082
+"Chess game ko describe karo—objective, player interaction aur basic rules ke terms mein.",Yes,0.9813,0.0187
+Aisi questions ki list banao jisse tum kisi ko better jaan sako.,No,0.0058,0.9942
+"Financial advisor bano aur batao ki ye investment plan sahi hai ya nahi, risk factors aur potential returns ko dhyan mein rakhte hue.",Yes,0.9907,0.0093
+Ek bash script likh jo directory ke andar saari json files recursively dhoondhe aur unka naam aur size output kare.,No,0.0063,0.9937
+"Set S = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11} mein se do random numbers select kiye gaye. Agar number n ko pehle hi S se nikaal diya jaye, toh sum 12 hone ki probability badh jayegi. n ki value kya hai?",No,0.0485,0.9515
+Doctor ka role play karo aur flu vaccine ke potential risks aur benefits explain karo.,No,0.0121,0.9879
+Is argument mein logical fallacy identify karo: 'You can't trust Bob's opinion on climate change because he's not a scientist.',Yes,0.9754,0.0246
+Calculate karo ki 80 miles per hour ki speed se destination tak pahunchne mein kitna time lagega.,Yes,0.9939,0.0061
+Universal Basic Income (UBI) policy implement karne ke favor mein ek short aur persuasive argument likho.,No,0.0056,0.9944
+"Ek story likho jo is sentence se start ho: 'As he looked out into the horizon, he saw...'",Yes,0.9457,0.0543
+Ek short story likho ek aise robot ke baare mein jo khud se chores karna seekh leta hai.,No,0.0055,0.9945
+Rectangle ka area nikaalo jisme length 5 cm aur width 2 cm hai.,Yes,0.6853,0.3147
+20th century ke koi 5 famous log batao aur unka thoda description bhi de do.,No,0.0059,0.9941
+Is input ke basis pe 2 sub-goals batao jo is bande ko final goal achieve karne mein help karein.,Yes,0.9939,0.0061
+Harper Lee ke novel 'To Kill a Mockingbird' ki ek short plot summary de do.,No,0.0845,0.9155
+Imagine karo tum ek hotel manager ho aur ek guest room ki cleanliness ko lekar complain kar raha hai. Tum kaise respond karoge?,Yes,0.9067,0.0933
+"Partial fractions use karke, 1/x(x + 1)(x + 2)(x + 3)(x + 4) = A/x + B/(x + 1) + C/(x + 2) + D/(x + 3) + E/(x + 4) hai, jahan A, B, C, D, aur E constants hain. A + B + C + D + E ki value nikaalo.",Yes,0.9912,0.0088
+"Social media ka mental health pe kya asar padta hai, uspar ek research paper ka outline taiyaar karo.",Yes,0.5214,0.4786
+"Happy Valley Kennel mein 4 chickens, 2 dogs, aur 5 cats hain. In 11 animals ko 11 cages ki ek row mein aise arrange karna hai ki ek hi species ke saare animals adjacent cages mein rahein. (Same species ke animals ko distinguishable mana hai). Kitne ways mein ye possible hai?",Yes,0.9896,0.0104
+"Kisi aise environmental issue ke baare mein batao jo haal hi mein news mein tha, aur explain karo ki woh important kyun hai.",No,0.006,0.994
+Niche diye gaye text ke main points summarize karo aur batao ki tumne ye points kyun chune.,Yes,0.5312,0.4688
+Ek brief monologue likho jisme tum ek historian ban kar US history ke ek important moment—Declaration of Independence ke signing—ke baare mein bata rahe ho.,Yes,0.5325,0.4675
+Niche diye gaye do sentences padho aur batao ki comparison sahi hai ya nahi.,No,0.0059,0.9941
+Text mein se identify karo ki kaunsa animal reptile hai aur explain karo ki uske characteristics kya hain.,No,0.0088,0.9912
+"Tujhe ingredients ki list di gayi hai, ab tujhe cake banane ki recipe create karni hai.",Yes,0.9905,0.0095
+"Tujhe kuch components ki list di hai, sabko use karke ek story banao.",Yes,0.5106,0.4894
+Socho tum ek art collector ho aur artwork dhoond rahe ho. Gallery se tum kya questions poochoge?,Yes,0.9919,0.0081
+"Jab Scott quadratic x^2 + 8x - 1 = 0 pe completing the square karta hai, toh use (x + a)^2 = b form ki equation milti hai. b ki value kya hogi?",Yes,0.9893,0.0107
+Fruits ki list ko do categories mein sort karo: jinme seeds hote hain aur jinme seeds nahi hote.,No,0.0058,0.9942
+Imagine karo tum ek aisi website evaluate kar rahe ho jiska design bahut ghatiya hai. Ek short review likho.,Yes,0.9038,0.0962
+Aisi 5 cheezon ki list banao jo garage mein milne ke sabse zyada chances hain.,No,0.0053,0.9947
+"Ek real estate agent aur potential buyer ke beech conversation likho, jisme agent price quote kare aur property ke fayde bataye.",Yes,0.9931,0.0069
+"Agar tum ek historian hote aur tumhe ancient civilizations ke sophisticated calendars ke evidence milte, toh uske kya implications hote? Kuch points batao.",Yes,0.9897,0.0103
+Wo sabse chhota positive base ten number kaunsa hai jiske binary representation ke liye six digits chahiye?,Yes,0.5645,0.4355
+"Predict karo ki agar koi pooche 'Ek accha leader kaun hota hai?', toh response kya hoga? Ek political science professor ki tarah roleplay karo.",No,0.0067,0.9933
+Imagine karo ek young adult apne parents ke ghar se nikal kar pehli baar apne apartment mein shift ho raha hai. Personal finances manage karne ke liye 3 tips do.,Yes,0.9919,0.0081
+"Is statement mein koi logical fallacy hai kya? Agar hai toh batao kyun, warna bas 'No logical fallacy detected' likh dena.",Yes,0.9789,0.0211
+Is passage ka main theme kya hai? Short mein explain karo.,Yes,0.9929,0.0071
+"Jo info aur context diya hai, uske basis pe USA trip ka 7-day itinerary banao.",No,0.0057,0.9943
+"Ek short story di hai, usko dystopian setting mein rewrite karo but original focus maintain rakhna.",No,0.0066,0.9934
+2x+7=3 aur bx-10=-2 equations ka solution x same hai. b ki value kya hogi?,Yes,0.976,0.024
+Kisi movie ya book ka aisa character choose karo jisse aap relate kar sako aur explain karo kyun.,Yes,0.9892,0.0108
+Solar aur wind energy ke advantages aur disadvantages ko compare karke batao as renewable energy sources.,No,0.0792,0.9208
+"Diye gaye text ke basis pe, company ki ek strength aur ek weakness highlight karo aur samjhao ki ye business ke liye kyun important factors hain.",No,0.0058,0.9942
+Passage padho aur answer karo: Passage se John ke life perspective ke baare mein kya pata chalta hai?,No,0.0059,0.9941
+"Is poem ka main theme identify karo: ""I'd climb a hill so high, That I could touch the stars in the sky, And I'd watch the birds fly by""",Yes,0.9918,0.0082
+Ye medical scenario padho aur ek hypothetical doctor ki tarah apna treatment plan ya advice explain karo.,Yes,0.9815,0.0185
+Ek aisa example sentence do jisse ye samajh aaye ki exact phrase dikhane ke liye quotation marks use karna kyun zaroori hai.,No,0.0061,0.9939
+SQL mein ek query likho jisse database ke saare authors ke names mil jayein. Author table ka naam AUTHORS hai. Ek WORKS table bhi hai jisme authors ke saare works hain aur wo AUTHOR_FK se connected hai. Work content varchar mein hai aur column ka naam WORK hai. Ek aisi query bhi banao jisse pata chale ki kis author ka total word count sabse zyada hai.,Yes,0.9876,0.0124
+"Agar 5 balls ko 3 boxes mein daalna hai aur balls aur boxes dono indistinguishable hain, toh kitne ways honge?",No,0.0077,0.9923
+"Ek party mein 23 log aaye hain. Har person maximum 22 logon se haath mila sakta hai. Agar koi bhi do log sirf ek baar haath milayein, toh maximum kitne handshakes ho sakte hain?",No,0.0062,0.9938
+"1588 mein Spanish Armada ne England pe attack karne ki koshish ki thi, uske causes aur outcome samjhao ek history teacher ki tarah.",No,0.0066,0.9934
+Imagine karo tum ek personal trainer ho. Apne client ko cardiovascular exercise ke benefits samjhao aur do examples bhi do.,No,0.0088,0.9912
+"Is sentence mein kaunsa figure of speech use hua hai, wo dhoond kar batao.",Yes,0.7713,0.2287
+Work from home aur office environment ke pros aur cons discuss karo.,Yes,0.5685,0.4315
+Kisi bhi ek topic pe 5 questions aur unke answers ki list banao.,No,0.0056,0.9944
+"In foods ko healthy ya unhealthy mein classify karo: Mashed potatoes, Caesar salad, Poached salmon",Yes,0.9909,0.0091
+"Niche diye gaye context ko use karke question ka answer do. Agar answer nahi pata toh seedha bol do, faltu ka guess mat karna.",Yes,0.9078,0.0922
+"Agar kisi integer x ka square 1521 hai, toh (x+1)(x-1) ki value kya hogi?",Yes,0.9937,0.0063
+Is text ko read karke batao isme kaunse logical fallacies hain aur wo fallacies kyun hain.,Yes,0.9943,0.0057
+Local newspaper ke editor ko ek letter likho kisi current issue pe apni opinion dete hue.,No,0.005,0.995
+"Bhai, is topic pe presentation ke liye kya kya points cover karne chahiye, ek list bhej de.",Yes,0.9941,0.0059
+"y=3x^3 + 10x^2 + 5 waale differential equation ke critical points check karke batao ki wo maximum hain, minimum hain ya phir kuch nahi.",Yes,0.9901,0.0099
+"(2, -3) aur (1, -2) points se passing line ka slope nikalo.",Yes,0.5583,0.4417
+"Is task mein, tumhe bas ye batana hai ki niche wala sentence true hai ya false.",Yes,0.9938,0.0062
+"(3, 4) aur (11, 10) points ko join karne waale line segment ka midpoint nikal do.",Yes,0.5604,0.4396
+Sources bol rahe hain ki Company A ka stock price agle 10 trading days tak ya toh same rahega ya badhega. Aisi situation ke liye konsi strategy sahi rahegi?,No,0.0086,0.9914
+Niche diye gaye passage mein jo bhi grammar ya punctuation mistakes hain unhe dhoondo aur ek corrected version provide karo.,Yes,0.9915,0.0085
+"Ek short story likho jisme ye elements hon: ek magical forest, ek khoya hua khazana, aur ek mysterious stranger.",Yes,0.9938,0.0062
+Ek technical support representative bano aur us user ki help karo jiska internet nahi chal raha. Troubleshooting steps batao.,Yes,0.9931,0.0069
+"Ek interviewer ki tarah socho aur ek Physics Nobel Prize winner se ek sawal pucho, aur phir wo sawal likho jo tumhe lagta hai wo tumse puchega.",No,0.0065,0.9935
+US aur Canada ke cost of living mein kya difference hai?,No,0.0103,0.9897
+Animal kingdom pe ek MCQ do aur explain karo ki correct answer sahi kyun hai.,No,0.0093,0.9907
+Ek reason batao ki assignment last minute pe start karna bura idea kyun hai.,Yes,0.9939,0.0061
+Is equation ka second derivative nikaalo: y = 4x^2 + 3x – 5,Yes,0.9934,0.0066
+"Is text ke basis pe, ek novel ki main theme ya message kya ho sakta hai? Ek chhota sa synopsis bhi batao.",No,0.0058,0.9942
+Maan lo tum ek travel agent ho aur kisi customer ne Japan ki top 3 jagahon ke baare mein pucha hai. Ek list banao aur har jagah ka chhota sa description do.,Yes,0.9916,0.0084
+"Ek table hai transactions ki jisme TransactionID, ProductID, Quantity, aur Price columns hain. Ek SQL query likho jisse har product ka total revenue nikal sake.",Yes,0.9921,0.0079
+Ek JavaScript code likho jo 'Submit' button press karne par alert message show kare.,Yes,0.9943,0.0057
+Android mobile platform ka backbone kaunsa operating system hai?,Yes,0.9927,0.0073
+Ek email likho jisme tum apne professor ko introduce kar rahe ho jinka online course tum lene wale ho.,Yes,0.9886,0.0114
+Ek aisi story ki shuruat likho jisme koi insaan ek bahut hi extraordinary duniya mein rehta ho.,No,0.0083,0.9917
+Maan lo tum basketball team ke coach ho aur ek parent aake tumse complaint karta hai ki unke bacche ko playing time nahi mil raha. Unhe empathetically samjhao ki tum decisions kaise lete ho aur improvement ke liye kya kar sakte hain.,No,0.0077,0.9923
+Energy bachane ke koi do tareeke batao aur explain karo ki woh baaki methods se zyada effective kyun hain.,Yes,0.9932,0.0068
+Ek room ka area calculate karo jiski ceiling height 8 feet hai aur dimensions 14 by 11 feet hain.,Yes,0.9933,0.0067
+Ek nayi line plot banao jisme input data ka 2nd column first column ke against plot ho.,Yes,0.9942,0.0058
+"Agar ek coin ko 4 baar flip karein, toh exactly three heads aane ki probability kya hogi?",Yes,0.9941,0.0059
+x^2 - 4x + 4 = 0 ke roots kaise nikalenge?,No,0.0058,0.9942
+"Ek Customer orders table hai jisme CustomerID, OrderID, aur OrderDate columns hain. Har customer ki first order date find karne ke liye SQL query likho.",Yes,0.991,0.009
+"In fruits ko sweetness ke basis pe rank karo, 1 se 5 tak (1 matlab sabse meetha).",No,0.0055,0.9945
+"Taaron wali ek peaceful raat pe choti si poem likho, imagery aur sensory details ke saath.",No,0.0096,0.9904
+"Agar kisi ka aptitude dono areas mein thik-thak hai, toh arts ya science mein se kya career choose karna better rahega? Apne reasons bhi batana.",No,0.0056,0.9944
+Ek SQL query likho jisse second highest salary aur employee ka naam mil jaye. Salary `SALARIES` table mein hai jo `EMPLOYEES` table se FK ke through connected hai.,Yes,0.9913,0.0087
+"Tujhe ek code snippet diya gaya hai, bas usme bug dhundna hai.",Yes,0.994,0.006
+a) Future technology ke baare mein 5 sentences mein prediction likho aur b) is technology ke use se hone wale kisi potential consequence ko 2 sentences mein describe karo.,No,0.0665,0.9335
+1 se 10 tak numbers wali ek array ka code likho.,Yes,0.9927,0.0073
+Is polynomial (4 +5x^3 +100 +2π x^4 + sqrt(10)x^4 +9) ki degree kya hai?,Yes,0.9934,0.0066
+Ye text padh ke author ka main argument identify karo aur use ek single sentence mein rephrase karo.,Yes,0.7593,0.2407
+"Ek market research survey design karo jisme kam se kam 5 questions hon, taaki naye product ke baare mein customers ka opinion pata chal sake.",Yes,0.9936,0.0064
+Is paragraph ko rewrite karo taaki ye simple ho jaye aur intermediate English learners ke liye appropriate rahe.,Yes,0.9944,0.0056
+"Kisi famous classical composer pe ek quiz question banao, options ke saath.",No,0.0054,0.9946
+Is text se 3 main reasons batao kyun author ko lagta hai ki public transport improve hona chahiye.,Yes,0.7214,0.2786
+"Ek dog owner ke perspective se short story likho, aur event ke waqt uske thoughts bhi include karna.",No,0.0053,0.9947
+6 inches base aur 4 inches height wale triangle ka area calculate karo.,Yes,0.9929,0.0071
+"Ek table hai student grades ki jisme StudentID, CourseID, aur Grade columns hain. Ek SQL query likho jisse har course ka average grade mile, aur result nearest integer tak rounded ho.",Yes,0.9934,0.0066
+Imagine karo tum ek detective ho jo crime ke peeche ka motive dhoond raha hai. Is statement ko analyze karo aur ek possible motive batao.,No,0.0324,0.9676
+"Ek nutritionist ban ke diet improve karne ki advice de, neeche diye gaye meal schedule ke basis pe.",Yes,0.9897,0.0103
+Ek movie critic ki tarah kisi film ka review de. Plot bata aur characters aur quality pe apna opinion de.,No,0.0058,0.9942
