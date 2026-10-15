@@ -3,6 +3,7 @@ from __future__ import annotations
 import json as _json
 import threading as _threading
 import time as _time
+from pathlib import Path
 from typing import Annotated
 
 import httpx
@@ -134,10 +135,42 @@ async def healthz():
         "calibration_bench_n": bench_n,
         "calibration_pad_n": pad_n,
         "threshold": gw.calibrator.threshold,
+        "router_source": gw.router_source,
+        "group_thresholds": gw.calibrator.group_thresholds if gw.calibrator.is_mondrian else {},
         "cheap_model": s.cheap.model,
         "premium_model": s.premium.model,
         "tokenizer_backend": TokenCounter().backend,
         "pricing_date": s.pricing_date,
+    }
+
+
+@app.get("/v1/research/summary")
+async def research_summary() -> dict:
+    """Real-data research results for the dashboard: benchmark progress, per-language
+    accuracy and tokenizer tax, certification results, and what the gateway serves."""
+    gw = gateway()
+    bench = Path(get_settings().data_dir) / "bench"
+
+    def _read(name: str):
+        f = bench / name
+        return _json.loads(f.read_text(encoding="utf-8")) if f.exists() else None
+
+    try:
+        import sys as _sys
+
+        _sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "scripts" / "bench"))
+        from status import status as _status
+
+        progress = _status()
+    except Exception as e:  # dashboard must load even before any data exists
+        progress = {"error": str(e)}
+    return {
+        "router_source": gw.router_source,
+        "group_thresholds": gw.calibrator.group_thresholds if gw.calibrator.is_mondrian else {},
+        "progress": progress,
+        "summary": _read("summary.json"),
+        "certification": _read("certify_report.json"),
+        "simulation": _read("simulation_report.json"),
     }
 
 
@@ -1486,6 +1519,14 @@ async def diagnostics_upstream() -> dict:
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard_page() -> HTMLResponse:
     return HTMLResponse(dashboard_html())
+
+
+@app.get("/research", response_class=HTMLResponse)
+async def research_page() -> HTMLResponse:
+    """Real-data results page (reads /v1/research/summary)."""
+    from gateway.modules.m8_dashboard import dashboard as _dash
+
+    return HTMLResponse(Path(_dash.__file__).with_name("research.html").read_text(encoding="utf-8"))
 
 
 def run() -> None:

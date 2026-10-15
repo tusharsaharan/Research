@@ -28,38 +28,34 @@ import numpy as np
 from common import BENCH, GRADES, latest_variants, read_jsonl
 from scipy.stats import binom
 
-from gateway.modules.m1_pipeline.hinglish import code_mix_ratio
+from gateway.modules.m4_router.certified import ENCODER, artifacts_dir, featurize
 
 LANGS = ("english", "hinglish")
 
 
 # ----------------------------------------------------------------- scorer
 
-def featurize(texts: list[str], langs: list[str]) -> tuple[np.ndarray, str]:
-    base = np.array([[float(lg == "hinglish"), code_mix_ratio(t), math.log1p(len(t.split()))] for t, lg in zip(texts, langs)])
-    try:
-        from sentence_transformers import SentenceTransformer
-
-        enc = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
-        emb = enc.encode(texts, batch_size=32, normalize_embeddings=True, show_progress_bar=False)
-        return np.hstack([base, emb]), "multilingual-MiniLM + lang/CMI/length"
-    except Exception as e:  # encoder unavailable -> say so in the report
-        return base, f"lang/CMI/length only ({type(e).__name__})"
-
-
-def train_scorer(rows: list[dict], texts: dict) -> tuple[dict, str]:
+def train_scorer(rows: list[dict], texts: dict) -> tuple[dict, str, dict | None]:
+    """Fit on scorer_train only; returns (scores for all rows, description, servable bundle)."""
     from sklearn.linear_model import LogisticRegression
 
     keys = [(r["item_id"], r["lang"]) for r in rows]
-    X, feat_desc = featurize([texts[k] for k in keys], [k[1] for k in keys])
+    flags = [k[1] == "hinglish" for k in keys]
+    try:
+        X = featurize([texts[k] for k in keys], flags, use_embeddings=True)
+        use_emb, desc = True, f"{ENCODER} + lang/CMI/length"
+    except RuntimeError as e:  # encoder unavailable -> say so in the report
+        X = featurize([texts[k] for k in keys], flags, use_embeddings=False)
+        use_emb, desc = False, f"lang/CMI/length only ({e})"
     y = np.array([r["u"] for r in rows])
     tr = np.array([r["split"] == "scorer_train" for r in rows])
     if y[tr].sum() < 5 or (1 - y[tr]).sum() < 5:
         # Too few positives to learn from: fall back to input length (documented in report).
         s = X[:, 2] / max(X[:, 2].max(), 1e-9)
-        return dict(zip(keys, s)), feat_desc + " | FALLBACK: length score (too few u=1 in scorer_train)"
-    clf = LogisticRegression(max_iter=2000, C=1.0).fit(X[tr], y[tr])
-    return dict(zip(keys, clf.predict_proba(X)[:, 1])), feat_desc + " | logistic regression"
+        return dict(zip(keys, s)), desc + " | FALLBACK: length score (too few u=1 in scorer_train)", None
+    clf = LogisticRegression(max_iter=2000, C=1.0, class_weight="balanced").fit(X[tr], y[tr])
+    desc += " | logistic regression (balanced)"
+    return dict(zip(keys, clf.predict_proba(X)[:, 1])), desc, {"clf": clf, "use_embeddings": use_emb, "description": desc}
 
 
 # ------------------------------------------------------- certification
@@ -102,6 +98,7 @@ def main() -> None:
     ap.add_argument("--alphas", default="0.05,0.10,0.20")
     ap.add_argument("--delta", type=float, default=0.10)
     ap.add_argument("--seed", type=int, default=20261015)
+    ap.add_argument("--serve-alpha", type=float, default=0.10, help="alpha the gateway serves (must be in --alphas)")
     args = ap.parse_args()
     alphas = [float(a) for a in args.alphas.split(",")]
 
@@ -109,7 +106,7 @@ def main() -> None:
     texts = {(v["item_id"], v["lang"]): v["text"] for v in latest_variants()}
     if not grades:
         raise SystemExit("no graded rows yet: run collect.py and grade.py first")
-    scores, scorer_desc = train_scorer(grades, texts)
+    scores, scorer_desc, bundle = train_scorer(grades, texts)
 
     train_scores = np.array([scores[(r["item_id"], r["lang"])] for r in grades if r["split"] == "scorer_train"])
     grid = np.unique(np.quantile(train_scores, np.linspace(0, 1, 101))) if len(train_scores) else np.linspace(0, 1, 101)
@@ -149,6 +146,7 @@ def main() -> None:
     report = {"scorer": scorer_desc, "n_cert_items": len(items), "n_cert_rows": len(cert),
               "n_scorer_train_rows": int(len(train_scores)), "delta": args.delta, "splits": args.splits,
               "u_rate_by_lang": {lg: float(np.mean([r["u"] for r in grades if r["lang"] == lg] or [0])) for lg in LANGS},
+              "by_source": by_source(grades),
               "results": []}
     for (method, alpha, lg), m in sorted(acc.items(), key=lambda kv: (kv[0][1], kv[0][0], kv[0][2])):
         if lg == "mix":
@@ -171,6 +169,66 @@ def main() -> None:
         print(f"{r['alpha']:>5} {r['method']:>12} {r['lang']:>9} {r['violation_rate']:>6} {r['mean_risk']:>7} "
               f"{r['cheap_share']:>6} {r['cost_saving']:>6}")
     print("report ->", BENCH / "certify_report.json")
+    export_router(bundle, cert, scores, grid, args)
+
+
+def by_source(grades: list[dict]) -> dict:
+    """Accuracy and u-rate per dataset and language (all splits)."""
+    out: dict = {}
+    for r in grades:
+        key = f"{r.get('source', '?')}/{r['lang']}"
+        o = out.setdefault(key, {"n": 0, "cheap_acc": 0.0, "premium_acc": 0.0, "u_rate": 0.0})
+        o["n"] += 1
+        o["cheap_acc"] += r["cheap_correct"]
+        o["premium_acc"] += r["premium_correct"]
+        o["u_rate"] += r["u"]
+    for o in out.values():
+        for k in ("cheap_acc", "premium_acc", "u_rate"):
+            o[k] = round(o[k] / o["n"], 4)
+    return dict(sorted(out.items()))
+
+
+def export_router(bundle: dict | None, cert: list[dict], scores: dict, grid: np.ndarray, args) -> None:
+    """Certify serving thresholds on the whole cert split and save them for the gateway."""
+    import pickle
+    from datetime import datetime, timezone
+
+    if bundle is None:
+        print("router not exported: scorer fell back (too few u=1 in scorer_train)")
+        return
+    alphas = [float(a) for a in args.alphas.split(",")]
+    K, A = len(LANGS), len(alphas)
+
+    def arrays(rs):
+        return (np.array([scores[(r["item_id"], r["lang"])] for r in rs]), np.array([r["u"] for r in rs]))
+
+    def lam_or_none(x: float) -> float | None:
+        return None if x == -math.inf else float(x)
+
+    per_alpha = {}
+    for alpha in alphas:
+        per_lang = {}
+        for lg in LANGS:
+            rows = [r for r in cert if r["lang"] == lg]
+            s, u = arrays(rows)
+            lam = fixed_sequence(s, u, grid, alpha, args.delta / (K * A))
+            per_lang[lg] = {"cheap_if_score_at_most": lam_or_none(lam), "n": len(rows),
+                            "cheap_share_on_cert": round(float((s <= lam).mean()), 4) if len(rows) else 0.0}
+        s, u = arrays(cert)
+        per_alpha[f"{alpha:.2f}"] = {"per_language": per_lang,
+                                     "marginal": {"cheap_if_score_at_most": lam_or_none(
+                                         fixed_sequence(s, u, grid, alpha, args.delta / A))}}
+    d = artifacts_dir(BENCH.parent)
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "certified_router.pkl").write_bytes(pickle.dumps(bundle))
+    (d / "certified_thresholds.json").write_text(json.dumps({
+        "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "delta": args.delta, "alphas": alphas, "serve_alpha": f"{args.serve_alpha:.2f}",
+        "guarantee": "per language: P(quality lost vs always-premium > alpha) <= delta, "
+                     "fixed-sequence Clopper-Pearson at delta/(K*|A|) on the cert split",
+        "n_cert_rows": len(cert), "preliminary": len(cert) < 600,
+        "scorer": bundle["description"], "thresholds": per_alpha}, indent=2), encoding="utf-8")
+    print("router artifacts ->", d)
 
 
 if __name__ == "__main__":

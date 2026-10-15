@@ -6,6 +6,8 @@ import os
 # local backend/.env says. Process env beats the .env file in pydantic-settings,
 # so pin dry-run before anything imports gateway.config.
 os.environ["GATEWAY_DRY_RUN"] = "true"
+# Tests use the fixed demo router, not whatever certify.py last exported locally.
+os.environ["GATEWAY_USE_CERTIFIED_ROUTER"] = "false"
 
 import pytest  # noqa: E402
 

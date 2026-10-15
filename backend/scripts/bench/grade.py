@@ -32,6 +32,26 @@ def extract(text: str) -> str | None:
     return m[-1].replace(",", "").rstrip(".")
 
 
+_LETTER_FINAL = re.compile(r"####\s*\(?([A-H])\)?(?![A-Za-z])")
+# Fallback only for replies without '####': an option label like "C)" or "(C)".
+# A bare capital letter is not accepted ("A train leaves..." would match).
+_LETTER_ANY = re.compile(r"(?<![A-Za-z])\(?([A-H])\)(?![A-Za-z])")
+
+
+def extract_letter(text: str) -> str | None:
+    m = _LETTER_FINAL.findall(text or "")
+    if m:
+        return m[-1]
+    hits = _LETTER_ANY.findall(text or "")
+    return hits[-1] if hits else None
+
+
+def correct(task: str, text: str, gold: str) -> bool:
+    if task == "mcq":
+        return extract_letter(text) == gold
+    return same(extract(text), gold)
+
+
 def same(a: str | None, gold: str) -> bool:
     if a is None:
         return False
@@ -57,11 +77,13 @@ def main() -> None:
             continue
         p = by_key[(item_id, lang, "premium")]
         gold = items[item_id]["gold"]
-        c_ok = same(extract(a["content"]), gold)
-        p_ok = same(extract(p["content"]), gold)
+        task = items[item_id].get("task", "math")
+        c_ok = correct(task, a["content"], gold)
+        p_ok = correct(task, p["content"], gold)
         cu, pu = a["usage"], p["usage"]
         rows.append({
             "item_id": item_id, "lang": lang, "split": items[item_id]["split"],
+            "source": items[item_id]["source"].split("/")[0], "task": items[item_id].get("task", "math"),
             "cheap_correct": c_ok, "premium_correct": p_ok, "u": int((not c_ok) and p_ok),
             "prompt_tokens": pu.get("prompt_tokens", 0),
             "cost_cheap_usd": tier_cost_usd("cheap", cu.get("prompt_tokens", 0), cu.get("completion_tokens", 0)),

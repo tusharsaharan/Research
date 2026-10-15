@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Routing Research Results</title>
+<style>
+  :root { --bg:#fbfbfa; --fg:#1d1d1f; --muted:#6b6b70; --line:#e3e3e0; --card:#fff; --ok:#1f7a4d; --bad:#b3261e; --accent:#2b5fd9; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141416; --fg:#ececee; --muted:#9a9aa1; --line:#2b2b30; --card:#1c1c20; --ok:#5ec48f; --bad:#ff8a80; --accent:#8fb0ff; } }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width:1040px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:22px; margin:0 0 4px; } h2 { font-size:16px; margin:28px 0 8px; }
+  .sub { color:var(--muted); margin:0 0 16px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; }
+  .card b { display:block; font-size:22px; font-variant-numeric:tabular-nums; }
+  .card span { color:var(--muted); font-size:13px; }
+  .scroll { overflow-x:auto; }
+  table { border-collapse:collapse; width:100%; background:var(--card); border:1px solid var(--line); border-radius:10px; font-variant-numeric:tabular-nums; }
+  th, td { text-align:left; padding:7px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  th { font-size:12px; color:var(--muted); font-weight:600; }
+  .ok { color:var(--ok); font-weight:600; } .bad { color:var(--bad); font-weight:600; }
+  .note { color:var(--muted); font-size:13px; }
+  code { font-size:13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Language-conditional certified routing</h1>
+  <p class="sub" id="router">Loading…</p>
+  <div class="cards" id="cards"></div>
+
+  <h2>Accuracy by dataset and language</h2>
+  <p class="note"><i>u</i> = cheap model wrong and premium right: the quality lost by routing that query cheap.</p>
+  <div class="scroll"><table id="sources"></table></div>
+
+  <h2>Marginal vs per-language certification</h2>
+  <p class="note" id="certnote"></p>
+  <div class="scroll"><table id="cert"></table></div>
+
+  <h2>Known-truth simulation</h2>
+  <div class="scroll"><table id="sim"></table></div>
+</main>
+<script>
+const pct = v => v == null ? "–" : (100 * v).toFixed(1) + "%";
+const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function table(el, head, rows) {
+  el.innerHTML = "<tr>" + head.map(h => `<th>${esc(h)}</th>`).join("") + "</tr>" +
+    rows.map(r => "<tr>" + r.map(c => `<td>${c}</td>`).join("") + "</tr>").join("");
+}
+fetch("/v1/research/summary").then(r => r.json()).then(d => {
+  document.getElementById("router").textContent = "Gateway router: " + d.router_source;
+  const p = d.progress || {}, s = d.summary || {}, a = p.answers_ok || {};
+  const cards = [
+    ["Source items", p.items], ["Hinglish variants passing checks", p.hinglish_auto_checks_passed],
+    ["Graded (item, language) pairs", p.graded_pairs],
+    ["Tokenizer tax (Hinglish / English)", s.tokenizer_tax_hinglish_over_english ? s.tokenizer_tax_hinglish_over_english.toFixed(3) + "×" : "–"],
+    ["Premium answers", (a["premium/english"]||0) + (a["premium/hinglish"]||0)],
+    ["Cheap answers", (a["cheap/english"]||0) + (a["cheap/hinglish"]||0)],
+  ];
+  document.getElementById("cards").innerHTML = cards.map(([k,v]) => `<div class="card"><b>${v ?? "–"}</b><span>${esc(k)}</span></div>`).join("");
+
+  const c = d.certification;
+  const src = (c && c.by_source) || {};
+  table(document.getElementById("sources"), ["Dataset / language", "n", "Cheap acc.", "Premium acc.", "u rate"],
+    Object.entries(src).map(([k,v]) => [esc(k), v.n, pct(v.cheap_acc), pct(v.premium_acc), pct(v.u_rate)]));
+  if (c) {
+    document.getElementById("certnote").innerHTML =
+      `${c.n_cert_items} certification items, ${c.splits} random calibration/test splits, δ = ${c.delta}. ` +
+      `A violation rate above δ means the guarantee failed for that language. Scorer: <code>${esc(c.scorer)}</code>`;
+    table(document.getElementById("cert"), ["α", "Method", "Language", "Violation rate", "Mean risk", "Cheap share", "Cost saving"],
+      c.results.filter(r => r.lang !== "mix-shift").map(r => [r.alpha, esc(r.method), esc(r.lang),
+        `<span class="${r.violation_rate > c.delta ? "bad" : "ok"}">${pct(r.violation_rate)}</span>`,
+        pct(r.mean_risk), pct(r.cheap_share), pct(r.cost_saving)]));
+  } else document.getElementById("certnote").textContent = "No certification run yet: run backend/scripts/bench/certify.py.";
+  const sim = d.simulation;
+  if (sim) table(document.getElementById("sim"), ["Method / language", "Violation rate", "95% CI"],
+    Object.entries(sim.violation_rate).map(([k,v]) => [esc(k),
+      `<span class="${v.rate > sim.setup.delta ? "bad" : "ok"}">${pct(v.rate)}</span>`, v.ci95.map(pct).join(" – ")]));
+}).catch(e => { document.getElementById("router").textContent = "Could not load results: " + e; });
+</script>
+</body>
+</html>

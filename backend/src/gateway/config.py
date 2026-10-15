@@ -38,6 +38,8 @@ class Settings(BaseSettings):
     crf_model_path: Path = Path("data/models/crf_compressor.pkl")
     tfidf_path: Path = Path("data/tfidf/hinglish_idf.json")
     crf_aggressive: bool = False
+    # Serve the learned router + per-language thresholds from scripts/bench/certify.py when present.
+    use_certified_router: bool = True
     distilled_checkpoint: Path = Path("data/checkpoints/distilled.json")
     pricing_date: str = PRICING_DATE
     timeout_s: float = 30.0

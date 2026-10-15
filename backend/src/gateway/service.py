@@ -11,6 +11,7 @@ from gateway.config import Settings, get_settings
 from gateway.llm import build_client
 from gateway.modules.m2_compressor.compressor import Compressor
 from gateway.modules.m3_conformal.conformal import ConformalCalibrator
+from gateway.modules.m4_router.certified import load_certified, premium_threshold
 from gateway.modules.m4_router.difficulty import DifficultyScorer
 from gateway.modules.m4_router.router import CascadeRouter
 from gateway.modules.m6_telegram.db import LogDB
@@ -95,6 +96,26 @@ class Gateway:
         self.calibration: list[CalibSample] = calibration
         self.calibrator = ConformalCalibrator(alpha=s.alpha).calibrate(calibration)
 
+        # Prefer the router certified on real benchmark data (scripts/bench/certify.py):
+        # learned scorer + per-language thresholds. Otherwise keep the heuristic demo router.
+        scorer = DifficultyScorer(self.counter)
+        self.router_source = "heuristic (no certified artifacts)"
+        certified = load_certified(s.data_dir) if s.use_certified_router else None
+        if certified is not None:
+            scorer, thresholds = certified
+            serve = thresholds["thresholds"][thresholds["serve_alpha"]]
+            self.calibrator.is_mondrian = True
+            self.calibrator.group_thresholds = {
+                g: premium_threshold(v["cheap_if_score_at_most"]) for g, v in serve["per_language"].items()
+            }
+            # Languages not certified (e.g. mixed_script) fall back to the marginal threshold.
+            self.calibrator.threshold = premium_threshold(serve["marginal"]["cheap_if_score_at_most"])
+            self.calibrator.alpha = float(thresholds["serve_alpha"])
+            self.router_source = (
+                f"certified ({thresholds['n_cert_rows']} cert rows, alpha={thresholds['serve_alpha']}, "
+                f"delta={thresholds['delta']}{', preliminary' if thresholds.get('preliminary') else ''})"
+            )
+
         self.router = CascadeRouter(
             calibrator=self.calibrator,
             cheap_client=build_client(
@@ -103,7 +124,7 @@ class Gateway:
             premium_client=build_client(
                 "premium", s.premium.model, s.premium.base_url, s.premium.api_key, s.dry_run, timeout=s.timeout_s
             ),
-            scorer=DifficultyScorer(self.counter),
+            scorer=scorer,
             counter=self.counter,
             dry_run=s.dry_run,
         )

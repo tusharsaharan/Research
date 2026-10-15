@@ -19,12 +19,14 @@ from __future__ import annotations
 
 import argparse
 
-from common import ANSWERS, BudgetExhausted, append_jsonl, chat, in_shard, latest_variants, provider, read_jsonl, variant_ok
+from common import ANSWERS, BENCH, BudgetExhausted, append_jsonl, chat, in_shard, latest_variants, provider, read_jsonl, variant_ok
 
-SYSTEM = (
-    "Solve the problem. You may think briefly. End your reply with a final line of the "
-    "form '#### <number>' containing only the final numeric answer."
-)
+SYSTEM = {
+    "math": "Solve the problem. You may think briefly. End your reply with a final line of the "
+            "form '#### <number>' containing only the final numeric answer.",
+    "mcq": "Answer the multiple-choice question. You may think briefly. End your reply with a final "
+           "line of the form '#### <letter>' containing only the letter of the correct option.",
+}
 
 
 def main() -> None:
@@ -34,9 +36,12 @@ def main() -> None:
     ap.add_argument("--daily-token-budget", type=int, default=190_000)
     ap.add_argument("--max-tokens", type=int, default=1024)
     ap.add_argument("--shard", default=None, help="i/n, e.g. 1/3")
+    ap.add_argument("--source", default=None, help="only items whose id starts with this, e.g. arc")
     args = ap.parse_args()
 
-    variants = [v for v in latest_variants() if variant_ok(v) and in_shard(v["item_id"], args.shard)]
+    task = {r["item_id"]: r.get("task", "math") for r in read_jsonl(BENCH / "items.jsonl")}
+    variants = [v for v in latest_variants() if variant_ok(v) and in_shard(v["item_id"], args.shard)
+                and (not args.source or v["item_id"].startswith(args.source))]
     done = {(a["item_id"], a["lang"], a["tier"]) for a in read_jsonl(ANSWERS) if a.get("status") == "ok"}
     for tier in args.tiers.split(","):
         p = provider(tier)
@@ -46,7 +51,7 @@ def main() -> None:
         print(f"{tier} ({p['model']}): {len(todo)} calls to make")
         for n, v in enumerate(todo, 1):
             try:
-                out = chat(p["model"], [{"role": "system", "content": SYSTEM}, {"role": "user", "content": v["text"]}],
+                out = chat(p["model"], [{"role": "system", "content": SYSTEM[task[v["item_id"]]]}, {"role": "user", "content": v["text"]}],
                            base_url=p["base_url"], api_key=p["api_key"], max_tokens=args.max_tokens,
                            daily_token_budget=args.daily_token_budget)
             except BudgetExhausted as e:
