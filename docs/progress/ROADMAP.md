@@ -28,7 +28,7 @@ below if yours differs; `weekly_report.py` reads them from this file.
 - [x] [Tushar] Router picks a per-language threshold (english / hinglish / mixed_script)
 - [x] [Tushar] Learned scorer no longer zero-pads embeddings at serve time
 - [x] [Tushar] Benchmark pipeline: items → Hinglish variants → cheap+premium answers → gold grading (5-item live smoke run passes)
-- [ ] [Tushar] Merge calibration fixes from the parallel session (`from_pairs`, real bounds in sweeps, post-hoc α correction, valid CRC, validity simulation)
+- [x] [Tushar] Merge calibration fixes from the parallel session (`from_pairs`, real bounds in sweeps, post-hoc α correction, valid CRC, validity simulation)
 - [ ] [All] Commit the working tree so the branch runs from a clean checkout
 - [ ] [Shivam] Build all 1,319 items and translate them (`build_items.py`, `translate.py --shard i/3`)
 - [ ] [Shivam] Annotation guide + verify first 300 Hinglish items in `verify_sheet.csv` (50 double-checked for agreement)
