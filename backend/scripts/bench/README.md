@@ -28,6 +28,22 @@ python backend/scripts/bench/status.py                      # counts for the wee
   are excluded from answering; fix them in `verify_sheet.csv` or re-run
   `translate.py --retry-failed`.
 
+## Automatic daily run (Windows)
+
+A Task Scheduler job "TokenOpt Daily Benchmark" runs `run_daily.cmd` (which
+calls `run_daily.py`) every day at 06:00, just after the UTC midnight when the
+daily token ledger resets. If the laptop is off or asleep then, it runs as
+soon as you log in. Output goes to `backend/data/bench/logs/daily-YYYY-MM-DD.log`.
+
+```powershell
+Get-ScheduledTaskInfo -TaskName "TokenOpt Daily Benchmark"   # last/next run, last result
+Start-ScheduledTask -TaskName "TokenOpt Daily Benchmark"     # run now
+Unregister-ScheduledTask -TaskName "TokenOpt Daily Benchmark" -Confirm:$false   # remove
+```
+
+It runs as your user only while you are logged in, so it never needs your
+password; the API key comes from `backend/.env`.
+
 ## Files
 
 | File | Row = |
