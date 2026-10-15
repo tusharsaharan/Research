@@ -81,3 +81,8 @@ Interim runs on partial data are allowed for debugging and are labelled
 ## Change log
 
 - 2026-10-15: initial version.
+- 2026-10-15 (before any result on `cert`): scorer uses `class_weight="balanced"`
+  (u = 1 is rare; thresholds depend only on score ranking). Added gold-answer
+  multiple-choice sources ARC-Challenge test (all) and an MMLU test sample
+  (1,000, seeded) under the same splits and analysis; results are reported
+  pooled and per dataset.

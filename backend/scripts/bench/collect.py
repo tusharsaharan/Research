@@ -39,9 +39,19 @@ def main() -> None:
     ap.add_argument("--source", default=None, help="only items whose id starts with this, e.g. arc")
     args = ap.parse_args()
 
-    task = {r["item_id"]: r.get("task", "math") for r in read_jsonl(BENCH / "items.jsonl")}
-    variants = [v for v in latest_variants() if variant_ok(v) and in_shard(v["item_id"], args.shard)
+    items = read_jsonl(BENCH / "items.jsonl")
+    task = {r["item_id"]: r.get("task", "math") for r in items}
+    latest = latest_variants()
+    # English needs no translation, so answer it straight from the items file.
+    have_en = {v["item_id"] for v in latest if v["lang"] == "english"}
+    latest += [{"item_id": r["item_id"], "lang": "english", "text": r["question_en"], "checks": {}}
+               for r in items if r["item_id"] not in have_en]
+    variants = [v for v in latest if variant_ok(v) and in_shard(v["item_id"], args.shard)
                 and (not args.source or v["item_id"].startswith(args.source))]
+    # Items whose Hinglish version is ready come first, languages interleaved, so a
+    # partial (quota-limited) run yields paired English/Hinglish data.
+    paired = {v["item_id"] for v in variants if v["lang"] == "hinglish"}
+    variants.sort(key=lambda v: (v["item_id"] not in paired, v["item_id"], v["lang"]))
     done = {(a["item_id"], a["lang"], a["tier"]) for a in read_jsonl(ANSWERS) if a.get("status") == "ok"}
     for tier in args.tiers.split(","):
         p = provider(tier)
