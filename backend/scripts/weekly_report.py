@@ -53,7 +53,8 @@ def git(*args: str) -> str:
 
 def commits(start: str, end: str) -> dict[str, list[str]]:
     until = (date.fromisoformat(end) + timedelta(days=1)).isoformat()
-    out = git("log", f"--since={start}", f"--until={until}", "--no-merges", "--format=%an\x1f%h %s")
+    # A bare date means "that day at the current time" to git, so pin midnight.
+    out = git("log", f"--since={start} 00:00", f"--until={until} 00:00", "--no-merges", "--format=%an\x1f%h %s")
     by_author: dict[str, list[str]] = defaultdict(list)
     for line in out.splitlines():
         if "\x1f" in line:

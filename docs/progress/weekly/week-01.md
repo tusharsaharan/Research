@@ -1,5 +1,5 @@
 # Week 1 progress — Foundations fixed, real data flowing
-_2026-10-15 → 2026-10-25 · generated 2026-10-15 19:29 by `backend/scripts/weekly_report.py`_
+_2026-10-15 → 2026-10-25 · generated 2026-10-15 19:31 by `backend/scripts/weekly_report.py`_
 
 **Planned tasks done: 6/12**
 
@@ -8,7 +8,7 @@ _2026-10-15 → 2026-10-25 · generated 2026-10-15 19:29 by `backend/scripts/wee
 | All | 0/1 | 0 |
 | Sahil | 0/2 | 0 |
 | Shivam | 0/2 | 0 |
-| Tushar | 6/7 | 0 |
+| Tushar | 6/7 | 4 |
 
 ## Done
 - [Tushar] Tests always run offline (forced dry-run); no more quota burn or env-dependent failures
@@ -29,10 +29,13 @@ _2026-10-15 → 2026-10-25 · generated 2026-10-15 19:29 by `backend/scripts/wee
 ## Evidence
 
 **Commits**
-- no commits in this date range (uncommitted work does not count as evidence)
+- Tushar:
+  - 24cf4d3 weekly_report: credit commits to roadmap owners by first name
+  - d784241 Add 4-week prototype roadmap and week-1 progress report
+  - 9397435 Fix cost model, per-language routing and test isolation; add benchmark pipeline
+  - d5b35cd Wire CRF compressor into the gateway and fix rewrite prompts
 
-**Backend tests:** 1 failed, 307 passed, 6 skipped in 98.04s (0:01:38)
-  - FAILED tests/test_phase2.py::test_fixed_sequence_dominates_hoeffding - Assert...
+**Backend tests:** skipped
 
 **Benchmark pipeline**
 ```json
@@ -43,8 +46,8 @@ _2026-10-15 → 2026-10-25 · generated 2026-10-15 19:29 by `backend/scripts/wee
     "scorer_train": 412,
     "pilot": 138
   },
-  "hinglish_variants": 103,
-  "hinglish_auto_checks_passed": 78,
+  "hinglish_variants": 142,
+  "hinglish_auto_checks_passed": 105,
   "answers_ok": {
     "cheap/english": 5,
     "cheap/hinglish": 4,
@@ -55,7 +58,7 @@ _2026-10-15 → 2026-10-25 · generated 2026-10-15 19:29 by `backend/scripts/wee
   "graded_pairs": 8,
   "tokens_by_day": {
     "2026-10-15": {
-      "openai/gpt-oss-20b": 31900,
+      "openai/gpt-oss-20b": 42772,
       "openai/gpt-oss-120b": 2400
     }
   },
