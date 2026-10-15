@@ -33,7 +33,9 @@ below if yours differs; `weekly_report.py` reads them from this file.
 - [ ] [Shivam] Build all 1,319 items and translate them (`build_items.py`, `translate.py --shard i/3`)
 - [ ] [Shivam] Annotation guide + verify first 300 Hinglish items in `verify_sheet.csv` (50 double-checked for agreement)
 - [ ] [Sahil] Start daily answer collection (`collect.py`), target ≥ 600 graded pairs by Sunday
-- [ ] [Sahil] Pre-registration file `docs/research/PREREG.md`: groups, loss, α/δ grids, hypotheses, splits
+- [x] [Tushar] Pre-registration file `docs/research/PREREG.md`: groups, loss, α/δ grids, hypotheses, splits (committed before any result)
+- [x] [Tushar] Certification experiment `certify.py` (marginal vs per-language, re-splits, mix-shift) + known-truth simulation: per-language valid (2.6% / 3.3% violations at δ=10%); one shared threshold over-risks Hinglish in 69% of trials
+- [ ] [Sahil] First real (preliminary) `certify.py` run once ≥ 300 cert items have both answers
 
 Demo: tests green · live pipeline · first per-language accuracy table (`backend/data/bench/summary.json`).
 

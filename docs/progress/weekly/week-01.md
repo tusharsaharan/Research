@@ -1,14 +1,14 @@
 # Week 1 progress — Foundations fixed, real data flowing
-_2026-10-15 → 2026-10-25 · generated 2026-10-15 19:31 by `backend/scripts/weekly_report.py`_
+_2026-10-15 → 2026-10-25 · generated 2026-10-15 19:35 by `backend/scripts/weekly_report.py`_
 
-**Planned tasks done: 6/12**
+**Planned tasks done: 8/14**
 
 | Owner | Done | Commits this week |
 |---|---|---|
 | All | 0/1 | 0 |
 | Sahil | 0/2 | 0 |
 | Shivam | 0/2 | 0 |
-| Tushar | 6/7 | 4 |
+| Tushar | 8/9 | 7 |
 
 ## Done
 - [Tushar] Tests always run offline (forced dry-run); no more quota burn or env-dependent failures
@@ -17,6 +17,8 @@ _2026-10-15 → 2026-10-25 · generated 2026-10-15 19:31 by `backend/scripts/wee
 - [Tushar] Router picks a per-language threshold (english / hinglish / mixed_script)
 - [Tushar] Learned scorer no longer zero-pads embeddings at serve time
 - [Tushar] Benchmark pipeline: items → Hinglish variants → cheap+premium answers → gold grading (5-item live smoke run passes)
+- [Tushar] Pre-registration file `docs/research/PREREG.md`: groups, loss, α/δ grids, hypotheses, splits (committed before any result)
+- [Tushar] Certification experiment `certify.py` (marginal vs per-language, re-splits, mix-shift) + known-truth simulation: per-language valid (2.6% / 3.3% violations at δ=10%); one shared threshold over-risks Hinglish in 69% of trials
 
 ## Still open
 - [Tushar] Merge calibration fixes from the parallel session (`from_pairs`, real bounds in sweeps, post-hoc α correction, valid CRC, validity simulation)
@@ -24,12 +26,15 @@ _2026-10-15 → 2026-10-25 · generated 2026-10-15 19:31 by `backend/scripts/wee
 - [Shivam] Build all 1,319 items and translate them (`build_items.py`, `translate.py --shard i/3`)
 - [Shivam] Annotation guide + verify first 300 Hinglish items in `verify_sheet.csv` (50 double-checked for agreement)
 - [Sahil] Start daily answer collection (`collect.py`), target ≥ 600 graded pairs by Sunday
-- [Sahil] Pre-registration file `docs/research/PREREG.md`: groups, loss, α/δ grids, hypotheses, splits
+- [Sahil] First real (preliminary) `certify.py` run once ≥ 300 cert items have both answers
 
 ## Evidence
 
 **Commits**
 - Tushar:
+  - 843b7cf Add certification experiment and known-truth validity simulation
+  - 79fc95d Pre-register study R1: marginal vs per-language certified routing
+  - 49ea5e1 weekly_report: count commits from midnight of the week's first day
   - 24cf4d3 weekly_report: credit commits to roadmap owners by first name
   - d784241 Add 4-week prototype roadmap and week-1 progress report
   - 9397435 Fix cost model, per-language routing and test isolation; add benchmark pipeline
@@ -46,20 +51,20 @@ _2026-10-15 → 2026-10-25 · generated 2026-10-15 19:31 by `backend/scripts/wee
     "scorer_train": 412,
     "pilot": 138
   },
-  "hinglish_variants": 142,
-  "hinglish_auto_checks_passed": 105,
+  "hinglish_variants": 218,
+  "hinglish_auto_checks_passed": 163,
   "answers_ok": {
-    "cheap/english": 5,
-    "cheap/hinglish": 4,
-    "premium/english": 5,
-    "premium/hinglish": 4
+    "cheap/english": 13,
+    "cheap/hinglish": 11,
+    "premium/english": 52,
+    "premium/hinglish": 35
   },
   "answer_errors": 0,
   "graded_pairs": 8,
   "tokens_by_day": {
     "2026-10-15": {
-      "openai/gpt-oss-20b": 42772,
-      "openai/gpt-oss-120b": 2400
+      "openai/gpt-oss-20b": 69318,
+      "openai/gpt-oss-120b": 27579
     }
   },
   "summary": {
