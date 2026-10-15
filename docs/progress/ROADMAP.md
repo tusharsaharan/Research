@@ -42,6 +42,10 @@ or 4–5 days if all three of you run `run_daily.py --shard i/3` with your own k
 - [x] [Tushar] Certification experiment `certify.py` (marginal vs per-language, re-splits, mix-shift) + known-truth simulation: per-language valid (2.6% / 3.3% violations at δ=10%); one shared threshold over-risks Hinglish in 69% of trials
 - [ ] [Sahil] First real (preliminary) `certify.py` run once ≥ 300 cert items have both answers
 
+- [x] [Tushar] Compression benchmark on 8,000 prompts (GSM8K, ARC, MMLU, Hinglish-Instruct; 3 tokenizers; numbers/negation/question-word/option checks) → `docs/research/COMPRESSION_STUDY.md`
+- [x] [Tushar] New lossless compressor `tokopt` (tokenizer-aware spelling normalisation for romanized Hindi)
+- [x] [Tushar] Fixed CRF task-altering edits found by the benchmark (de-duplicated lists, broken intervals, edited quotes) + regression tests
+- [ ] [Shivam] Answer-level compression check (`compress_answers.py`, runs daily): first report with McNemar tests once ≥ 300 changed prompts are answered
 - [x] [Tushar] One-command daily runner `run_daily.py` (translate → answer → grade → certify → report)
 
 Demo: tests green · live pipeline · first per-language accuracy table (`backend/data/bench/summary.json`).

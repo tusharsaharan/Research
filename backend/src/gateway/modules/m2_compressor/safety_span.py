@@ -10,14 +10,26 @@ _FENCED = re.compile(r"```(?:[A-Za-z+]*\n)?.*?```", re.DOTALL)
 _INLINE = re.compile(r"`[^`\n]+`")
 _PHONE = re.compile(r"(?<!\w)(?:\+\d{1,3}[ \t-]?)?(?:\(?\d{2,4}\)?[ \t-]?)?\d{3,5}[ \t-]?\d{3,5}(?!\w)")
 _AMOUNT = re.compile(r"(?:Rs\.?|INR|₹)\s?\d[\d,]*(?:\.\d+)?")
+# Bracketed groups that contain a digit: lists, arrays, intervals, sets, tuples.
+# Compressors must never touch these — the 8,000-prompt benchmark showed the CRF
+# de-duplicating "[1, 2, 2, 3]" (which changes a remove-duplicates task) and
+# breaking "[2, 2] ∪ [3, 3]".
+_NUMERIC_GROUP = re.compile(r"[\[({][^\[\](){}\n]*\d[^\[\](){}\n]*[\])}]")
+# Text the user quoted is content, not phrasing: keep it verbatim.
+_QUOTED = re.compile(r"\"[^\"\n]{1,2000}\"|“[^”\n]{1,2000}”")
+# Arithmetic / equations: "2x + 3 = 7", "5 * 4", "x^2 - 1".
+_MATH = re.compile(r"[\w.]*\d[\w.]*(?:\s*[-+*/^=<>×÷≤≥]\s*[\w.]*\d?[\w.]*)+")
 
 _KINDS = (
     ("code_fenced", _FENCED),
     ("code_inline", _INLINE),
     ("email", _EMAIL),
     ("url", _URL),
+    ("quoted", _QUOTED),
+    ("numeric_group", _NUMERIC_GROUP),
     ("phone", _PHONE),
     ("amount", _AMOUNT),
+    ("math", _MATH),
 )
 
 _PS = re.compile(r"\[\[PS(\d+)\]\]", re.IGNORECASE)
