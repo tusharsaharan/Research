@@ -46,6 +46,8 @@ async def _handle_tool(name: str, args: dict[str, Any]) -> str:
         method = args.get("method", "auto")
         if method == "heuristic":
             r = gw.compressor.compress_heuristic(text)
+        elif method == "crf":
+            r = gw.compressor.compress_crf(text)
         elif method == "distilled":
             r = gw.compressor.compress_distilled(text)
         else:
@@ -145,7 +147,7 @@ if HAS_MCP:
     async def list_tools() -> list[Tool]:  # type: ignore
         return [
             Tool(name="healthz", description="Gateway health + dry_run flag", inputSchema={"type": "object", "properties": {}}),
-            Tool(name="compress", description="Compress Hinglish text (heuristic/distilled/adaptive/auto)", inputSchema={"type": "object", "properties": {"text": {"type": "string"}, "method": {"type": "string", "enum": ["heuristic", "distilled", "adaptive", "auto"]}}, "required": ["text"]}),
+            Tool(name="compress", description="Compress Hinglish text (heuristic/crf/distilled/adaptive/auto)", inputSchema={"type": "object", "properties": {"text": {"type": "string"}, "method": {"type": "string", "enum": ["heuristic", "crf", "distilled", "adaptive", "auto"]}}, "required": ["text"]}),
             Tool(name="chat", description="Run a prompt through the full gateway (compress+route)", inputSchema={"type": "object", "properties": {"text": {"type": "string"}}, "required": ["text"]}),
             Tool(name="reasoning_budget", description="Estimate reasoning budget for a Hinglish query", inputSchema={"type": "object", "properties": {"text": {"type": "string"}}, "required": ["text"]}),
             Tool(name="compare_budgets", description="Compare Hinglish vs English reasoning budgets", inputSchema={"type": "object", "properties": {"hinglish": {"type": "string"}, "english": {"type": "string"}}, "required": ["hinglish", "english"]}),

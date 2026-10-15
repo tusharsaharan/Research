@@ -174,7 +174,7 @@ class OpenAIClient(BaseLLMClient):
             data = resp.json()
 
         choice = data["choices"][0]
-        content = choice["message"]["content"]
+        content = choice["message"].get("content") or choice["message"].get("reasoning") or ""
         usage = Usage(**data.get("usage", {}))
         usage.total_tokens = usage.prompt_tokens + usage.completion_tokens
         return LLMResult(content=content, usage=usage, model=self.model, raw=data)

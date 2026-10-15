@@ -143,7 +143,7 @@ async def healthz():
 
 class CompressRequest(BaseModel):
     text: str
-    method: str | None = None  # heuristic | distilled | llmlingua2 | model | auto
+    method: str | None = None  # heuristic | crf | distilled | llmlingua2 | model | auto
     rate: float | None = None  # kept-fraction for llmlingua2 (0.05..0.95)
 
 
@@ -291,6 +291,8 @@ async def compress_endpoint(req: CompressRequest) -> dict:
     method = (req.method or "auto").lower()
     if method == "heuristic":
         res = gw.compressor.compress_heuristic(text)
+    elif method == "crf":
+        res = gw.compressor.compress_crf(text)
     elif method == "distilled":
         res = gw.compressor.compress_distilled(text)
     elif method == "llmlingua2":
@@ -326,13 +328,13 @@ async def compress_methods() -> dict:
     from gateway.modules.m2_compressor.llmlingua2 import DEFAULT_MODEL, is_available
 
     return {
-        "methods": ["heuristic", "distilled", "llmlingua2", "model", "adaptive", "auto"],
+        "methods": ["heuristic", "crf", "distilled", "llmlingua2", "model", "adaptive", "auto"],
         "default": "auto",
         "llmlingua2_available": is_available(),
         "llmlingua2_model": DEFAULT_MODEL,
         "notes": (
-            "auto uses distilled if available, else llmlingua2 when enabled, else model when not dry_run, "
-            "else heuristic; adaptive is code-mix-aware (novel)"
+            "auto uses distilled if available, else crf when enabled, else llmlingua2 when enabled, "
+            "else model when not dry_run, else heuristic; adaptive is code-mix-aware (novel)"
         ),
     }
 
@@ -341,9 +343,16 @@ _gloss_client_cache: dict[str, object] = {}
 
 
 def _gloss_client():
-    """Local (Ollama) client for translation; None in dry-run (dictionary mode)."""
+    """Local (Ollama) client for translation; None in dry-run (dictionary mode).
+
+    Also None when no API key is configured for a remote endpoint: attempting
+    the call would just burn 3 retried 401s before falling back, so skip
+    straight to the honest dictionary/passthrough fallback (model_used=False).
+    """
     s = get_settings()
     if s.dry_run:
+        return None
+    if "localhost" not in s.local.base_url and not (s.local.api_key or "").strip():
         return None
     key = f"{s.local.model}@{s.local.base_url}"
     if key not in _gloss_client_cache:
@@ -672,6 +681,8 @@ async def compress_redteam(req: RedteamRequest) -> RedteamResponse:
     # Reuse same dispatch as /v1/compress but force grading
     if method == "heuristic":
         res = gw.compressor.compress_heuristic(text)
+    elif method == "crf":
+        res = gw.compressor.compress_crf(text)
     elif method == "distilled":
         res = gw.compressor.compress_distilled(text)
     elif method == "model":

@@ -8,7 +8,7 @@ _EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 _URL = re.compile(r"https?://\S+|www\.\S+")
 _FENCED = re.compile(r"```(?:[A-Za-z+]*\n)?.*?```", re.DOTALL)
 _INLINE = re.compile(r"`[^`\n]+`")
-_PHONE = re.compile(r"(?<!\d)\+?\d[\d\s().-]{7,}\d")
+_PHONE = re.compile(r"(?<!\w)(?:\+\d{1,3}[ \t-]?)?(?:\(?\d{2,4}\)?[ \t-]?)?\d{3,5}[ \t-]?\d{3,5}(?!\w)")
 _AMOUNT = re.compile(r"(?:Rs\.?|INR|₹)\s?\d[\d,]*(?:\.\d+)?")
 
 _KINDS = (
@@ -20,7 +20,7 @@ _KINDS = (
     ("amount", _AMOUNT),
 )
 
-_PS = re.compile(r"\[\[PS(\d+)\]\]")
+_PS = re.compile(r"\[\[PS(\d+)\]\]", re.IGNORECASE)
 
 
 def detect_spans(text: str) -> list[SafetySpan]:

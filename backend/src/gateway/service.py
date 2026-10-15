@@ -86,6 +86,9 @@ class Gateway:
             distilled_map=distilled_map,
             use_llmlingua2=s.llmlingua2,
             llmlingua2_rate=s.llmlingua2_rate,
+            use_crf=s.use_crf,
+            crf_model_path=s.crf_model_path,
+            tfidf_path=s.tfidf_path,
         )
 
         calibration = load_calibration(s.data_dir)

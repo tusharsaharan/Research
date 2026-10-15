@@ -41,6 +41,25 @@ LEXICAL_AMBER_THRESHOLD = 0.18
 _WORD = re.compile(r"[a-z\u0900-\u097f]+")
 _DEVANAGARI = re.compile(r"[\u0900-\u097f]")
 
+
+def _looks_like_devanagari_hindi(text: str) -> bool:
+    """Honesty guard for `hi` output: reject mojibake as `pass`.
+
+    A weak generator (e.g. tiny Ollama model) can emit replacement chars
+    or Latin noise while the self-judge LLM scores it 0.8-1.0. Require real
+    Devanagari content: >=3 Devanagari chars, no U+FFFD, and Devanagari
+    must be at least 10% of alphanumeric content.
+    """
+    if not text or "\ufffd" in text:
+        return False
+    deva = len(_DEVANAGARI.findall(text))
+    if deva < 3:
+        return False
+    alnum = len(re.findall(r"[A-Za-z0-9\u0900-\u097f]", text))
+    if alnum == 0:
+        return False
+    return (deva / alnum) >= 0.10
+
 # English function words excluded from lexical content-overlap (they are the
 # ones a correct translation *should* change).
 _STOP = frozenset(
@@ -235,6 +254,11 @@ async def translate(
         amber, pas = _thresholds_for(engine)
         g = _gate(sim, amber, pas)
         if g in ("pass", "amber"):
+            if target == "hi" and not _looks_like_devanagari_hindi(candidate):
+                # Don't let a corrupt `hi` string through as pass/amber:
+                # fall back to passthrough, honestly labeled reject.
+                out = await _fb(trimmed)
+                return TranslationResult(out, round(float(sim), 4), "reject", source_label, engine)
             return TranslationResult(
                 candidate, round(float(sim), 4), g, "model", engine
             )

@@ -103,7 +103,7 @@ class Compressor:
         masked, spans = mask(text)
         compressed_masked, drops = prune(masked)
         final, ok = reinject(compressed_masked, spans)
-        if not ok:
+        if not ok or not final.strip():
             final = text
         return self._result(text, final, spans, "heuristic", drops)
 
@@ -176,7 +176,15 @@ class Compressor:
         if self.client is None:
             return self.compress_heuristic(text)
         result = await self.client.chat(rewrite_messages(masked, protected), temperature=temperature)
-        final, ok = reinject(result.content.strip(), spans)
+        raw = result.content.strip()
+        # Clean any surrounding markdown block or quotes that LLMs might add
+        if raw.startswith("```") and raw.endswith("```"):
+            lines = raw.splitlines()
+            if len(lines) >= 3:
+                raw = "\n".join(lines[1:-1]).strip()
+        if (raw.startswith('"') and raw.endswith('"')) or (raw.startswith("'") and raw.endswith("'")):
+            raw = raw[1:-1].strip()
+        final, ok = reinject(raw, spans)
         if not ok:
             final = text
         return self._result(text, final, spans, "rewrite")
@@ -188,7 +196,10 @@ class Compressor:
             method = "heuristic"
         else:
             result = await self.client.chat(compression_messages(masked), temperature=0.0)
-            final, ok = reinject(result.content.strip(), spans)
+            raw = result.content.strip()
+            if (raw.startswith('"') and raw.endswith('"')) or (raw.startswith("'") and raw.endswith("'")):
+                raw = raw[1:-1].strip()
+            final, ok = reinject(raw, spans)
             method = "model"
             if not ok:
                 final = text
@@ -199,35 +210,75 @@ class Compressor:
         return self._result(text, final, spans, method, drops)
 
     async def compress(self, text: str) -> CompressResult:
+        if not text or not text.strip():
+            return self._result(text, text, [], "heuristic")
+
+        # 1. Distilled pre-computed checkpoint
         if text in self.distilled_map:
             return self.compress_distilled(text)
-        if self.use_crf and self._linguistic is not None:
-            res = self.compress_crf(text)
-            if res.method == "crf" and res.ratio < 1.0:
-                return res
-            # CRF unavailable (heuristic-labelled) or no compression -> chain.
-        if self.use_llmlingua2:
-            res = self.compress_llmlingua2(text)
-            if res.method == "llmlingua2":
-                return res
-            # Trained path unavailable/failed → continue down the chain.
+
+        # Skip model rewrite for minimal 1-2 token messages (e.g. 'hello', 'namaste')
+        tokens = text.split()
+        if len(tokens) <= 2:
+            if self.use_crf and self._linguistic is not None:
+                res = self.compress_crf(text)
+                if res.method == "crf" and res.ratio < 1.0:
+                    return res
+            return self.compress_heuristic(text)
+
+        # 2. Intelligent model rewrite path (runs when live / not dry_run)
         if self.use_model:
-            # Rewrite path first: constrained LLM compression with Judge-A
-            # protected terms. Served only if spans reinject cleanly AND the
-            # rewrite is actually shorter; otherwise continue down the chain.
-            # (No reward gate here — no reference exists at serve time. The
-            # gate runs in evaluation, where references exist.)
             try:
                 from gateway.modules.m2_compressor.safety_span import detect_spans as _spans
 
                 prot = [sp.text for sp in _spans(text)]
-                prot += [t for t in text.split() if t.lower().strip(",.!?") in
-                         {"nahi", "nahin", "nhi", "nai", "ni", "not", "never", "n't", "mat",
-                          "kya", "kahan", "kidhar", "kaise", "kab", "kyun", "kyu", "kaun"}]
+                prot += [
+                    t
+                    for t in text.split()
+                    if t.lower().strip(",.!?")
+                    in {
+                        "nahi",
+                        "nahin",
+                        "nhi",
+                        "nai",
+                        "ni",
+                        "not",
+                        "never",
+                        "n't",
+                        "mat",
+                        "kya",
+                        "kahan",
+                        "kidhar",
+                        "kaise",
+                        "kab",
+                        "kyun",
+                        "kyu",
+                        "kaun",
+                    }
+                ]
                 rw = await self.compress_rewrite(text, prot)
                 if rw.method == "rewrite" and rw.ratio < 1.0:
                     return rw
             except Exception:
                 pass
-            return await self.compress_model(text)
+            try:
+                m = await self.compress_model(text)
+                if m.method == "model" and m.ratio < 1.0:
+                    return m
+            except Exception:
+                pass
+
+        # 3. CRF linguistic compressor (offline / dry-run / fallback)
+        if self.use_crf and self._linguistic is not None:
+            res = self.compress_crf(text)
+            if res.method == "crf" and res.ratio < 1.0:
+                return res
+
+        # 4. LLMLingua-2 trained baseline
+        if self.use_llmlingua2:
+            res = self.compress_llmlingua2(text)
+            if res.method == "llmlingua2":
+                return res
+
+        # 5. Heuristic fallback
         return self.compress_heuristic(text)
