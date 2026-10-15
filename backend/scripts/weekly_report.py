@@ -105,6 +105,11 @@ def main() -> None:
         per_owner[t["owner"]][1] += 1
         per_owner[t["owner"]][0] += t["done"]
     cm = commits(week["start"], week["end"])
+    # Roadmap owners are first names; git authors are full names.
+    for author in list(cm):
+        owner = next((o for o in per_owner if o != "All" and author.lower().startswith(o.lower())), None)
+        if owner:
+            cm[owner] = cm.get(owner, []) + cm.pop(author)
     tests = "skipped" if args.skip_tests else run_tests()
     bench = bench_status()
     nxt = next((w for w in weeks if w["n"] == week["n"] + 1), None)
