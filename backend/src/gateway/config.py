@@ -44,10 +44,10 @@ class Settings(BaseSettings):
     telegram_webhook_secret: str = ""
     public_url: str = "http://127.0.0.1:8000"
 
-    cheap: TierConfig = TierConfig(
-        model="llama-3.1-8b-instant", base_url="https://api.groq.com/openai/v1"
-    )
-    premium: TierConfig = TierConfig(model="gpt-4o", base_url="https://api.openai.com/v1")
+    # Defaults match the study pair (Groq free tier); llama-3.1-8b-instant was
+    # retired by Groq and gpt-4o needs a paid key. backend/.env overrides both.
+    cheap: TierConfig = TierConfig(model="openai/gpt-oss-20b", base_url="https://api.groq.com/openai/v1")
+    premium: TierConfig = TierConfig(model="openai/gpt-oss-120b", base_url="https://api.groq.com/openai/v1")
     # Ollama tag; HF hub id is Qwen/Qwen3-0.6B (see grpo_config.py)
     local: TierConfig = TierConfig(model="qwen3:0.6b", base_url="http://localhost:11434/v1")
 

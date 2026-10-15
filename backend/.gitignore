@@ -26,3 +26,6 @@ experiments/token_study/config.yaml
 results/
 # autonomous router-track pipeline (free Groq labels, proxy tiers) — all generated
 data/router_track/
+
+# Benchmark run data (share via Drive; see backend/scripts/bench/README.md)
+data/bench/

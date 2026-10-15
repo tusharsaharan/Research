@@ -136,6 +136,32 @@ def code_mix_ratio(text: str) -> float:
     return round(hindi / n, 6)
 
 
+LANGUAGE_GROUPS = ("english", "hinglish", "mixed_script")
+# Short particles that are also common English words; they never decide a group alone.
+_AMBIGUOUS = frozenset({"hi", "me", "par", "se", "ko", "na", "the"})
+
+
+def language_group(text: str) -> str:
+    """Language group used for group-conditional (Mondrian) routing guarantees.
+
+    A fixed, documented rule — the guarantee holds for groups *as defined
+    here*, so its accuracy must be measured on hand-labelled queries:
+      mixed_script — any Devanagari token;
+      hinglish     — at least two romanized-Hindi tokens that are not
+                     ambiguous English words;
+      english      — everything else.
+    """
+    tokens = text.split()
+    if any(_DEVANAGARI.search(t) for t in tokens):
+        return "mixed_script"
+    hits = 0
+    for t in tokens:
+        low = t.lower().strip(",.!?;:\"'()[]{}")
+        if low not in _AMBIGUOUS and (low in _HINGLISH_TOKENS or low in _PARTICLES):
+            hits += 1
+    return "hinglish" if hits >= 2 else "english"
+
+
 def code_mix_detail(text: str) -> dict[str, int | float]:
     """Explain the ratio for debugging / eval tables."""
     tokens = text.split()

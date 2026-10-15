@@ -20,6 +20,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+
 
 def _artifacts_dir(data_dir: Path | str | None = None) -> Path:
     if data_dir is None:
@@ -38,6 +40,7 @@ class LearnedScorer:
         self.data_dir = Path(data_dir) if data_dir else None
         self.artifacts = _artifacts_dir(data_dir)
         self._clf = None
+        self._encoder = None  # lazy SentenceTransformer; False once known unavailable
         self._backend = "heuristic"
         try:
             import pickle
@@ -64,23 +67,41 @@ class LearnedScorer:
             len(text.split()) / 50.0,
         ]
 
+    def _embed(self, text: str) -> list[float] | None:
+        """Same encoder and normalisation as training (run04_supervised.py)."""
+        if self._encoder is None:
+            try:
+                from sentence_transformers import SentenceTransformer
+
+                self._encoder = SentenceTransformer(EMBEDDING_MODEL)
+            except Exception:
+                self._encoder = False
+        if self._encoder is False:
+            return None
+        return [float(v) for v in self._encoder.encode([text], normalize_embeddings=True)[0]]
+
     def predict_proba_fail(self, text: str) -> float:
-        """Return P(cheap fails|x) in [0,1]."""
+        """Return P(cheap fails|x) in [0,1].
+
+        Scores must come from the exact features the thresholds were calibrated
+        on. If the embedding encoder is unavailable we fall back to the
+        heuristic scorer (and say so in ``backend``) instead of zero-padding,
+        which would silently produce uncalibrated scores.
+        """
         if self._clf is None:
             return float(self.heuristic.score(text))
         try:
-            # logreg was trained on [5 heuristic + 384 MiniLM]; without an
-            # encoder available offline, use heuristic-only columns if dims mismatch.
             feats = self._featurize_heuristic(text)
             n_expected = int(self._clf.coef_.shape[1])
-            if n_expected == len(feats):
-                p = float(self._clf.predict_proba([feats])[0, 1])
-            elif n_expected > len(feats):
-                # pad missing embedding dims with zeros (documented degradation)
-                row = feats + [0.0] * (n_expected - len(feats))
-                p = float(self._clf.predict_proba([row])[0, 1])
-            else:
-                p = float(self.heuristic.score(text))
+            if n_expected > len(feats):
+                emb = self._embed(text)
+                if emb is None or len(feats) + len(emb) != n_expected:
+                    self._backend = "heuristic (encoder unavailable)"
+                    return float(self.heuristic.score(text))
+                feats = feats + emb
+            elif n_expected < len(feats):
+                return float(self.heuristic.score(text))
+            p = float(self._clf.predict_proba([feats])[0, 1])
             return min(1.0, max(0.0, p))
         except Exception:
             return float(self.heuristic.score(text))

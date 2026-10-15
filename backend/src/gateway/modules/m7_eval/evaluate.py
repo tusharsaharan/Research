@@ -6,7 +6,14 @@ from collections import Counter
 from difflib import SequenceMatcher
 from pathlib import Path
 
-from gateway.pricing import CHEAP_PER_1K_USD, FX_INR_PER_USD, PREMIUM_PER_1K_USD
+from gateway.pricing import (
+    CHEAP_OUT_PER_1K_USD,
+    CHEAP_PER_1K_USD,
+    FX_INR_PER_USD,
+    PREMIUM_OUT_PER_1K_USD,
+    PREMIUM_PER_1K_USD,
+    estimate_cost_usd,
+)
 from gateway.schemas import EvalRecord, EvalResult, EvalSummary
 from gateway.tokenizer import TokenCounter
 
@@ -99,6 +106,8 @@ class HinglishEvaluator:
         self.counter = counter or TokenCounter()
         self.premium_per_1k = premium_per_1k
         self.cheap_per_1k = cheap_per_1k
+        self.premium_out_per_1k = PREMIUM_OUT_PER_1K_USD
+        self.cheap_out_per_1k = CHEAP_OUT_PER_1K_USD
         self.fx_rate_inr_per_usd = fx_rate_inr_per_usd
         self.bleu, self.rouge_l = _load_metric_functions()
         self._embedder = embedder  # lazy: resolved on first score() so eval never breaks offline
@@ -118,10 +127,12 @@ class HinglishEvaluator:
         tok_comp = self.counter.count(rec.compressed)
         savings_ratio = max(0.0, 1.0 - tok_comp / max(1, tok_orig))
 
-        baseline = (
-            (tok_orig + self.counter.count(rec.reference_answer)) * self.premium_per_1k / 1000.0
+        baseline = estimate_cost_usd(
+            tok_orig, self.counter.count(rec.reference_answer), self.premium_per_1k, self.premium_out_per_1k
         )
-        actual = (tok_comp + self.counter.count(rec.predicted_answer)) * self.cheap_per_1k / 1000.0
+        actual = estimate_cost_usd(
+            tok_comp, self.counter.count(rec.predicted_answer), self.cheap_per_1k, self.cheap_out_per_1k
+        )
         savings = max(0.0, baseline - actual)
 
         span_preserved = all(p in rec.compressed for p in rec.protected)
