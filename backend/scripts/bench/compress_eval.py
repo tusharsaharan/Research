@@ -183,18 +183,23 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=20261016)
     ap.add_argument("--llmlingua", action="store_true", help="add LLMLingua-2 (bert-base multilingual) at keep-rates 0.7 and 0.5; ~1 h on CPU")
     ap.add_argument("--shard", default=None, help="i/n: process every n-th prompt (run n processes in parallel)")
+    ap.add_argument("--methods", default=None, help="comma list: run only these methods")
+    ap.add_argument("--tag", default="", help="row-file tag so new runs don't overwrite old shards")
     ap.add_argument("--summarize", action="store_true", help="only rebuild the summary from all row files")
     args = ap.parse_args()
 
     toks = load_tokenizers()
     if args.summarize:
         agg: dict = defaultdict(lambda: defaultdict(float))
-        files = sorted(BENCH.glob("compress_rows.shard*.jsonl")) or [OUT_ROWS]
+        files = sorted(BENCH.glob("compress_rows.*shard*.jsonl")) or [OUT_ROWS]
         n_prompts = set()
         texts = {p["pid"]: p["text"] for p in build_prompts(args.n, args.seed)}
         for f in files:
             for line in f.open(encoding="utf-8"):
-                row = json.loads(line)
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError:
+                    continue  # partial line from an interrupted run
                 orig = texts.get(row["pid"])
                 if orig is not None:  # recompute checks with the current metric code
                     row |= survive(orig, row["compressed"] if row["changed"] else orig)
@@ -224,12 +229,26 @@ def main() -> None:
         **{f"crf+tokopt[{n}]": (lambda t, f=f: f(comp.compress_crf(t).compressed)) for n, f in norms.items()},
     }
     if args.llmlingua:
-        methods |= {"llmlingua2+spans@0.7": lingua(0.7), "llmlingua2+spans@0.5": lingua(0.5)}
+        from gateway.modules.m2_compressor.guarded import compress_guarded
+        from gateway.modules.m2_compressor.llmlingua2 import get_compressor
+
+        def guarded(rate: float):
+            def f(t: str) -> str:
+                out = compress_guarded(t, rate, get_compressor())
+                return out if out else t
+            return f
+
+        methods |= {"llmlingua2+spans@0.7": lingua(0.7), "llmlingua2+spans@0.5": lingua(0.5),
+                    "guarded@0.7": guarded(0.7), "guarded@0.5": guarded(0.5), "guarded@0.4": guarded(0.4),
+                    "guarded@0.5+tokopt": (lambda t, g=guarded(0.5), f=norms["o200k"]: f(g(t)))}
+    if args.methods:
+        keep = set(args.methods.split(","))
+        methods = {k: v for k, v in methods.items() if k in keep}
     rows_path = OUT_ROWS
     if args.shard:
         i_s, n_s = (int(x) for x in args.shard.split("/"))
         prompts = prompts[i_s - 1 :: n_s]
-        rows_path = BENCH / f"compress_rows.shard{i_s}.jsonl"
+        rows_path = BENCH / f"compress_rows.{args.tag + '.' if args.tag else ''}shard{i_s}.jsonl"
     crf_live = comp.compress_crf(prompts[0]["text"]).method == "crf"
     print(f"{len(prompts)} prompts | tokenizers {list(toks)} | crf model loaded: {crf_live}")
     print("tokopt rewrite rules:", {n: len(f.best) for n, f in norms.items()})
@@ -237,12 +256,27 @@ def main() -> None:
     def ntok(text: str) -> dict:
         return {n: len(t.encode(text, add_special_tokens=False).ids) for n, t in toks.items()}
 
-    rows_path.write_text("", encoding="utf-8")
+    done: set = set()
+    if args.shard and rows_path.exists():  # resume: keep rows from an interrupted run
+        for line in rows_path.open(encoding="utf-8"):
+            try:
+                r = json.loads(line)
+                done.add((r["pid"], r["method"]))
+            except json.JSONDecodeError:
+                pass  # half-written last line
+        if rows_path.read_bytes()[-1:] not in (b"", b"\n"):
+            with rows_path.open("a", encoding="utf-8") as fh0:
+                fh0.write("\n")
+        print(f"resuming: {len(done)} rows already done")
+    else:
+        rows_path.write_text("", encoding="utf-8")
     agg: dict = defaultdict(lambda: defaultdict(float))
     with rows_path.open("a", encoding="utf-8") as fh:
         for i, p in enumerate(prompts, 1):
             base = ntok(p["text"])
             for m, fn in methods.items():
+                if (p["pid"], m) in done:
+                    continue
                 t0 = time.perf_counter()
                 out = fn(p["text"])
                 ms = (time.perf_counter() - t0) * 1000

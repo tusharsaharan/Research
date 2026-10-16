@@ -69,6 +69,7 @@ class LLMLingua2Compressor:
         masked_texts: list[str],
         markers_per_text: list[list[str]],
         rate: float = 0.5,
+        extra_force: list[str] | None = None,
     ) -> list[str | None]:
         """Compress pre-masked texts. Returns compressed strings or None per row.
 
@@ -84,7 +85,7 @@ class LLMLingua2Compressor:
             comp = self._ensure()
             # Union of markers across the batch; preservation is token-string
             # based so shared [[PSi]] names are safe across rows.
-            force = sorted({m for markers in markers_per_text for m in markers})[:MAX_FORCE_MARKERS]
+            force = sorted({m for markers in markers_per_text for m in markers} | set(extra_force or []))[:MAX_FORCE_MARKERS]
             out = comp.compress_prompt(
                 masked_texts,
                 rate=rate,
