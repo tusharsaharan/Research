@@ -114,6 +114,51 @@ liya phir chal raha karun" (meaning inverted). Whether these edits change
 answers is what `compress_answers.py` measures; that is the paper's key
 compression result (pending, API-limited).
 
+## Guarded LLMLingua-2 (added 2026-10-17)
+
+`guarded@r` (`backend/src/gateway/modules/m2_compressor/guarded.py`): LLMLingua-2
+with (1) negations and question words forced to stay, (2) multiple-choice
+options kept verbatim (only the stem is compressed), (3) numbers that the
+model split restored to their original spelling. Same 8,000 prompts. "Sim" =
+mean cosine similarity of multilingual-MiniLM embeddings, original vs
+compressed, over changed prompts (`sem_sim.py`).
+
+| Lang | Method | o200k kept | Negation lost | Question word lost | Numbers deleted | Sim | Sim < 0.80 |
+|---|---|---|---|---|---|---|---|
+| English | crf+tokopt[o200k] | 0.970 | 0.0% | 0.3% | 0.1% | 0.997 | 0.1% |
+| English | llmlingua2+spans@0.7 | 0.665 | 23.2% | 64.3% | 0.0% | 0.910 | 2.2% |
+| English | guarded@0.7 | 0.784 | 0.0% | 0.0% | 0.0% | 0.936 | 1.0% |
+| English | llmlingua2+spans@0.5 | 0.473 | 58.9% | 94.9% | 0.8% | 0.835 | 24.9% |
+| English | guarded@0.5 | 0.654 | 0.0% | 0.0% | 0.2% | 0.879 | 12.8% |
+| English | guarded@0.4 | 0.595 | 0.0% | 0.0% | 0.5% | 0.840 | 28.0% |
+| Hinglish | crf+tokopt[o200k] | 0.942 | 0.4% | 0.2% | 0.1% | 0.969 | 0.6% |
+| Hinglish | llmlingua2+spans@0.7 | 0.691 | 21.7% | 36.7% | 0.4% | 0.899 | 4.0% |
+| Hinglish | guarded@0.7 | 0.689 | 0.0% | 0.1% | 0.4% | 0.899 | 3.8% |
+| Hinglish | llmlingua2+spans@0.5 | 0.503 | 57.0% | 73.4% | 1.0% | 0.812 | 36.2% |
+| Hinglish | guarded@0.5 | 0.501 | 0.0% | 0.3% | 1.0% | 0.814 | 35.5% |
+| Hinglish | guarded@0.4 | 0.410 | 0.0% | 0.3% | 1.2% | 0.763 | 64.0% |
+
+Finding 7: on Hinglish the guards cost **no compression** (0.501 vs 0.503
+kept at r = 0.5) and remove all negation loss and almost all question-word
+loss. On English the cost is the verbatim options (0.654 vs 0.473 kept).
+
+Finding 8: **embedding similarity does not see the difference.** Guarded and
+plain score the same similarity on Hinglish (0.814 vs 0.812) even though one
+deletes negations in 57% of prompts and the other in 0%. Sentence-embedding
+similarity — a common "meaning preserved" metric — is blind to negation and
+question-word deletion, so it cannot certify compression safety. This
+justifies unit-level checks plus answer-level evaluation (pending).
+
+`tokopt` adds nothing on top of guarded@0.5 under o200k (0.498 vs 0.501).
+
+Spot checks (AGENTS.md rule): (a) embedding blindness confirmed directly —
+"mera phone kaam nahi kar raha hai" vs the same without "nahi": similarity
+0.872, while an opposite-meaning paraphrase scores 0.917. (b) The guarded
+number deletions (0.2–1.2%) are real: numbers fused with units were dropped
+("5kg aur 7kg" → "5kg aur", "1tbsp", "10am"), because LLMLingua-2 only
+protects pure-digit tokens. Fixed 2026-10-17 by forcing every word that
+contains a digit; the guarded rows above predate the fix (re-run queued).
+
 ## Novel research directions for compression
 
 **R1. Task-altering edits as the safety metric, certified per language.**

@@ -242,9 +242,9 @@ def main() -> None:
                     "guarded@0.7": guarded(0.7), "guarded@0.5": guarded(0.5), "guarded@0.4": guarded(0.4),
                     "guarded@0.5+tokopt": (lambda t, g=guarded(0.5), f=norms["o200k"]: f(g(t)))}
         for name in (args.methods or "").split(","):  # any keep-rate on request, e.g. guarded@0.3
-            m = re.fullmatch(r"(guarded|llmlingua2\+spans)@(0\.\d+)", name)
+            m = re.fullmatch(r"(guarded2?|llmlingua2\+spans)@(0\.\d+)", name)
             if m and name not in methods:
-                methods[name] = guarded(float(m[2])) if m[1] == "guarded" else lingua(float(m[2]))
+                methods[name] = guarded(float(m[2])) if m[1].startswith("guarded") else lingua(float(m[2]))
     if args.methods:
         keep = set(args.methods.split(","))
         methods = {k: v for k, v in methods.items() if k in keep}

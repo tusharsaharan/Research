@@ -31,6 +31,12 @@ def _guard_words(text: str) -> list[str]:
     for w in re.findall(r"[A-Za-z']+", text):
         if w.lower() in NEGATIONS or w.lower() in QUESTION_WORDS:
             out.add(w)
+    # Numbers fused with units ("7kg", "1tbsp", "10am", "5th"): LLMLingua-2's
+    # force_reserve_digit only keeps pure-digit tokens, so these were dropped.
+    for w in text.split():
+        w = w.strip(",.!?;:\"'()[]{}")
+        if any(ch.isdigit() for ch in w):
+            out.add(w)
     return sorted(out)
 
 
