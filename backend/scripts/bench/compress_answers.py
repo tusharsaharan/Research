@@ -44,7 +44,23 @@ def build_methods() -> dict:
         "heuristic": lambda t: comp.compress_heuristic(t).compressed,
         "crf": lambda t: comp.compress_crf(t).compressed,
         "crf+tokopt": lambda t: norm(comp.compress_crf(t).compressed),
+        # same keep-rate, with and without meaning guards: does deleting negations /
+        # question words / option labels actually cost correct answers?
+        "llmlingua2@0.5": lambda t: _lingua(comp, t, 0.5),
+        "guarded@0.5": lambda t: _guarded(t, 0.5),
     }
+
+
+def _lingua(comp, t: str, rate: float) -> str:
+    r = comp.compress_llmlingua2(t, rate=rate)
+    return r.compressed if r.method == "llmlingua2" else t
+
+
+def _guarded(t: str, rate: float) -> str:
+    from gateway.modules.m2_compressor.guarded import compress_guarded
+    from gateway.modules.m2_compressor.llmlingua2 import get_compressor
+
+    return compress_guarded(t, rate, get_compressor()) or t
 
 
 def report() -> None:
@@ -95,7 +111,7 @@ def report() -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--methods", default="crf,crf+tokopt")
+    ap.add_argument("--methods", default="guarded@0.5,llmlingua2@0.5,crf+tokopt")
     ap.add_argument("--daily-token-budget", type=int, default=160_000, help="cheap-model tokens/day total cap")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--report", action="store_true")
