@@ -11,9 +11,44 @@
 
 <!-- LOVABLE:END -->
 
-# Working rules for AI agents (read first)
+# Working rules for AI agents (read first — these are strict)
 
 The owner is on a limited plan. **Spend tokens like they are money.**
+
+## Start and end of every session (no lost context)
+
+1. Read, in this order and nothing else first: this file, the last 30 lines of
+   `docs/progress/AGENT_LOG.md`, then the current week in `docs/progress/ROADMAP.md`.
+2. Research context lives in `docs/research/`: `PREREG.md` (hypotheses, frozen
+   settings), `COMPRESSION_STUDY.md`, `ROUTER_COMPRESSOR_REPORT.md`, `DECISIONS.md`.
+   Never change pre-registered settings without adding a dated change-log line.
+3. Before ending (or when context runs long), append to `AGENT_LOG.md`:
+   date · what was done (commits) · what is running (job, log file) · next step.
+   Max 6 lines. This file is the handoff; keep it accurate.
+4. Commit finished work locally with a clear message; never push unless asked.
+
+## Doing the work well
+
+- Results must be traceable: every number in a doc comes from a file in
+  `backend/data/bench/` produced by a committed script. Say "pending" otherwise.
+- Check suspicious metrics on 2–3 real examples before reporting them (several
+  "failures" so far were metric bugs).
+- CPU jobs: use all cores via `--shard i/n` processes (14 cores here; keep
+  ≥ 1.5 GB free RAM per LLMLingua-2 process). Start them in the background,
+  write output to a log file, and do not poll.
+- API jobs only through `run_daily.py` (scheduled 06:00).
+
+## Which agent for which job
+
+| Job | Agent / model |
+|---|---|
+| Find files or symbols across the repo | built-in Grep/Glob; `Explore` agent (Haiku) only if many places |
+| Mechanical edits, running scripts, reading logs | main session on Haiku or Sonnet, low effort |
+| New scripts, bug fixes, gateway wiring, tests | Sonnet |
+| Statistical guarantees, proofs, experiment design, paper text | Opus |
+| Parallel CPU work | shell processes (`--shard`), never sub-agents |
+
+Sub-agents and side sessions only when the user asks for them by name.
 
 ## Token discipline
 

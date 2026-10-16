@@ -60,8 +60,28 @@ _NUM = re.compile(r"\d+(?:[.,]\d+)*")
 _OPT = re.compile(r"(?<![A-Za-z])([A-H])\)")
 
 
+class _TiktokenShim:
+    """tiktoken behind the tokenizers.Tokenizer interface used here (.encode(...).ids)."""
+
+    class _Enc:
+        def __init__(self, ids):
+            self.ids = ids
+
+    def __init__(self, name: str) -> None:
+        import tiktoken
+
+        self._e = tiktoken.get_encoding(name)
+
+    def encode(self, text: str, add_special_tokens: bool = False):
+        return self._Enc(self._e.encode(text, disallowed_special=()))
+
+
 def load_tokenizers() -> dict[str, Tokenizer]:
     out = {}
+    try:  # gpt-oss / GPT-4o family tokenizer: the serving models' own token counts
+        out["o200k"] = _TiktokenShim("o200k_base")
+    except Exception:
+        pass
     for name, repo in TOKENIZERS.items():
         files = glob.glob(str(HF / repo / "snapshots" / "*" / "tokenizer.json"))
         if files:
@@ -100,10 +120,30 @@ def build_prompts(n: int, seed: int) -> list[dict]:
     return prompts[:n] if len(prompts) > n else prompts
 
 
+_LETTER = re.compile(r"(?<![A-Za-z])([A-H])(?:\)|\s)")
+
+
+def _digits(t: str) -> str:
+    """All digits in order. Equal digit sequences = numbers only reformatted
+    ('$ 5. 50', '10, 440, 000'), not deleted or changed."""
+    return "".join(re.findall(r"\d", t))
+
+
+def _in_order(labels: list[str], seen: list[str]) -> bool:
+    """All option labels appear in order (other capital letters in between are fine)."""
+    it = iter(seen)
+    return all(lab in it for lab in labels)
+
+
 def survive(orig: str, comp: str) -> dict:
     o_num, c_num = _NUM.findall(orig), _NUM.findall(comp)
+    labels = _OPT.findall(orig)
     return {
         "numbers_kept": sorted(o_num) == sorted(c_num) if o_num else None,
+        # same digits in the same order: reformatted at most, not deleted
+        "numbers_present": _digits(orig) == _digits(comp) if o_num else None,
+        # option letters still present in order, even without the ")" (A amount ... B distance ...)
+        "option_letters_kept": _in_order(labels, _LETTER.findall(comp + " ")) if labels else None,
         "neg_in": count_set(orig, NEG), "neg_out": count_set(comp, NEG),
         "qw_in": count_set(orig, QW), "qw_out": count_set(comp, QW),
         "postp_in": count_set(orig, POSTP), "postp_out": count_set(comp, POSTP),
@@ -112,13 +152,55 @@ def survive(orig: str, comp: str) -> dict:
     }
 
 
+def add(agg: dict, row: dict, toks) -> None:
+    s, m = row, row["method"]
+    for key in (f"{row['source']}|{row['lang']}|{m}", f"ALL|{row['lang']}|{m}"):
+        a = agg[key]
+        a["n"] += 1
+        a["changed"] += row["changed"]
+        a["ms"] += row["ms"]
+        for tn in toks:
+            a[f"before_{tn}"] += row["tokens_before"][tn]
+            a[f"after_{tn}"] += row["tokens_after"][tn]
+        if s["numbers_kept"] is not None:
+            a["num_n"] += 1
+            a["num_ok"] += s["numbers_kept"]
+        if s["options_kept"] is not None:
+            a["opt_n"] += 1
+            a["opt_ok"] += s["options_kept"]
+            a["optl_ok"] += s["option_letters_kept"]
+        if s["numbers_present"] is not None:
+            a["nump_ok"] += s["numbers_present"]
+        for unit in ("neg", "qw", "postp", "na"):
+            if s[f"{unit}_in"]:
+                a[f"{unit}_prompts"] += 1
+                a[f"{unit}_lost_prompts"] += s[f"{unit}_out"] < s[f"{unit}_in"]
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=8000)
     ap.add_argument("--seed", type=int, default=20261016)
+    ap.add_argument("--llmlingua", action="store_true", help="add LLMLingua-2 (bert-base multilingual) at keep-rates 0.7 and 0.5; ~1 h on CPU")
+    ap.add_argument("--shard", default=None, help="i/n: process every n-th prompt (run n processes in parallel)")
+    ap.add_argument("--summarize", action="store_true", help="only rebuild the summary from all row files")
     args = ap.parse_args()
 
     toks = load_tokenizers()
+    if args.summarize:
+        agg: dict = defaultdict(lambda: defaultdict(float))
+        files = sorted(BENCH.glob("compress_rows.shard*.jsonl")) or [OUT_ROWS]
+        n_prompts = set()
+        texts = {p["pid"]: p["text"] for p in build_prompts(args.n, args.seed)}
+        for f in files:
+            for line in f.open(encoding="utf-8"):
+                row = json.loads(line)
+                orig = texts.get(row["pid"])
+                if orig is not None:  # recompute checks with the current metric code
+                    row |= survive(orig, row["compressed"] if row["changed"] else orig)
+                n_prompts.add(row["pid"])
+                add(agg, row, toks)
+        return write_summary(agg, toks, len(n_prompts), None, {})
     prompts = build_prompts(args.n, args.seed)
     # TokOpt vocabularies are learned from the Hinglish-Instruct corpus only (not the evaluated gold items).
     with HINGLISH_INSTRUCT.open(encoding="utf-8-sig") as fh:
@@ -126,15 +208,28 @@ def main() -> None:
     english = [p["text"] for p in prompts if p["lang"] == "english" and p["source"] != "hinglish-instruct"]
     norms = {name: TokOptNormalizer(t, corpus, english) for name, t in toks.items() if name != "bert-en"}
 
-    comp = Compressor(counter=TokenCounter(), use_crf=True,
+    comp = Compressor(counter=TokenCounter(), use_crf=True, use_llmlingua2=args.llmlingua,
                       crf_model_path=BACKEND / "data" / "models" / "crf_compressor.pkl",
                       tfidf_path=BACKEND / "data" / "tfidf" / "hinglish_idf.json")
+    def lingua(rate: float):
+        def f(t: str) -> str:
+            r = comp.compress_llmlingua2(t, rate=rate)
+            return r.compressed if r.method == "llmlingua2" else t
+        return f
+
     methods = {
         "heuristic": lambda t: comp.compress_heuristic(t).compressed,
         "crf": lambda t: comp.compress_crf(t).compressed,
         **{f"tokopt[{n}]": (lambda t, f=f: f(t)) for n, f in norms.items()},
         **{f"crf+tokopt[{n}]": (lambda t, f=f: f(comp.compress_crf(t).compressed)) for n, f in norms.items()},
     }
+    if args.llmlingua:
+        methods |= {"llmlingua2+spans@0.7": lingua(0.7), "llmlingua2+spans@0.5": lingua(0.5)}
+    rows_path = OUT_ROWS
+    if args.shard:
+        i_s, n_s = (int(x) for x in args.shard.split("/"))
+        prompts = prompts[i_s - 1 :: n_s]
+        rows_path = BENCH / f"compress_rows.shard{i_s}.jsonl"
     crf_live = comp.compress_crf(prompts[0]["text"]).method == "crf"
     print(f"{len(prompts)} prompts | tokenizers {list(toks)} | crf model loaded: {crf_live}")
     print("tokopt rewrite rules:", {n: len(f.best) for n, f in norms.items()})
@@ -142,9 +237,9 @@ def main() -> None:
     def ntok(text: str) -> dict:
         return {n: len(t.encode(text, add_special_tokens=False).ids) for n, t in toks.items()}
 
-    OUT_ROWS.write_text("", encoding="utf-8")
+    rows_path.write_text("", encoding="utf-8")
     agg: dict = defaultdict(lambda: defaultdict(float))
-    with OUT_ROWS.open("a", encoding="utf-8") as fh:
+    with rows_path.open("a", encoding="utf-8") as fh:
         for i, p in enumerate(prompts, 1):
             base = ntok(p["text"])
             for m, fn in methods.items():
@@ -154,31 +249,20 @@ def main() -> None:
                 after = ntok(out)
                 s = survive(p["text"], out)
                 row = {**{k: p[k] for k in ("pid", "source", "lang", "task")}, "method": m, "ms": round(ms, 2),
-                       "tokens_before": base, "tokens_after": after, "changed": out != p["text"], **s}
+                       "tokens_before": base, "tokens_after": after, "changed": out != p["text"], **s,
+                       "compressed": out if out != p["text"] else None}
                 fh.write(json.dumps(row, ensure_ascii=False) + "\n")
-                for key in (f"{p['source']}|{p['lang']}|{m}", f"ALL|{p['lang']}|{m}"):
-                    a = agg[key]
-                    a["n"] += 1
-                    a["changed"] += row["changed"]
-                    a["ms"] += ms
-                    for tn in toks:
-                        a[f"before_{tn}"] += base[tn]
-                        a[f"after_{tn}"] += after[tn]
-                    if s["numbers_kept"] is not None:
-                        a["num_n"] += 1
-                        a["num_ok"] += s["numbers_kept"]
-                    if s["options_kept"] is not None:
-                        a["opt_n"] += 1
-                        a["opt_ok"] += s["options_kept"]
-                    for unit in ("neg", "qw", "postp", "na"):
-                        if s[f"{unit}_in"]:
-                            a[f"{unit}_prompts"] += 1
-                            a[f"{unit}_lost_prompts"] += s[f"{unit}_out"] < s[f"{unit}_in"]
-                            a[f"{unit}_in"] += s[f"{unit}_in"]
-                            a[f"{unit}_out"] += min(s[f"{unit}_out"], s[f"{unit}_in"])
+                add(agg, row, toks)
             if i % 1000 == 0:
                 print(f"  {i}/{len(prompts)}")
 
+    if args.shard:
+        print("rows ->", rows_path, "(run --summarize after all shards finish)")
+        return
+    write_summary(agg, toks, len(prompts), crf_live, {n: len(f.best) for n, f in norms.items()})
+
+
+def write_summary(agg, toks, n_prompts, crf_live, rules) -> None:
     summary = {}
     for key, a in sorted(agg.items()):
         src, lang, m = key.split("|")
@@ -188,23 +272,25 @@ def main() -> None:
         for tn in toks:
             r[f"kept_ratio_{tn}"] = round(a[f"after_{tn}"] / max(a[f"before_{tn}"], 1), 4)
         r["numbers_kept_rate"] = round(a["num_ok"] / a["num_n"], 4) if a["num_n"] else None
+        r["numbers_present_rate"] = round(a["nump_ok"] / a["num_n"], 4) if a["num_n"] else None
         r["options_kept_rate"] = round(a["opt_ok"] / a["opt_n"], 4) if a["opt_n"] else None
+        r["option_letters_kept_rate"] = round(a["optl_ok"] / a["opt_n"], 4) if a["opt_n"] else None
         for unit in ("neg", "qw", "postp", "na"):
             pn = a[f"{unit}_prompts"]
             r[f"{unit}_prompts"] = int(pn)
             r[f"{unit}_loss_rate"] = round(a[f"{unit}_lost_prompts"] / pn, 4) if pn else None
         summary[key] = r
-    OUT_SUMMARY.write_text(json.dumps({"n_prompts": len(prompts), "tokenizers": list(toks), "crf_model_loaded": crf_live,
-                                       "tokopt_rules": {n: len(f.best) for n, f in norms.items()},
+    OUT_SUMMARY.write_text(json.dumps({"n_prompts": n_prompts, "tokenizers": list(toks), "crf_model_loaded": crf_live,
+                                       "tokopt_rules": rules,
                                        "rows": summary}, indent=2), encoding="utf-8")
 
-    print(f"\n{'lang':9} {'method':22} {'n':>5} {'chg':>5} {'qwen':>6} {'xlmr':>6} {'bert':>6} {'num':>6} {'opt':>6} {'negLost':>7} {'qwLost':>7}")
+    print(f"\n{'lang':9} {'method':22} {'n':>5} {'chg':>5} {'o200k':>6} {'qwen':>6} {'xlmr':>6} {'num':>6} {'opt':>6} {'negLost':>7} {'qwLost':>7}")
     for key, r in summary.items():
         if not key.startswith("ALL|"):
             continue
         f = lambda v: "  -  " if v is None else f"{v:.3f}"  # noqa: E731
-        print(f"{r['lang']:9} {r['method']:22} {r['n']:>5} {r['changed_share']:.2f} {r.get('kept_ratio_qwen2.5', 0):>6.3f} "
-              f"{r.get('kept_ratio_xlmr', 0):>6.3f} {r.get('kept_ratio_bert-en', 0):>6.3f} {f(r['numbers_kept_rate']):>6} "
+        print(f"{r['lang']:9} {r['method']:22} {r['n']:>5} {r['changed_share']:.2f} {r.get('kept_ratio_o200k', 0):>6.3f} "
+              f"{r.get('kept_ratio_qwen2.5', 0):>6.3f} {r.get('kept_ratio_xlmr', 0):>6.3f} {f(r['numbers_kept_rate']):>6} "
               f"{f(r['options_kept_rate']):>6} {f(r['neg_loss_rate']):>7} {f(r['qw_loss_rate']):>7}")
     print("summary ->", OUT_SUMMARY)
 

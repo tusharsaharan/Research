@@ -1,0 +1,4 @@
+# Agent handoff log (append-only, newest last, ≤ 6 lines per entry)
+
+- 2026-10-15 · Fixed cost model, test isolation, bot token; built bench pipeline (GSM8K/ARC/MMLU, EN + Hinglish), certify.py, certified router in gateway, /research page, run_daily.py + Task Scheduler 06:00. Prereg committed. Prelim: cheap ≈ premium on GSM8K Hinglish (H1 not supported yet, n small).
+- 2026-10-16 · Compression study on 8,000 prompts (heuristic, CRF, tokopt, LLMLingua-2 @0.7/0.5; o200k/Qwen/XLM-R tokenizers) → docs/research/COMPRESSION_STUDY.md. Fixed CRF task-altering edits (numeric groups/quotes/math now protected spans). compress_eval.py has --shard/--summarize. Answer-level compression check runs daily (compress_answers.py). Next: simulation sweeps (sim_tax.py), then answer-level results when quota allows.

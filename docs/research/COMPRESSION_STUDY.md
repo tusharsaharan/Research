@@ -89,6 +89,31 @@ legitimately dropped as filler. Compressors join lines, so option labels are
 checked in order anywhere in the text. On ARC/MMLU, CRF counts as "changed" on
 every prompt partly because of that line joining.
 
+## Baseline: LLMLingua-2 (added 2026-10-16)
+
+`microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank`, run through
+the repo wrapper with protected spans forced (`llmlingua2+spans`), keep-rates
+0.7 and 0.5, same 8,000 prompts. Token ratios use o200k (the gpt-oss tokenizer).
+"Deleted" = digits / option labels no longer present; "reformatted" = same
+digits but split ("$5.50" → "$ 5. 50", "10,440,000" → "10, 440, 000").
+
+| Lang | Method | o200k kept | Numbers deleted | Numbers reformatted | Option labels deleted | Negation lost | Question word lost |
+|---|---|---|---|---|---|---|---|
+| English | crf | 0.970 | 0.1% | 0% | 0.5% | 0.0% | 0.3% |
+| English | llmlingua2+spans@0.7 | 0.665 | 0.0% | 13.3% | 26.6% | 23.2% | 64.3% |
+| English | llmlingua2+spans@0.5 | 0.473 | 0.8% | 13.2% | 88.1% | 58.9% | 94.9% |
+| Hinglish | crf+tokopt[o200k] | 0.942 | 0.1% | 0% | – | 0.4% | 0.2% |
+| Hinglish | llmlingua2+spans@0.7 | 0.691 | 0.4% | 7.7% | – | 21.7% | 36.7% |
+| Hinglish | llmlingua2+spans@0.5 | 0.503 | 1.0% | 7.7% | – | 57.0% | 73.4% |
+
+Finding 6: LLMLingua-2 compresses 6–10× more than CRF but deletes a negation
+in about one in five prompts that contain one at keep-rate 0.7 (both
+languages), and most question words. Example: "bhai mera phone kaam nahi kar
+raha hai … phir bhi nahi chal raha, kya karun?" → "mera raha Rs. 2,500 charger
+liya phir chal raha karun" (meaning inverted). Whether these edits change
+answers is what `compress_answers.py` measures; that is the paper's key
+compression result (pending, API-limited).
+
 ## Novel research directions for compression
 
 **R1. Task-altering edits as the safety metric, certified per language.**
