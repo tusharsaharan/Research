@@ -31,7 +31,10 @@ KERNEL_SLUG = "tokenopt-local-answers"
 
 
 def sh(*args: str, check: bool = True) -> str:
-    r = subprocess.run(["kaggle", *args], capture_output=True, text=True, encoding="utf-8")
+    import os
+
+    env = {**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"}  # Windows charmap crash on download
+    r = subprocess.run(["kaggle", *args], capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
     if check and r.returncode:
         raise SystemExit(f"kaggle {' '.join(args)} failed:\n{r.stdout}\n{r.stderr}")
     return r.stdout + r.stderr
@@ -62,10 +65,14 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--skip-prepare", action="store_true")
     ap.add_argument("--poll-min", type=int, default=10)
+    ap.add_argument("--download-only", action="store_true",
+                    help="only fetch the last run's output + log (no upload, no new run)")
     args = ap.parse_args()
     user = username()
     here = Path(__file__).resolve().parent
 
+    if args.download_only:
+        return download_and_import(user, here)
     if not args.skip_prepare:
         subprocess.run([sys.executable, str(here / "kaggle_prepare.py")], check=True)
 
@@ -107,7 +114,10 @@ def main() -> None:
             break
         time.sleep(60 * args.poll_min)
 
-    # 5. download output, 6. analyse
+    download_and_import(user, here)
+
+
+def download_and_import(user: str, here: Path) -> None:
     out = K / "kernel_output"
     out.mkdir(exist_ok=True)
     sh("kernels", "output", f"{user}/{KERNEL_SLUG}", "-p", str(out))
