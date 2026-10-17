@@ -77,11 +77,14 @@ def main() -> None:
         shutil.copy(K / "answers.jsonl", ds_dir / "prev_answers.jsonl")
     (ds_dir / "dataset-metadata.json").write_text(json.dumps(
         {"title": "TokenOpt Hinglish prompts", "id": f"{user}/{DS_SLUG}", "licenses": [{"name": "other"}]}))
-    exists = "404" not in sh("datasets", "status", f"{user}/{DS_SLUG}", check=False)
-    if exists:
+    # Create first; only if Kaggle says it already exists, add a new version.
+    # (A 'status' pre-check misreported a missing dataset as existing -> 403 on version.)
+    out = sh("datasets", "create", "-p", str(ds_dir), "--dir-mode", "zip", check=False)  # private by default
+    print(out[-400:])
+    if "already" in out.lower() or "exists" in out.lower():
         sh("datasets", "version", "-p", str(ds_dir), "-m", time.strftime("update %Y-%m-%d %H:%M"), "--dir-mode", "zip")
-    else:
-        sh("datasets", "create", "-p", str(ds_dir), "--dir-mode", "zip")  # private by default
+    elif "error" in out.lower() or "forbidden" in out.lower() or "denied" in out.lower():
+        raise SystemExit("dataset create failed:\n" + out[-800:])
     print("dataset ready:", f"{user}/{DS_SLUG}")
     time.sleep(60)  # let Kaggle finish processing the dataset version
 
