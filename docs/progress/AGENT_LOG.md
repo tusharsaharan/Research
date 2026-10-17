@@ -14,3 +14,4 @@
 - 2026-10-17 hourly check 7/8 · all 3 sweep shards resumed OK; 42,492/56,000 unique, ~2.5k/h → ~5h left; guarded2 queued after.
 - 2026-10-17 · Speed-up: LLMLingua-2 forward-pass cache (rates share one pass) + torch threads = cores/shards. Sweep restarted (resume). Measure rows/h at next check.
 - 2026-10-17 · Rate sweep done → COMPRESSION_STUDY.md (finding 9). Built Kaggle T4 pipeline: kaggle_prepare.py (33,081 prompts exported), backend/kaggle/local_answers_t4.ipynb (vLLM, Qwen2.5-3B, resumable), kaggle_import.py (paired McNemar + pair-2 routing labels). Local CPU test of notebook still running (pid 26056). Running: sem_sim (slow) then guarded2 re-run.
+- 2026-10-17 · Kaggle automation: kaggle_run.py (prepare→private dataset→push GPU notebook→wait→download→import), kaggle_auto.py waiter running detached (log backend/data/bench/kaggle/auto.log; markers run.done / run.failed). Blocked only on user's ~/.kaggle/kaggle.json. guarded2 5,353/40,000 at 16:37.
