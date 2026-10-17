@@ -73,6 +73,18 @@ def main() -> None:
 
     if args.download_only:
         return download_and_import(user, here)
+    # Carry over answers from an earlier (possibly failed) run so nothing is redone.
+    prev_dir = K / "kernel_output"
+    prev_dir.mkdir(parents=True, exist_ok=True)
+    print(sh("kernels", "output", f"{user}/{KERNEL_SLUG}", "-p", str(prev_dir), check=False)[-300:])
+    if (prev_dir / "answers.jsonl").exists():
+        old = {json.loads(x)["key"]: x for x in open(prev_dir / "answers.jsonl", encoding="utf-8") if x.strip()}
+        if (K / "answers.jsonl").exists():
+            old |= {json.loads(x)["key"]: x for x in open(K / "answers.jsonl", encoding="utf-8") if x.strip()}
+        (K / "answers.jsonl").write_text("".join(v if v.endswith("\n") else v + "\n" for v in old.values()), encoding="utf-8")
+        print(f"carried over {len(old)} answers from the previous run")
+    for f in prev_dir.glob("*.log"):
+        print("previous run log tail:\n", f.read_text(encoding="utf-8", errors="replace")[-1500:])
     if not args.skip_prepare:
         subprocess.run([sys.executable, str(here / "kaggle_prepare.py")], check=True)
 
