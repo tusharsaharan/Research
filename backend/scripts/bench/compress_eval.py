@@ -193,6 +193,7 @@ def main() -> None:
         agg: dict = defaultdict(lambda: defaultdict(float))
         files = sorted(BENCH.glob("compress_rows.*shard*.jsonl")) or [OUT_ROWS]
         n_prompts = set()
+        seen_rows: set = set()
         texts = {p["pid"]: p["text"] for p in build_prompts(args.n, args.seed)}
         for f in files:
             for line in f.open(encoding="utf-8"):
@@ -200,6 +201,9 @@ def main() -> None:
                     row = json.loads(line)
                 except json.JSONDecodeError:
                     continue  # partial line from an interrupted run
+                if (row["pid"], row["method"]) in seen_rows:
+                    continue  # duplicate from overlapping runs
+                seen_rows.add((row["pid"], row["method"]))
                 orig = texts.get(row["pid"])
                 if orig is not None:  # recompute checks with the current metric code
                     row |= survive(orig, row["compressed"] if row["changed"] else orig)
