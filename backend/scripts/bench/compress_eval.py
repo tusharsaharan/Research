@@ -186,7 +186,15 @@ def main() -> None:
     ap.add_argument("--methods", default=None, help="comma list: run only these methods")
     ap.add_argument("--tag", default="", help="row-file tag so new runs don't overwrite old shards")
     ap.add_argument("--summarize", action="store_true", help="only rebuild the summary from all row files")
+    ap.add_argument("--threads", type=int, default=0,
+                    help="torch threads per process (0 = cores / shards, avoids oversubscription)")
     args = ap.parse_args()
+    import os
+
+    import torch
+
+    n_shards = int(args.shard.split("/")[1]) if args.shard else 1
+    torch.set_num_threads(args.threads or max(1, (os.cpu_count() or 1) // n_shards))
 
     toks = load_tokenizers()
     if args.summarize:

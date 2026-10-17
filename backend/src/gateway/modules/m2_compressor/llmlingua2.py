@@ -23,6 +23,43 @@ def is_available() -> bool:
         return False
 
 
+class _CachedForward:
+    """Memoise the token-classifier forward pass.
+
+    LLMLingua-2's per-token keep probabilities depend only on the input ids,
+    not on the keep-rate (the rate is a percentile threshold applied after).
+    Compressing the same prompt at several rates therefore repeats an
+    identical forward pass; this cache makes every rate after the first free.
+    Small LRU keyed on (ids, mask) bytes, so memory stays bounded.
+    """
+
+    def __init__(self, model, size: int = 64) -> None:
+        from collections import OrderedDict
+
+        self._model = model
+        self._cache: OrderedDict = OrderedDict()
+        self._size = size
+        self.hits = 0
+        self.misses = 0
+
+    def __call__(self, input_ids, attention_mask):
+        key = (input_ids.cpu().numpy().tobytes(), attention_mask.cpu().numpy().tobytes(), tuple(input_ids.shape))
+        out = self._cache.get(key)
+        if out is not None:
+            self._cache.move_to_end(key)
+            self.hits += 1
+            return out
+        self.misses += 1
+        out = self._model(input_ids=input_ids, attention_mask=attention_mask)
+        self._cache[key] = out
+        if len(self._cache) > self._size:
+            self._cache.popitem(last=False)
+        return out
+
+    def __getattr__(self, name):  # .eval(), .to(), .config, ... pass through
+        return getattr(self._model, name)
+
+
 class LLMLingua2Compressor:
     """Trained token-classifier compressor with code-mix-safe guards.
 
@@ -58,6 +95,7 @@ class LLMLingua2Compressor:
                         use_llmlingua2=True,
                         device_map=self.device,
                     )
+                    self._comp.model = _CachedForward(self._comp.model)
         return self._comp
 
     @property
