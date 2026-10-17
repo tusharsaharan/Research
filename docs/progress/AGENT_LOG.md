@@ -5,3 +5,12 @@
 - 2026-10-17 · Guarded LLMLingua-2 (forces negations/question words, keeps MCQ options verbatim, restores split numbers) → commit c7d4bb1. Detached run `scripts/bench/run_guarded.ps1` finishing guarded shards (resumable), then --summarize + sem_sim.py; done-marker `backend/data/bench/run_guarded.done`. Interim (79%): guarded@0.5 keeps 66% EN / 50% HI tokens with 0 negation loss vs plain LLMLingua-2 ~57-59%. Next: read final summary + sem_sim, update COMPRESSION_STUDY.md.
 - 2026-10-17 · compress_answers default methods now guarded@0.5 vs llmlingua2@0.5 vs crf+tokopt (paired, daily API). Queued detached `run_sweep.ps1` (waits for run_guarded.done; rates 0.3/0.6/0.8 guarded + 0.3/0.4/0.6/0.8 plain; done-marker run_sweep.done). Next: rate-distortion table + sem_sim into COMPRESSION_STUDY.md.
 - 2026-10-17 � Guarded results + embedding-blindness finding in COMPRESSION_STUDY.md. Fixed guard to force digit-containing words (5kg/10am were dropped). Running: run_sweep.ps1 (? run_sweep.done), then queued run_guarded2.ps1 (guarded2@0.4�0.8, ? run_guarded2.done). Next: rate-distortion table from both.
+- 2026-10-17 hourly check 1/8 · sweep 14,666/56,000 rows, guarded2 queued, CPU 100%. No change.
+- 2026-10-17 hourly check 2/8 · sweep 28,245/56,000 (~13.6k/h), ETA ~2h; guarded2 queued.
+- 2026-10-17 hourly check 3/8 · sweep 41,820/56,000, ETA ~1h; guarded2 queued.
+- 2026-10-17 hourly check 4/8 · sweep 55,373/56,000 (finishing; then summarize + sem_sim, then guarded2 starts).
+- 2026-10-17 hourly check 5/8 · found 2 sweep instances running (duplicate rows); killed one, summarize now dedups.
+- 2026-10-17 hourly check 6/8 · surviving sweep was redoing rows (40,021 unique); restarted run_sweep.ps1 single instance with resume.
+- 2026-10-17 hourly check 7/8 · all 3 sweep shards resumed OK; 42,492/56,000 unique, ~2.5k/h → ~5h left; guarded2 queued after.
+- 2026-10-17 · Speed-up: LLMLingua-2 forward-pass cache (rates share one pass) + torch threads = cores/shards. Sweep restarted (resume). Measure rows/h at next check.
+- 2026-10-17 · Rate sweep done → COMPRESSION_STUDY.md (finding 9). Built Kaggle T4 pipeline: kaggle_prepare.py (33,081 prompts exported), backend/kaggle/local_answers_t4.ipynb (vLLM, Qwen2.5-3B, resumable), kaggle_import.py (paired McNemar + pair-2 routing labels). Local CPU test of notebook still running (pid 26056). Running: sem_sim (slow) then guarded2 re-run.

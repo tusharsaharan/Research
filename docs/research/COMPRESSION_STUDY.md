@@ -159,6 +159,32 @@ number deletions (0.2–1.2%) are real: numbers fused with units were dropped
 protects pure-digit tokens. Fixed 2026-10-17 by forcing every word that
 contains a digit; the guarded rows above predate the fix (re-run queued).
 
+## Rate sweep: compression vs meaning-unit loss (added 2026-10-17)
+
+All 8,000 prompts, o200k kept ratio; loss = share of prompts containing the
+unit that lose at least one. Guarded rows are pre digit-word fix (guarded2 re-run pending).
+
+| Lang | Rate | Plain kept | Plain neg lost | Plain qword lost | Guarded kept | Guarded neg lost | Guarded qword lost |
+|---|---|---|---|---|---|---|---|
+| EN | 0.8 | 0.777 | 11.1% | 40.5% | 0.859 | 0.0% | 0.0% |
+| EN | 0.7 | 0.665 | 23.2% | 64.2% | 0.784 | 0.0% | 0.0% |
+| EN | 0.6 | 0.567 | 43.5% | 83.3% | 0.717 | 0.0% | 0.0% |
+| EN | 0.5 | 0.473 | 58.9% | 94.9% | 0.654 | 0.0% | 0.0% |
+| EN | 0.4 | 0.384 | 73.4% | 99.0% | 0.595 | 0.0% | 0.0% |
+| EN | 0.3 | 0.298 | 82.4% | 99.7% | 0.537 | 0.0% | 0.0% |
+| HI | 0.8 | 0.797 | 11.6% | 18.5% | 0.794 | 0.0% | 0.1% |
+| HI | 0.7 | 0.691 | 21.7% | 36.7% | 0.689 | 0.0% | 0.1% |
+| HI | 0.6 | 0.596 | 37.6% | 56.0% | 0.593 | 0.0% | 0.1% |
+| HI | 0.5 | 0.503 | 57.0% | 73.4% | 0.501 | 0.0% | 0.3% |
+| HI | 0.4 | 0.411 | 72.5% | 86.1% | 0.410 | 0.0% | 0.3% |
+| HI | 0.3 | 0.322 | 81.4% | 94.1% | 0.322 | 0.4% | 0.3% |
+
+Finding 9: plain LLMLingua-2's negation loss grows steadily with compression
+(11% → 82% of negated prompts), in both languages. The guards remove it at
+every rate; on Hinglish they cost zero compression at every rate (kept ratio
+identical to within 0.003). On English the guarded curve flattens below ~0.54
+because multiple-choice options stay verbatim.
+
 ## Novel research directions for compression
 
 **R1. Task-altering edits as the safety metric, certified per language.**
