@@ -38,10 +38,24 @@ def sh(*args: str, check: bool = True) -> str:
 
 
 def username() -> str:
-    tok = Path.home() / ".kaggle" / "kaggle.json"
-    if not tok.exists():
-        raise SystemExit(f"missing {tok}: Kaggle -> Settings -> API -> Create New Token, save it there")
-    return json.loads(tok.read_text())["username"]
+    """Kaggle username: kaggle.json (legacy token), KAGGLE_USERNAME, or ~/.kaggle/username."""
+    import os
+
+    kdir = Path.home() / ".kaggle"
+    if (kdir / "kaggle.json").exists():
+        return json.loads((kdir / "kaggle.json").read_text())["username"]
+    if os.environ.get("KAGGLE_USERNAME"):
+        return os.environ["KAGGLE_USERNAME"]
+    if (kdir / "username").exists():
+        return (kdir / "username").read_text().strip()
+    raise SystemExit("put your Kaggle username in ~/.kaggle/username (one line)")
+
+
+def token_ready() -> bool:
+    import os
+
+    kdir = Path.home() / ".kaggle"
+    return (kdir / "kaggle.json").exists() or (kdir / "access_token").exists() or bool(os.environ.get("KAGGLE_API_TOKEN"))
 
 
 def main() -> None:

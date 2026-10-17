@@ -38,12 +38,15 @@ def log(msg: str) -> None:
 
 
 def main() -> None:
-    token = Path.home() / ".kaggle" / "kaggle.json"
+    from kaggle_run import token_ready
+
+    kdir = Path.home() / ".kaggle"
     while True:
         rows = guarded2_rows()
-        if token.exists() and rows >= NEED:
+        ready = token_ready() and ((kdir / "kaggle.json").exists() or (kdir / "username").exists())
+        if ready and rows >= NEED:
             break
-        log(f"waiting: token={'yes' if token.exists() else 'no'} guarded2={rows}/{NEED}")
+        log(f"waiting: credentials={'yes' if ready else 'no'} guarded2={rows}/{NEED}")
         time.sleep(300)
     log("starting kaggle_run.py")
     here = Path(__file__).resolve().parent
