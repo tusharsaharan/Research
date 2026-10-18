@@ -183,12 +183,12 @@ def parse(reply: str) -> str | None:
     return None
 
 
-def grade() -> None:
+def grade(answers=None) -> None:
     from scipy.stats import binomtest
 
     items = {r["id"]: r for r in read_jsonl(OUT / "items.jsonl")}
     pred: dict[tuple, str | None] = {}
-    for a in read_jsonl(BENCH / "kaggle" / "answers.jsonl"):
+    for a in read_jsonl(Path(answers) if answers else BENCH / "kaggle" / "answers.jsonl"):
         if a["item_id"] in items:
             for m in a["methods"]:
                 pred[(a["item_id"], m)] = parse(a.get("content") or "")
@@ -242,5 +242,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["build", "compress", "export", "grade"])
     ap.add_argument("--shard", default=None)
+    ap.add_argument("--answers", default=None, help="answers file (default: kaggle/answers.jsonl)")
     a = ap.parse_args()
-    {"build": build, "export": export, "grade": grade}.get(a.cmd, lambda: compress(a.shard))()
+    {"build": build, "export": export, "grade": lambda: grade(a.answers)}.get(a.cmd, lambda: compress(a.shard))()

@@ -108,6 +108,7 @@ def main() -> None:
     ap.add_argument("--task", help="only prompts of this task (condaqa, math, mcq)")
     ap.add_argument("--methods", help="comma list; keep prompts carrying any of these methods")
     ap.add_argument("--limit", type=int, default=0, help="random sample of N items (all their variants)")
+    ap.add_argument("--ids", help="file with one item_id per line (overrides --limit)")
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--max-out", type=int, default=512)
     ap.add_argument("--max-tokens-total", type=int, default=0, help="stop after this many tokens (in+out) this run")
@@ -121,7 +122,10 @@ def main() -> None:
     if a.methods:
         want = set(a.methods.split(","))
         rows = [r for r in rows if want & set(r["methods"])]
-    if a.limit:
+    if a.ids:
+        keep = set(open(a.ids, encoding="utf-8").read().split())
+        rows = [r for r in rows if r["item_id"] in keep]
+    elif a.limit:
         ids = sorted({r["item_id"] for r in rows})
         keep = set(random.Random(20261018).sample(ids, min(a.limit, len(ids))))
         rows = [r for r in rows if r["item_id"] in keep]
@@ -144,8 +148,8 @@ def main() -> None:
                 break
             except httpx.HTTPStatusError as e:
                 code = e.response.status_code
-                if "insufficient_quota" in e.response.text:
-                    print("no credits left on this account - stopping", flush=True)
+                if "insufficient_quota" in e.response.text or "PerDay" in e.response.text:
+                    print("no credits / daily quota left - stopping (resume tomorrow or enable billing)", flush=True)
                     stop.set()
                     return
                 if code in (429, 500, 502, 503, 504):
