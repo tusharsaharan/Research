@@ -185,6 +185,33 @@ every rate; on Hinglish they cost zero compression at every rate (kept ratio
 identical to within 0.003). On English the guarded curve flattens below ~0.54
 because multiple-choice options stay verbatim.
 
+## Adaptive guarded compression (added 2026-10-18)
+
+`compress_adaptive` (`guarded.py`): per prompt, the most aggressive guarded2
+rate in {0.4,…,0.8} whose multilingual-MiniLM similarity to the original is
+≥ τ (else the lightest rate). Evaluated offline on 7,647 prompts that have all
+five rates (`adaptive_eval.py` → `adaptive_report.json`).
+
+| Lang | Method | o200k kept | Mean sim | Sim < 0.80 | Neg lost | Qword lost |
+|---|---|---|---|---|---|---|
+| EN | fixed guarded2@0.5 | 0.652 | 0.879 | 12.5% | 0% | 0% |
+| EN | adaptive τ=0.85 | 0.654 | 0.896 | 0.2% | 0% | 0% |
+| EN | fixed guarded2@0.7 | 0.781 | 0.937 | 1.0% | 0% | 0% |
+| EN | adaptive τ=0.93 | 0.769 | 0.941 | 0.2% | 0% | 0% |
+| HI | fixed guarded2@0.5 | 0.496 | 0.813 | 36.2% | 0% | 0.2% |
+| HI | adaptive τ=0.80 | 0.509 | 0.844 | 0.9% | 0% | 0.2% |
+| HI | fixed guarded2@0.6 | 0.589 | 0.859 | 13.6% | 0% | 0.2% |
+| HI | adaptive τ=0.85 | 0.591 | 0.881 | 1.0% | 0% | 0.2% |
+
+Finding 10: at matched compression, adaptive rate selection raises mean
+similarity by 2–3 points and cuts badly-compressed prompts (sim < 0.80) by
+13–40× (e.g. Hinglish 36.2% → 0.9% at ~0.50 kept). At matched similarity it
+compresses slightly more. Caveat (important): the selection uses the same
+similarity metric it is scored on, and finding 8 shows that metric is blind to
+negation — the guards cover negation/question words/numbers, but other content
+can still drop (e.g. "phone" in the phone-complaint example). Answer-level
+accuracy (Kaggle run) is the real test.
+
 ## Novel research directions for compression
 
 **R1. Task-altering edits as the safety metric, certified per language.**

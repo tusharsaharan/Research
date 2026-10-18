@@ -66,3 +66,28 @@ def compress_guarded(text: str, rate: float, lingua) -> str | None:
         return None
     final = _restore_numbers(stem, final)
     return (final.rstrip() + options) if options else final
+
+
+ADAPTIVE_RATES = (0.4, 0.5, 0.6, 0.7, 0.8)  # most -> least aggressive
+
+
+def compress_adaptive(text: str, lingua, encoder, tau: float = 0.85, rates=ADAPTIVE_RATES) -> tuple[str, float | None]:
+    """Most aggressive guarded compression whose embedding similarity to the
+    original stays >= tau. Returns (text, chosen_rate); rate None = unchanged.
+
+    The guards keep negations / question words / numbers / options, which the
+    embedding similarity cannot see; the floor protects the remaining meaning.
+    LLMLingua-2's forward pass is cached across rates, so extra rates are cheap.
+    """
+    cands = []
+    for r in rates:
+        out = compress_guarded(text, r, lingua)
+        if out and out != text:
+            cands.append((r, out))
+    if not cands:
+        return text, None
+    vecs = encoder.encode([text] + [c[1] for c in cands], normalize_embeddings=True, show_progress_bar=False)
+    for (r, out), v in zip(cands, vecs[1:]):
+        if float(vecs[0] @ v) >= tau:
+            return out, r
+    return text, None
