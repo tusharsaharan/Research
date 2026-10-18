@@ -41,6 +41,21 @@ Findings:
 4. Token/embedding metrics missed all of this (findings 8 and 10 in
    COMPRESSION_STUDY.md): answer-level evaluation is required.
 
+### A2. Equal-budget check (the fair comparison)
+
+Guarded compresses less than plain at the same keep-rate, so compare at
+matched prompt tokens (linear interpolation on plain's rate curve):
+- **All questions:** guarded ≈ plain at equal tokens (EN −1.8 / −0.9 pts;
+  HI −0.8 to +3.2). Most of the "halves the loss" effect above is guarded
+  compressing less. This agrees with CAVEWOMAN (2606.24083): degradation is
+  driven by compression rate more than by method.
+- **Questions that contain a negation (EN, n = 514):** guarded wins at equal
+  tokens — at ~0.76 kept: guarded −9.7 [−14.0, −5.1] vs plain −17.1
+  [−22.4, −12.3] (+7.4 pts, CIs disjoint); at ~0.85 kept: −3.9 vs −9.7
+  (+5.8 pts). HI has only 27 negated questions — too few to conclude.
+- So the guards matter exactly where they should (negated questions) and are
+  neutral elsewhere. A negation-heavy evaluation set is the right next test.
+
 ## B. Language-conditional certified routing (pair 2)
 
 Cheap = Qwen2.5-3B (local GPU), premium = gpt-oss-120b. u = cheap wrong and
