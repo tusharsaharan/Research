@@ -22,6 +22,7 @@ import argparse
 import json
 import math
 import random
+from pathlib import Path
 from collections import defaultdict
 
 import numpy as np
@@ -98,12 +99,14 @@ def main() -> None:
     ap.add_argument("--alphas", default="0.05,0.10,0.20")
     ap.add_argument("--delta", type=float, default=0.10)
     ap.add_argument("--seed", type=int, default=20261015)
+    ap.add_argument("--grades", default="grades.jsonl", help="grades file in data/bench (e.g. grades_pair2.jsonl)")
     ap.add_argument("--serve-alpha", type=float, default=0.10, help="alpha the gateway serves (must be in --alphas)")
     args = ap.parse_args()
     alphas = [float(a) for a in args.alphas.split(",")]
 
-    grades = [r for r in read_jsonl(GRADES) if r["lang"] in LANGS]
-    texts = {(v["item_id"], v["lang"]): v["text"] for v in latest_variants()}
+    grades = [r for r in read_jsonl(BENCH / args.grades) if r["lang"] in LANGS]
+    texts = {(r["item_id"], "english"): r["question_en"] for r in read_jsonl(BENCH / "items.jsonl")}
+    texts |= {(v["item_id"], v["lang"]): v["text"] for v in latest_variants()}
     if not grades:
         raise SystemExit("no graded rows yet: run collect.py and grade.py first")
     scores, scorer_desc, bundle = train_scorer(grades, texts)
@@ -158,7 +161,8 @@ def main() -> None:
                                   "mean_risk": round(float(np.mean(m["risk"])), 4),
                                   "cheap_share": round(float(np.mean(m["cheap_share"])), 3),
                                   "cost_saving": round(float(np.mean(m["saving"])), 3)})
-    (BENCH / "certify_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    (BENCH / ("certify_report.json" if args.grades == "grades.jsonl"
+              else f"certify_report_{Path(args.grades).stem}.json")).write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     print(f"scorer: {scorer_desc}\ncert items: {len(items)}  rows: {len(cert)}  delta={args.delta}  splits={args.splits}")
     print("u rate (cheap wrong & premium right):", {k: round(v, 3) for k, v in report["u_rate_by_lang"].items()})
@@ -169,7 +173,8 @@ def main() -> None:
         print(f"{r['alpha']:>5} {r['method']:>12} {r['lang']:>9} {r['violation_rate']:>6} {r['mean_risk']:>7} "
               f"{r['cheap_share']:>6} {r['cost_saving']:>6}")
     print("report ->", BENCH / "certify_report.json")
-    export_router(bundle, cert, scores, grid, args)
+    if args.grades == "grades.jsonl":  # only pair 1 (the gateway's own models) is served
+        export_router(bundle, cert, scores, grid, args)
 
 
 def by_source(grades: list[dict]) -> dict:
