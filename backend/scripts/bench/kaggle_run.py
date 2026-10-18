@@ -65,6 +65,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--skip-prepare", action="store_true")
     ap.add_argument("--poll-min", type=int, default=10)
+    ap.add_argument("--until-complete", action="store_true",
+                    help="loop: (wait for current run if --wait-only) -> download -> re-push until every prompt is answered")
+    ap.add_argument("--rounds", type=int, default=4)
+    ap.add_argument("--push-only", action="store_true", help=argparse.SUPPRESS)
     ap.add_argument("--wait-only", action="store_true",
                     help="don't upload or push; wait for the current run, then download + analyse")
     ap.add_argument("--download-only", action="store_true",
@@ -75,6 +79,8 @@ def main() -> None:
 
     if args.download_only:
         return download_and_import(user, here)
+    if args.until_complete:
+        return until_complete(user, here, args.poll_min, args.rounds, first_wait=args.wait_only)
     if args.wait_only:
         return wait_and_finish(user, here, args.poll_min)
     # Carry over answers from an earlier (possibly failed) run so nothing is redone.
@@ -122,7 +128,31 @@ def main() -> None:
         "dataset_sources": [f"{user}/{DS_SLUG}"], "competition_sources": [], "kernel_sources": []}))
     print(sh("kernels", "push", "-p", str(kdir)))
 
+    if args.push_only:
+        return
     wait_and_finish(user, here, args.poll_min)
+
+
+def n_answered() -> tuple[int, int]:
+    total = sum(1 for _ in open(K / "prompts.jsonl", encoding="utf-8"))
+    got = 0
+    if (K / "answers.jsonl").exists():
+        got = len({json.loads(x)["key"] for x in open(K / "answers.jsonl", encoding="utf-8") if x.strip()})
+    return got, total
+
+
+def until_complete(user: str, here: Path, poll_min: int, rounds: int, first_wait: bool) -> None:
+    for rnd in range(rounds):
+        if rnd > 0 or not first_wait:
+            subprocess.run([sys.executable, str(Path(__file__)), "--skip-prepare", "--push-only"], check=True)
+        try:
+            wait_and_finish(user, here, poll_min)
+        except SystemExit as e:
+            print("round", rnd, "ended without answers:", str(e)[:200], flush=True)
+        got, total = n_answered()
+        print(f"round {rnd}: {got}/{total} prompts answered", flush=True)
+        if got >= total:
+            break
 
 
 def wait_and_finish(user: str, here: Path, poll_min: int) -> None:
