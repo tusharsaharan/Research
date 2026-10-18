@@ -47,6 +47,9 @@ def main() -> None:
     step("premium answers", f"{b}/collect.py", "--tiers", "premium", "--daily-token-budget", str(args.premium_budget), *shard)
     step("compression answer check", f"{b}/compress_answers.py", "--daily-token-budget", str(args.compress_budget))
     step("cheap answers", f"{b}/collect.py", "--tiers", "cheap", "--daily-token-budget", str(args.cheap_budget), *shard)
+    # CondaQA negation test on an open-weight API model (free tier; stops at the daily quota, resumes next day)
+    step("condaqa answers (gemma)", f"{b}/api_answer.py", "--provider", "gemini", "--model", "gemma-4-26b-a4b-it",
+         "--task", "condaqa", "--workers", "8", "--max-out", "4096")
     step("grade", f"{b}/grade.py")
     step("certify", f"{b}/certify.py", "--splits", str(args.splits))
     step("compression benchmark (offline, 8,000 prompts)", f"{b}/compress_eval.py", "--n", "8000")
