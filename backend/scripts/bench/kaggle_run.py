@@ -65,6 +65,8 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--skip-prepare", action="store_true")
     ap.add_argument("--poll-min", type=int, default=10)
+    ap.add_argument("--wait-only", action="store_true",
+                    help="don't upload or push; wait for the current run, then download + analyse")
     ap.add_argument("--download-only", action="store_true",
                     help="only fetch the last run's output + log (no upload, no new run)")
     args = ap.parse_args()
@@ -73,6 +75,8 @@ def main() -> None:
 
     if args.download_only:
         return download_and_import(user, here)
+    if args.wait_only:
+        return wait_and_finish(user, here, args.poll_min)
     # Carry over answers from an earlier (possibly failed) run so nothing is redone.
     prev_dir = K / "kernel_output"
     prev_dir.mkdir(parents=True, exist_ok=True)
@@ -118,15 +122,31 @@ def main() -> None:
         "dataset_sources": [f"{user}/{DS_SLUG}"], "competition_sources": [], "kernel_sources": []}))
     print(sh("kernels", "push", "-p", str(kdir)))
 
-    # 4. wait
+    wait_and_finish(user, here, args.poll_min)
+
+
+def wait_and_finish(user: str, here: Path, poll_min: int) -> None:
+    """Poll until the kernel finishes. Network errors (DNS, timeouts) are logged and
+    retried, never mistaken for the kernel's own status."""
     while True:
         st = sh("kernels", "status", f"{user}/{KERNEL_SLUG}", check=False)
-        print(time.strftime("%H:%M"), st.strip().splitlines()[-1] if st.strip() else st)
-        if any(s in st for s in ('"complete"', "COMPLETE", "error", "ERROR", "cancel")):
-            break
-        time.sleep(60 * args.poll_min)
-
-    download_and_import(user, here)
+        line = st.strip().splitlines()[-1] if st.strip() else ""
+        if "KernelWorkerStatus." in st:
+            print(time.strftime("%H:%M"), line, flush=True)
+            if any(k in st for k in ("KernelWorkerStatus.COMPLETE", "KernelWorkerStatus.ERROR",
+                                     "KernelWorkerStatus.CANCEL")):
+                break
+        else:
+            print(time.strftime("%H:%M"), "status check failed (network?), retrying:", line[:160], flush=True)
+        time.sleep(60 * poll_min)
+    for attempt in range(6):  # downloads can hit the same network blips
+        try:
+            return download_and_import(user, here)
+        except SystemExit as e:
+            if "no answers.jsonl" in str(e) or attempt == 5:
+                raise
+            print("download failed, retrying in 2 min:", str(e)[:200], flush=True)
+            time.sleep(120)
 
 
 def download_and_import(user: str, here: Path) -> None:
