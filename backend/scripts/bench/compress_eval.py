@@ -234,8 +234,11 @@ def main() -> None:
             return r.compressed if r.method == "llmlingua2" else t
         return f
 
+    from gateway.modules.m2_compressor.lexical_safe import compress_lexical_safe as _lex
+
     methods = {
         "heuristic": lambda t: comp.compress_heuristic(t).compressed,
+        "lexical-safe": _lex,
         "crf": lambda t: comp.compress_crf(t).compressed,
         **{f"tokopt[{n}]": (lambda t, f=f: f(t)) for n, f in norms.items()},
         **{f"crf+tokopt[{n}]": (lambda t, f=f: f(comp.compress_crf(t).compressed)) for n, f in norms.items()},
@@ -250,6 +253,10 @@ def main() -> None:
                 return out if out else t
             return f
 
+        from gateway.modules.m2_compressor.lexical_safe import compress_lexical_safe
+
+        methods |= {"lexical-safe+guarded@0.5": (lambda t, g=guarded(0.5): g(compress_lexical_safe(t))),
+                    "crf+guarded@0.5": (lambda t, g=guarded(0.5): g(comp.compress_crf(t).compressed))}
         methods |= {"llmlingua2+spans@0.7": lingua(0.7), "llmlingua2+spans@0.5": lingua(0.5),
                     "guarded@0.7": guarded(0.7), "guarded@0.5": guarded(0.5), "guarded@0.4": guarded(0.4),
                     "guarded@0.5+tokopt": (lambda t, g=guarded(0.5), f=norms["o200k"]: f(g(t)))}
