@@ -33,6 +33,8 @@ def main() -> None:
     model = rows[0]["model"]
     res: dict = {}  # (item, lang, method) -> (correct, prompt_tokens)
     for r in rows:
+        if r["item_id"] not in items:  # other benchmarks (e.g. CondaQA) are graded by their own script
+            continue
         it = items[r["item_id"]]
         ok = correct(it.get("task", "math"), r["content"], it["gold"])
         for m in r["methods"]:

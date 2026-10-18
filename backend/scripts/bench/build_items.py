@@ -41,7 +41,7 @@ def hf_rows(dataset: str, config: str, split: str) -> list[dict]:
             except httpx.TransportError:
                 time.sleep(5 * 2**attempt)
                 continue
-            if r.status_code != 429:
+            if r.status_code not in (429, 500, 502, 503, 504):
                 break
             time.sleep(float(r.headers.get("retry-after", 5 * 2**attempt)))
         r.raise_for_status()
