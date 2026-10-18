@@ -108,3 +108,34 @@ Paired method-vs-method (exact McNemar):
 - Affix guard vs negation-word guard: +1.2 pts at both rates (p=0.017 @0.5, p=0.004 @0.7).
 - Affix guard vs plain LLMLingua-2: +4.4 pts on lexical-cue questions @0.5 (p=0.019); overall +0.8–0.9 (n.s.).
 - Rate still dominates: at 0.5 every LLMLingua-2 variant loses 9–10 pts.
+
+## E. Output length under compression (Qwen2.5-3B, all 4,069 gold items)
+
+Source: `output_length.py` -> `output_length_report.json` (paired, 95% bootstrap CI).
+- English: compressed prompts get *shorter* answers (output ×0.79–0.93), so total
+  tokens fall 8–28%. Part is a layout effect: filler pruning joins option lines and
+  the model answers more tersely (output ×0.84 at input ×0.99; checked on examples).
+- Hinglish: LLMLingua-2 / guarded prompts get *longer* answers (output ×1.05–1.08,
+  CIs above 1), eating most of the saving: guarded@0.7 keeps 0.81 of input but 0.96
+  of total tokens. Output expansion (cf. 2603.23527) appears only for code-mixed input.
+
+## F. Joint certified compress-or-route (pair 2, 1,000 re-splits, δ = 0.10)
+
+Source: `joint_certify.py` -> `joint_certify_report.json`. Configuration = (compression
+method for the cheap path, routing threshold); LTT: fixed sequence over thresholds,
+Bonferroni over 11 methods, cheapest certified config chosen on calibration. Variant B
+picks the method on the disjoint scorer_train split and certifies only that one.
+
+| Policy (per-language) | EN α=.05 / .10 / .20 saving (violation) | HI α=.05 / .10 / .20 saving (violation) |
+|---|---|---|
+| routing only | 13.0 / 24.3 / 46.0% (≤6.3%) | 2.9 / 9.1 / 23.7% (≤7.7%) |
+| joint, LTT over methods | 9.4 / 21.0 / 42.1% (≤4.1%) | 1.5 / 6.2 / 17.7% (≤2.2%) |
+| joint, method picked on train split | 13.0 / 24.3 / 40.7% (≤7.2%) | 2.9 / 9.1 / 23.7% (≤7.7%) |
+
+- All per-language policies hold the guarantee (violation ≤ 10%); one shared threshold
+  violates it again (EN up to 64.7%, HI 41.8%).
+- **Under a certified quality constraint, compression does not pay.** The joint search
+  picks only mild methods (filler pruning for EN; none/CRF for HI), never LLMLingua-2
+  below 0.8, and its multiplicity correction makes it slightly *worse* than routing alone.
+  Selection on the train split picks "no compression" in 5 of 6 cases. Savings come from routing.
+- Caveat: one cheap model (3B), cheap path priced at gpt-oss-20b list rates as a stand-in.
