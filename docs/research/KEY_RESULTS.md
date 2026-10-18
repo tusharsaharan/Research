@@ -85,3 +85,26 @@ similarity (answer-level test pending).
   items are model-translated and not yet human-verified.
 - 7,668 of 50,628 compressed prompts still unanswered (low-priority rates);
   the runner continues automatically.
+
+## D. Negation stress test: CondaQA (answer level, Qwen2.5-3B)
+
+CondaQA test split (Ravichander et al. 2022): 1,857 questions whose answer depends
+on a negation cue in the passage (477 lexical "not/never", 1,380 affixal "un-/-less"/other).
+Only the passage is compressed. Source: `condaqa.py grade` on `kaggle/answers.jsonl`
+(18,530 answers; 6.5% unparsed, counted wrong). Base accuracy is low (40.0%), so the
+3B model is a weak probe; stronger-model runs are in progress (`data/bench/api/`).
+
+| Method | kept | cue dropped | Δ acc (all) | Δ (lexical cues) |
+|---|---|---|---|---|
+| filler pruning | 1.00 | 0% | 0.0 | 0.0 |
+| stopwords, unsafe (2609.13154 warning case) | 0.70 | 15.7% | −6.9 | −10.3 |
+| stopwords, negation-safe | 0.71 | 3.9% | −4.0 | −5.7 |
+| LLMLingua-2 @0.7 / guarded / guarded+affix | 0.68 | 13.0 / 8.7 / 5.0% | −4.2 / −4.5 / −3.3 | −5.2 / −3.8 / −2.5 (n.s.) |
+| LLMLingua-2 @0.5 / guarded / guarded+affix | 0.49 | 37.7 / 28.6 / 13.9% | −10.1 / −10.5 / −9.2 | −13.0 / −10.1 / −8.6 |
+
+Paired method-vs-method (exact McNemar):
+- Negation-safe vs unsafe stopword removal: +2.9 pts overall (p<0.001), +4.6 on lexical-cue
+  questions (p=0.004) — first answer-level confirmation of 2609.13154's design choice.
+- Affix guard vs negation-word guard: +1.2 pts at both rates (p=0.017 @0.5, p=0.004 @0.7).
+- Affix guard vs plain LLMLingua-2: +4.4 pts on lexical-cue questions @0.5 (p=0.019); overall +0.8–0.9 (n.s.).
+- Rate still dominates: at 0.5 every LLMLingua-2 variant loses 9–10 pts.
