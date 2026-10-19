@@ -228,3 +228,30 @@ but they rank methods consistently.
 - **Tokenizer tax on human Hinglish is large:** the parallel human English commands use
   28% fewer o200k tokens and 33% fewer Qwen tokens than the Hinglish ones — far more than
   any meaning-safe deletion saves (CRF: 3%). Translate-then-send is the bigger lever (J).
+
+## M. Code-mixed Belebele: Hinglish vs English, deletion vs sentence selection (Qwen2.5-3B)
+
+Source: `belebele_cm.py grade` -> `belebele/report.json`, `belebele_extra.py grade` ->
+`belebele/extra_report.json`. 900 reading-comprehension MCQs; Hinglish items aligned with
+English Belebele (same gold). Only the passage is compressed. Δ vs the uncompressed passage
+in the same language; exact McNemar p.
+
+| | Hinglish kept / Δ (p) | English kept / Δ (p) |
+|---|---|---|
+| uncompressed accuracy | 49.2% | 64.8% |
+| filler pruning | 0.995 / −1.0 (0.02) | — |
+| negation-safe stopwords | 0.987 / −2.6 (0.003) | — |
+| CRF | 0.943 / −3.0 (0.02) | — |
+| LLMLingua-2 @0.7 | 0.687 / −5.6 (<0.001) | 0.733 / −2.1 (0.22) |
+| guarded @0.7 | 0.686 / −6.1 (<0.001) | — |
+| LLMLingua-2 @0.5 | 0.480 / −10.1 (<0.001) | 0.575 / −11.0 (<0.001) |
+| sentence selection @0.7 | 0.579 / −10.4 (<0.001) | 0.578 / −8.7 (<0.001) |
+| sentence selection @0.5 | 0.398 / −14.3 (<0.001) | 0.395 / −15.7 (<0.001) |
+
+- **Hinglish is more fragile at the same rate:** LLMLingua-2 @0.7 costs 5.6 pts on Hinglish
+  vs 2.1 (n.s.) on English; even near-lossless edits (filler pruning, CRF) cost Hinglish 1–3 pts.
+- **Sentence selection does not help on reading comprehension.** At matched budget (~0.58
+  kept) it is slightly better than deletion in English (−8.7 vs −11.0 for LLMLingua @0.5)
+  but not in Hinglish (−10.4 vs −10.1 at 0.48 kept); questions often need several sentences
+  (cf. referential dangling, 2608.04569). Whole-sentence units also overshoot the budget.
+- Same-language abstractive rewrites (1,800, written by the 3B model) are queued for answering.
