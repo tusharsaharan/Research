@@ -35,3 +35,4 @@
 - 2026-10-19 hourly check 6/8 (08:59) · hotpot answers 181/2,150 (~100/h); partial grade run; gemma still queued behind premium collect · no action
 - 2026-10-19 hourly check 7/8 (09:59) · hotpot answers 262/2,150 (~80/h); gemma 5,901, still behind premium collect · no action
 - 2026-10-19 hourly check 8/8 (10:59) · hotpot answers 326/2,150, 29 items graded (all n.s., trend: every LLMLingua variant loses F1, guarded/qaware no better; selective@0.5 -5.6). run_daily premium collect hung since 07:02 (blocks gemma step) — kill was denied, user must stop it. Cron deleted. Next: hotpot keeps answering; grade at end.
+- 2026-10-19 12:55 · user stopped hung collect.py; run_daily now on gemma step (6,862/18,530). Hotpot answer shards had died 11:09 (no error, 337 answers kept) → restarted run_hotpot.ps1 (resume; ~80/h, ~22h left).
