@@ -57,6 +57,17 @@ Hinglish-Instruct 0.958 → 0.945; GSM8K-English 0.980 → 0.980; ARC 0.959; MML
 
 ## Findings
 
+> **Correction (2026-10-19): `tokopt` is not lossless — findings 3 and R2 are withdrawn.**
+> Its "same word" test (consonant skeleton + final vowel) merges different words, and the
+> cheapest-token target is often an English word. All 63 merges it learned from the
+> Hinglish-Instruct corpus change the word (single-annotator check): *kiya→kya* (did→what),
+> *abhi→bhi* (now→also), *apni→pani* (own→water), *bechne→bachane* (sell→save),
+> *khel→kal* (game→tomorrow), *uspar→superior*, *wahan→when*. This explains why
+> CRF+tokopt costs Hinglish 9.3 accuracy points (English words were protected, English only −1.1).
+> `tokopt.py` now has `strict=True` (variant_form + a distributional check on the
+> Hinglish-Everyday-Conversations corpus), which leaves ~2 merges — i.e. no safe saving.
+> Token savings reported for tokopt below are real but came from meaning-changing edits.
+
 1. **Compression is small on short task prompts.** Best stacked method saves
    6.0% of Hinglish input tokens and ~3% of English. Filler pruning alone
    saves 0.4% on Hinglish.

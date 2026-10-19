@@ -23,6 +23,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 import httpx
+from pathlib import Path
 from common import BENCH, read_jsonl
 
 PROMPTS = BENCH / "kaggle" / "prompts.jsonl"
@@ -105,6 +106,7 @@ def main() -> None:
     ap.add_argument("--list-models", choices=list(ENV))
     ap.add_argument("--provider", choices=list(ENV))
     ap.add_argument("--model")
+    ap.add_argument("--prompts", default=str(PROMPTS), help="prompt file (default: kaggle/prompts.jsonl)")
     ap.add_argument("--task", help="only prompts of this task (condaqa, math, mcq)")
     ap.add_argument("--methods", help="comma list; keep prompts carrying any of these methods")
     ap.add_argument("--limit", type=int, default=0, help="random sample of N items (all their variants)")
@@ -116,7 +118,7 @@ def main() -> None:
     if a.list_models:
         return list_models(a.list_models)
     k = key(a.provider)
-    rows = read_jsonl(PROMPTS)
+    rows = read_jsonl(Path(a.prompts))
     if a.task:
         rows = [r for r in rows if r["task"] == a.task]
     if a.methods:
