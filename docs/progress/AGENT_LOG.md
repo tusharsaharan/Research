@@ -43,3 +43,4 @@
 - 2026-10-20 02:45 · Overnight start (16 x 30-min checks, cron :07/:37). Kaggle v7 RUNNING (Belebele base + extra). Added sentsel@0.5/0.33 to hotpot.py (200 items compressed); hotpot answering shard 1/2 resumed (BelowNormal). Next: after Kaggle round -> grade belebele, export-rw; start shard 2/2 if RAM allows.
 - 2026-10-20 check 1/16 (02:46) · Kaggle v7 RUNNING; hotpot answers 429; 2 hotpot shards up · no action
 - 2026-10-20 check 2/16 (03:20) · Kaggle round done (83,005/83,005). Belebele graded -> KEY_RESULTS M (HI more fragile; sentence selection no better than deletion). export-rw: 1,800 rewrite prompts; started kaggle_run.py myself (pid 4504, log kaggle/run5.log). hotpot 531 answers.
+- 2026-10-20 check 3/16 (03:50) · rewrite round done (84,805/84,805); rewrites graded -> KEY_RESULTS M (3B rewriting no better than deletion; 29% of HI rewrites switched to English). hotpot 627 answers.

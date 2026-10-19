@@ -255,3 +255,9 @@ in the same language; exact McNemar p.
   but not in Hinglish (−10.4 vs −10.1 at 0.48 kept); questions often need several sentences
   (cf. referential dangling, 2608.04569). Whole-sentence units also overshoot the budget.
 - Same-language abstractive rewrites (1,800, written by the 3B model) are queued for answering.
+- **Same-language abstractive rewriting (3B model, Cmprsr/SCOPE/Telegraph-English idea) does
+  not beat deletion here:** English rewrites keep 0.692 of passage tokens at −4.2 pts (p=0.015)
+  vs LLMLingua-2 @0.7 at 0.733 / −2.1 (n.s.); Hinglish rewrites keep 0.805 at −5.7 pts vs
+  LLMLingua-2 @0.7 at 0.687 / −5.6. The 3B rewriter ignored "stay in Hinglish" for 29% of
+  Hinglish passages (258 English + 34 mixed script of 900, `language_group`). Telegraph
+  English's gains used o4-mini as the rewriter; a 3B rewriter is not good enough.
