@@ -199,7 +199,7 @@ def answer(model: str, limit: int, shard: str | None) -> None:
     with path.open("a", encoding="utf-8") as fh:
         for r in rows:
             msgs = [{"role": "system", "content": r["system"]}, {"role": "user", "content": r["prompt"]}]
-            ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_tensors="pt")
+            ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_tensors="pt", return_dict=True)["input_ids"]
             with torch.no_grad():
                 g = lm.generate(ids, max_new_tokens=24, do_sample=False)
             out = tok.decode(g[0, ids.shape[1]:], skip_special_tokens=True)
