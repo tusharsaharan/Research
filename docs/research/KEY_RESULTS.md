@@ -266,7 +266,7 @@ in the same language; exact McNemar p.
 
 Source: `KAGGLE_TAG=-7b belebele_cm.py / belebele_extra.py grade` -> `belebele/report_7b.json`,
 `extra_report_7b.json`. (The 7B model answers with a bare letter; `grade.extract_letter`
-now accepts that. Only 157 of 84,805 3B replies were bare letters; 3B numbers re-graded,
+now accepts that. Only 157 of 84,805 3B replies were bare letters; 3B Belebele re-graded:
 unchanged to the reported precision.)
 
 | | Hinglish Δ (kept) | English Δ (kept) |
