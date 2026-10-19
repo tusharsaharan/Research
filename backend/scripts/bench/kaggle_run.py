@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -124,7 +125,7 @@ def main() -> None:
     (kdir / "kernel-metadata.json").write_text(json.dumps({
         "id": f"{user}/{KERNEL_SLUG}", "title": "TokenOpt local answers", "code_file": NB.name,
         "language": "python", "kernel_type": "notebook", "is_private": True,
-        "enable_gpu": True, "enable_internet": True, "machine_shape": "NvidiaTeslaT4",
+        "enable_gpu": True, "enable_internet": True, "machine_shape": os.environ.get("KAGGLE_GPU", "NvidiaTeslaT4"),  # e.g. NvidiaTeslaP100 when T4 queues are long
         "dataset_sources": [f"{user}/{DS_SLUG}"], "competition_sources": [], "kernel_sources": []}))
     print(sh("kernels", "push", "-p", str(kdir)))
 
