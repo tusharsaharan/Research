@@ -43,7 +43,10 @@ def extract_letter(text: str) -> str | None:
     if m:
         return m[-1]
     hits = _LETTER_ANY.findall(text or "")
-    return hits[-1] if hits else None
+    if hits:
+        return hits[-1]
+    bare = re.fullmatch(r"\s*\(?([A-H])[).]?\s*", text or "")  # reply is just the letter ("A")
+    return bare[1] if bare else None
 
 
 def correct(task: str, text: str, gold: str) -> bool:

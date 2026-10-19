@@ -261,3 +261,28 @@ in the same language; exact McNemar p.
   LLMLingua-2 @0.7 at 0.687 / −5.6. The 3B rewriter ignored "stay in Hinglish" for 29% of
   Hinglish passages (258 English + 34 mixed script of 900, `language_group`). Telegraph
   English's gains used o4-mini as the rewriter; a 3B rewriter is not good enough.
+
+### M2. Same test, second model: Qwen2.5-7B-Instruct (Kaggle, 2×T4)
+
+Source: `KAGGLE_TAG=-7b belebele_cm.py / belebele_extra.py grade` -> `belebele/report_7b.json`,
+`extra_report_7b.json`. (The 7B model answers with a bare letter; `grade.extract_letter`
+now accepts that. Only 157 of 84,805 3B replies were bare letters; 3B numbers re-graded,
+unchanged to the reported precision.)
+
+| | Hinglish Δ (kept) | English Δ (kept) |
+|---|---|---|
+| uncompressed accuracy | 66.2% | 92.6% |
+| filler pruning / neg-safe stopwords | −0.2 / −0.4 (n.s.) | — |
+| CRF | −2.3 (p=0.01) | — |
+| LLMLingua-2 @0.7 | −6.1 (0.69) | −4.2 (0.73) |
+| guarded @0.7 | −5.9 (0.69) | — |
+| LLMLingua-2 @0.5 | −14.3 (0.48) | −12.4 (0.58) |
+| sentence selection @0.7 | −10.8 (0.58) | −13.0 (0.58) |
+
+- The Hinglish gap grows with model size: 7B is 26.4 pts better on English than on the same
+  Hinglish items (3B: 15.6).
+- Deletion costs Hinglish more than English at the same rate on both models (7B @0.7: −6.1 vs
+  −4.2; @0.5: −14.3 vs −12.4), and a stronger model does not protect against compression.
+- Mild, near-lossless edits are harmless for 7B (filler pruning, neg-safe stopwords n.s.),
+  unlike 3B (−1 to −3): small models are more brittle to any edit.
+- Sentence selection is again no better than token deletion on short reading passages.
