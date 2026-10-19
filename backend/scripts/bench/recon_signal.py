@@ -100,7 +100,8 @@ def evaluate() -> None:
                 report[f"{lang}|{tgt}|{name}"] = round(float(roc_auc_score(y, s)), 4) if 0 < sum(y) < len(y) else None
             # does recon add information beyond how much was deleted? AUROC within kept-ratio terciles
             kw = np.array([r["kept_words"] for r in sub])
-            for q, (lo, hi) in enumerate(zip(np.quantile(kw, [0, 1 / 3, 2 / 3]), np.quantile(kw, [1 / 3, 2 / 3, 1.0001]))):
+            q1, q2 = np.quantile(kw, [1 / 3, 2 / 3])
+            for q, (lo, hi) in enumerate(((-np.inf, q1), (q1, q2), (q2, np.inf))):
                 idx = [i for i, v in enumerate(kw) if lo <= v < hi]
                 yy = [y[i] for i in idx]
                 if 0 < sum(yy) < len(yy):

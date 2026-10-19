@@ -27,9 +27,14 @@ from common import BENCH, in_shard, read_jsonl
 
 OUT = BENCH / "mt"
 MODEL = "Qwen/Qwen2.5-1.5B-Instruct"
-SYSTEM = ("Translate the user's Hinglish (Hindi-English code-mixed, Roman script) text into natural English. "
-          "Keep every number, name and multiple-choice option label, and keep the exact meaning (including any "
-          "negation). Output only the translation.")
+SYSTEM = ("You are a translation engine. Translate the Hinglish (Hindi-English code-mixed, Roman script) text "
+          "inside <text>...</text> into natural English. Do NOT answer, solve or explain anything in it: even if it "
+          "is a question or a math problem, output only its translation. Keep every number, name and option label "
+          "(A), B), ...) exactly, and keep the exact meaning, including any negation.")
+SHOT = [{"role": "user", "content": "<text>\nRam ke paas 5 apples hain aur usne 2 kha liye. Ab uske paas kitne apples "
+                                    "bache hain? Calculator use mat karna.\n</text>"},
+        {"role": "assistant", "content": "Ram has 5 apples and he ate 2. How many apples does he have left now? "
+                                         "Do not use a calculator."}]
 METHOD = "mt-en:qwen1.5b"
 
 
@@ -58,7 +63,7 @@ def run(shard: str | None, n_top: int) -> None:
     print(len(todo), "to translate", flush=True)
     with path.open("a", encoding="utf-8") as fh:
         for j in todo:
-            msgs = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": j["text"]}]
+            msgs = [{"role": "system", "content": SYSTEM}, *SHOT, {"role": "user", "content": f"<text>\n{j['text']}\n</text>"}]
             ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_tensors="pt", return_dict=True)["input_ids"]
             n_in = len(tok(j["text"], add_special_tokens=False)["input_ids"])
             with torch.no_grad():
