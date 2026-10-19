@@ -45,7 +45,7 @@ def username() -> str:
     """Kaggle username: kaggle.json (legacy token), KAGGLE_USERNAME, or ~/.kaggle/username."""
     import os
 
-    kdir = Path.home() / ".kaggle"
+    kdir = Path(os.environ.get("KAGGLE_CONFIG_DIR") or Path.home() / ".kaggle")
     if (kdir / "kaggle.json").exists():
         return json.loads((kdir / "kaggle.json").read_text())["username"]
     if os.environ.get("KAGGLE_USERNAME"):
@@ -58,7 +58,7 @@ def username() -> str:
 def token_ready() -> bool:
     import os
 
-    kdir = Path.home() / ".kaggle"
+    kdir = Path(os.environ.get("KAGGLE_CONFIG_DIR") or Path.home() / ".kaggle")
     return (kdir / "kaggle.json").exists() or (kdir / "access_token").exists() or bool(os.environ.get("KAGGLE_API_TOKEN"))
 
 
