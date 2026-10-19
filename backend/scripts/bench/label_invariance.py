@@ -92,7 +92,7 @@ def grade(answers: str) -> None:
 
     items = {r["id"]: r for r in read_jsonl(OUT / "items.jsonl")}
     texts = {}
-    for p in read_jsonl(OUT / "prompts.jsonl"):
+    for p in read_jsonl(OUT / "prompts.jsonl") + (read_jsonl(OUT / "repeat.jsonl") if (OUT / "repeat.jsonl").exists() else []):
         for m in p["methods"]:
             texts[(p["item_id"], m)] = p["prompt"]
     pred = {}
@@ -105,9 +105,9 @@ def grade(answers: str) -> None:
     report = {"n_messages": len(ids),
               "original_vs_gold": {"intent": round(sum(pred[(i, "original")][0] == items[i]["intent"] for i in ids) / max(1, len(ids)), 4),
                                    "emotion": round(sum(pred[(i, "original")][1] == items[i]["emotion"] for i in ids) / max(1, len(ids)), 4)}}
-    for m in METHODS:
+    for m in ["original-repeat"] + METHODS:  # original-repeat = same prompt asked again (noise floor)
         sub = [i for i in ids if (i, m) in pred]
-        changed_text = [i for i in sub if texts[(i, m)] != items[i]["text"]]
+        changed_text = [i for i in sub if texts[(i, m)] != items[i]["text"] or m == "original-repeat"]
         kept = sum(tc.count(texts[(i, m)]) for i in sub) / max(1, sum(tc.count(items[i]["text"]) for i in sub))
         report[m] = {"n": len(sub), "text_changed": len(changed_text), "kept_tokens": round(kept, 4),
                      "intent_same": round(sum(pred[(i, m)][0] == pred[(i, "original")][0] for i in sub) / max(1, len(sub)), 4),

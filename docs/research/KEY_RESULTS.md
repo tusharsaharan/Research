@@ -139,3 +139,68 @@ picks the method on the disjoint scorer_train split and certifies only that one.
   below 0.8, and its multiplicity correction makes it slightly *worse* than routing alone.
   Selection on the train split picks "no compression" in 5 of 6 cases. Savings come from routing.
 - Caveat: one cheap model (3B), cheap path priced at gpt-oss-20b list rates as a stand-in.
+
+## G. What actually predicts meaning loss? (Qwen2.5-3B answers as ground truth)
+
+Source: `meaning_signals.py` -> `meaning_signals_report.json` (47,450 original/compressed pairs).
+- **Noise floor.** Meaning-preserving edits (filler pruning) still change the 3B model's
+  final answer in 27% (EN) / 29% (HI) of edited prompts, with breaks ≈ fixes
+  (9.7 / 9.6% EN; 6.6 / 7.2% HI). "Answer changed" is mostly churn for a small model;
+  the meaningful quantity is breaks − fixes (what all accuracy deltas above report).
+- **No cheap signal predicts damage well.** AUROC for "compression broke a correct answer":
+  share of words kept 0.758 (EN) / 0.687 (HI); multilingual embedding cosine 0.744 / 0.670;
+  a learned combination of 25 signals (fit on scorer_train, scored on cert items) 0.760 / 0.670.
+  Number / negation / option retention alone: 0.50–0.59. Embedding similarity adds nothing
+  beyond "how much was deleted".
+- **Hinglish fragility is dose, not word class.** Logistic model of breaks on per-class
+  deletion shares + amount deleted (bootstrap CIs over items): deleting Hindi case markers
+  (−0.20 [−0.39, −0.01] log-odds/SD) and auxiliaries (−0.20 [−0.35, −0.07]) is *less* harmful
+  than deleting other words; the amount deleted dominates and hurts Hinglish twice as much
+  as English (+1.45 [0.90, 2.10] vs +0.69 [0.55, 0.86] per SD). (Our hypothesis that Hindi
+  grammar words carry the meaning was not supported.)
+
+## H. Correction: `tokopt` changed words (withdrawn)
+
+All 63 respellings learned by `tokopt` replace a word with a different word (single-annotator
+check; list in COMPRESSION_STUDY.md correction): e.g. *kiya→kya*, *abhi→bhi*, *apni→pani*,
+*khel→kal*, *wahan→when*. The target was the cheapest o200k spelling, which is often an
+English word. This explains section A's CRF+tokopt Hinglish loss (−9.3 vs −1.1 English).
+`tokopt.py --strict` (variant_form + distributional check on 200k Hinglish-Everyday-
+Conversations lines) leaves 2 merges: tokenizer-driven respelling gives no safe saving here.
+
+## I. Certified meaning-gated compression
+
+Source: `gated_compress.py` -> `gated_compress_report.json` (cert items, 500 re-splits, δ=0.10).
+Per prompt, pick the most compressed version whose risk score ≤ λ; λ certified so that the
+accuracy drop ≤ α (Clopper–Pearson on breaks and fixes separately, fixed-sequence LTT).
+- **Headroom exists:** choosing per prompt the most compressed version that does not lose the
+  answer (oracle) saves 29.6% (EN) / 28.6% (HI) of prompt tokens with no accuracy loss.
+- **Cheap gates cannot reach it:** at α = 5 points the best certified gate saves 4.4% (EN,
+  similarity gate) and ~0% (HI); one fixed method certified the same way saves 1.7% (EN).
+  Guarantee holds (violation ≤ 1.6% of re-splits vs 10% allowed).
+- So the bottleneck is a per-prompt meaning check, not the compressor.
+
+## J. Translate-then-send: upper bound (cf. 2606.03618)
+
+Source: `translate_back.py eval` -> `mt_report.json` (oracle block). The 578 Hinglish items
+are translations of known English questions, so the English original is a perfect translation:
+the 3B model scores **85.1% (English) vs 63.5% (Hinglish)** on the same items (155 vs 30
+discordant, p = 1.6e-21) with 14% fewer prompt tokens (Qwen template) and equal output length.
+The realistic version (small local translator) is in progress.
+
+## K. Pragmatic meaning on human Hinglish chat (pilot)
+
+Source: `label_invariance.py` -> `labels/report.json`. 71 human messages (Yugrathee28,
+strong-signal labels, ≥12 words), Gemini 3.5 Flash-Lite reads intent + emotion; measure =
+same labels as for the original message (gold labels are automatic, so not used).
+
+| Version | kept | both labels same (texts actually changed) |
+|---|---|---|
+| same message asked again (noise ceiling) | 1.00 | 90.1% |
+| filler pruning | 0.98 | 78.1% (n = 32) |
+| CRF | 0.94 | 68.4% |
+| negation-safe stopwords | 0.91 | 63.9% |
+| LLMLingua-2 @0.7 plain / guarded | 0.68 | 54.9% / 57.8% |
+
+Even mild deletion changes the perceived intent/emotion of chat messages 20+ points below the
+noise ceiling. n = 71: a pilot; needs a larger run.
