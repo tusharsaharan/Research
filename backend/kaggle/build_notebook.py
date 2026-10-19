@@ -123,19 +123,31 @@ for g in range(n_gpu):
 
 
 def main() -> None:
+    """KAGGLE_MODEL / KAGGLE_TAG / KAGGLE_ONE_WORKER env vars build a variant (e.g. Qwen2.5-7B split
+    across both GPUs with device_map="auto"); defaults reproduce the 3B notebook."""
+    import os
+
+    model = os.environ.get("KAGGLE_MODEL", "Qwen/Qwen2.5-3B-Instruct")
+    tag = os.environ.get("KAGGLE_TAG", "")
+    one = os.environ.get("KAGGLE_ONE_WORKER") == "1"
+    setup = SETUP.replace('MODEL = "Qwen/Qwen2.5-3B-Instruct"', f'MODEL = "{model}"')
+    if one:
+        setup = setup.replace("BATCH = 24", "BATCH = 8").replace(
+            "n_gpu = max(1, torch.cuda.device_count())", 'n_gpu = 1\nos.environ["ONE_WORKER"] = "1"')
+    worker = WORKER.replace('device_map="cuda:0"', 'device_map=("auto" if __import__("os").environ.get("ONE_WORKER") else "cuda:0")')
     cells = [
         {"cell_type": "markdown", "metadata": {}, "source": "# Local-model answers (Kaggle GPU, one worker per GPU)\n"},
-        {"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [], "source": SETUP},
+        {"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [], "source": setup},
         {"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [],
-         "source": "WORKER_SRC = " + repr(WORKER) + "\n"},
+         "source": "WORKER_SRC = " + repr(worker) + "\n"},
         {"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [], "source": LAUNCH},
     ]
     nb = {"cells": cells, "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
                                        "language_info": {"name": "python"}}, "nbformat": 4, "nbformat_minor": 5}
-    out = Path(__file__).with_name("local_answers_t4.ipynb")
+    out = Path(__file__).with_name(f"local_answers_t4{tag}.ipynb")
     out.write_text(json.dumps(nb, indent=1), encoding="utf-8")
     compile("\n".join(c["source"] for c in cells if c["cell_type"] == "code"), "nb", "exec")
-    compile(WORKER, "worker", "exec")
+    compile(worker, "worker", "exec")
     print("wrote", out)
 
 

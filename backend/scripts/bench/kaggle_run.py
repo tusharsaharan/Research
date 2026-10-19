@@ -25,10 +25,11 @@ from pathlib import Path
 
 from common import BACKEND, BENCH
 
-K = BENCH / "kaggle"
-NB = BACKEND / "kaggle" / "local_answers_t4.ipynb"
-DS_SLUG = "tokenopt-hinglish-prompts"
-KERNEL_SLUG = "tokenopt-local-answers"
+TAG = os.environ.get("KAGGLE_TAG", "")  # e.g. "-7b": separate prompts/answers folder, dataset and notebook
+K = BENCH / f"kaggle{TAG}"
+NB = BACKEND / "kaggle" / f"local_answers_t4{TAG}.ipynb"
+DS_SLUG = f"tokenopt-hinglish-prompts{TAG}"
+KERNEL_SLUG = f"tokenopt-local-answers{TAG}"
 
 
 def sh(*args: str, check: bool = True) -> str:
@@ -106,7 +107,7 @@ def main() -> None:
     if (K / "answers.jsonl").exists():  # earlier run's answers -> notebook resumes from them
         shutil.copy(K / "answers.jsonl", ds_dir / "prev_answers.jsonl")
     (ds_dir / "dataset-metadata.json").write_text(json.dumps(
-        {"title": "TokenOpt Hinglish prompts", "id": f"{user}/{DS_SLUG}", "licenses": [{"name": "other"}]}))
+        {"title": f"TokenOpt Hinglish prompts{TAG}", "id": f"{user}/{DS_SLUG}", "licenses": [{"name": "other"}]}))
     # Create first; only if Kaggle says it already exists, add a new version.
     # (A 'status' pre-check misreported a missing dataset as existing -> 403 on version.)
     out = sh("datasets", "create", "-p", str(ds_dir), "--dir-mode", "zip", check=False)  # private by default
@@ -123,7 +124,7 @@ def main() -> None:
     kdir.mkdir(parents=True, exist_ok=True)
     shutil.copy(NB, kdir / NB.name)
     (kdir / "kernel-metadata.json").write_text(json.dumps({
-        "id": f"{user}/{KERNEL_SLUG}", "title": "TokenOpt local answers", "code_file": NB.name,
+        "id": f"{user}/{KERNEL_SLUG}", "title": f"TokenOpt local answers{TAG}", "code_file": NB.name,
         "language": "python", "kernel_type": "notebook", "is_private": True,
         "enable_gpu": True, "enable_internet": True, "machine_shape": os.environ.get("KAGGLE_GPU", "NvidiaTeslaT4"),  # e.g. NvidiaTeslaP100 when T4 queues are long
         "dataset_sources": [f"{user}/{DS_SLUG}"], "competition_sources": [], "kernel_sources": []}))

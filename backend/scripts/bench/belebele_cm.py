@@ -141,7 +141,7 @@ def export_mt() -> None:
     items = {r["id"]: r for r in read_jsonl(OUT / "items.jsonl")}
     tr = defaultdict(dict)
     model = None
-    for a in read_jsonl(BENCH / "kaggle" / "answers.jsonl"):
+    for a in read_jsonl(BENCH / f"kaggle{__import__('os').environ.get('KAGGLE_TAG', '')}" / "answers.jsonl"):
         if a["item_id"] in items and a["methods"][0].startswith("mt-request:"):
             tr[a["item_id"]][a["methods"][0].split(":")[1]] = _clean_mt(a["content"])
             model = a.get("model", "kaggle")
@@ -170,10 +170,10 @@ def grade() -> None:
     from grade import extract_letter
 
     items = {r["id"]: r for r in read_jsonl(OUT / "items.jsonl")}
-    prompts = {p["key"]: p for p in read_jsonl(BENCH / "kaggle" / "prompts.jsonl") if p["item_id"] in items}
+    prompts = {p["key"]: p for p in read_jsonl(BENCH / f"kaggle{__import__('os').environ.get('KAGGLE_TAG', '')}" / "prompts.jsonl") if p["item_id"] in items}
     ok, toks = {}, {}
     tc = TokenCounter()
-    for a in read_jsonl(BENCH / "kaggle" / "answers.jsonl"):
+    for a in read_jsonl(BENCH / f"kaggle{__import__('os').environ.get('KAGGLE_TAG', '')}" / "answers.jsonl"):
         if a["item_id"] in items and a["key"] in prompts and prompts[a["key"]]["task"] == "mcq":
             for m in a["methods"]:
                 ok[(a["item_id"], m)] = extract_letter(a["content"]) == items[a["item_id"]]["gold"]

@@ -146,7 +146,7 @@ def export_rw() -> None:
 
     items = {r["id"]: r for r in read_jsonl(OUT / "items.jsonl")}
     rw, model = {}, "kaggle"
-    for a in read_jsonl(BENCH / "kaggle" / "answers.jsonl"):
+    for a in read_jsonl(BENCH / f"kaggle{__import__('os').environ.get('KAGGLE_TAG', '')}" / "answers.jsonl"):
         if a["item_id"] in items and a["methods"][0].startswith("rw-request:"):
             lang = "hinglish" if a["methods"][0].endswith("hi") else "english"
             text = re.sub(r"</?text>", "", a["content"] or "").strip()
@@ -176,10 +176,10 @@ def grade() -> None:
     from grade import extract_letter
 
     items = {r["id"]: r for r in read_jsonl(OUT / "items.jsonl")}
-    prompts = {p["key"]: p for p in read_jsonl(BENCH / "kaggle" / "prompts.jsonl") if p["item_id"] in items}
+    prompts = {p["key"]: p for p in read_jsonl(BENCH / f"kaggle{__import__('os').environ.get('KAGGLE_TAG', '')}" / "prompts.jsonl") if p["item_id"] in items}
     tc = TokenCounter()
     ok, ptok = {}, {}
-    for a in read_jsonl(BENCH / "kaggle" / "answers.jsonl"):
+    for a in read_jsonl(BENCH / f"kaggle{__import__('os').environ.get('KAGGLE_TAG', '')}" / "answers.jsonl"):
         p = prompts.get(a["key"])
         if p and p["task"] == "mcq":
             for m in a["methods"]:
