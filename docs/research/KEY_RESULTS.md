@@ -204,3 +204,27 @@ same labels as for the original message (gold labels are automatic, so not used)
 
 Even mild deletion changes the perceived intent/emotion of chat messages 20+ points below the
 noise ceiling. n = 71: a pilot; needs a larger run.
+
+## L. Meaning units on human Hinglish commands (Hinglish-TOP, 2,000 queries)
+
+Source: `top_slots.py` -> `top/report.json`. Slot = gold slot value (time, place, contact,
+message text...); "kept" = every word of the slot survives. Strict: dropping "for" from
+"for tomorrow at 4 pm" counts as a loss, so absolute numbers overstate damage (spot-checked),
+but they rank methods consistently.
+
+| Method | EN tokens kept | EN slots kept | HI tokens kept | HI slots kept |
+|---|---|---|---|---|
+| filler pruning | 1.00 | 99.9% | 1.00 | 100% |
+| CRF | 0.99 | 98.8% | 0.97 | 98.6% |
+| negation-safe stopwords | 0.64 | 57.6% | 0.95 | 90.4% |
+| LLMLingua-2 @0.8 / guarded | 0.75 | 63.3 / 63.2% | 0.75 | 73.6 / 72.6% |
+| LLMLingua-2 @0.5 / guarded | 0.47 | 41.3 / 39.5% | 0.46 | 47.8 / 44.3% |
+
+- Real errors found in the spot check: stopword lists delete **"am" in "6 am"** (it is
+  listed as a verb), making alarm times ambiguous; LLMLingua drops "ke liye"/"for" (harmless)
+  but also times and recipients at lower rates.
+- Negation guards do nothing for slots (guarded ≈ plain): meaning units other than negation
+  need their own protection.
+- **Tokenizer tax on human Hinglish is large:** the parallel human English commands use
+  28% fewer o200k tokens and 33% fewer Qwen tokens than the Hinglish ones — far more than
+  any meaning-safe deletion saves (CRF: 3%). Translate-then-send is the bigger lever (J).
