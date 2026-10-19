@@ -49,3 +49,4 @@
 - 2026-10-20 check 5/16 (04:46) · 7B RUNNING; hotpot 800 answers, partial grade run · no action
 - 2026-10-20 check 6/16 · 7B RUNNING; hotpot answering · no action
 - 2026-10-20 check 6/16 (05:25) · 7B Belebele done + graded (bare-letter parser fix in grade.py) -> KEY_RESULTS M2. Kaggle idle now. hotpot 878.
+- 2026-10-20 check 6b (05:40) · 7B round 2 pushed: CondaQA 600 Qs (4,209) + main GSM8K/ARC/MMLU HI+EN 5 methods (5,264); log kaggle-7b/run2.log.
