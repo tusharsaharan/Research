@@ -83,6 +83,44 @@ def load() -> dict[tuple, dict]:
 
 
 _NUM = re.compile(r"\d+(?:[.,]\d+)*")
+# Hindi / English number words: a translation may write these as digits.
+_NUM_WORDS = {"ek": 1, "do": 2, "teen": 3, "char": 4, "chaar": 4, "paanch": 5, "panch": 5, "chhe": 6, "che": 6,
+              "saat": 7, "aath": 8, "nau": 9, "das": 10, "gyarah": 11, "barah": 12, "dozen": 12, "half": 0.5, "aadha": 0.5,
+              "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+              "guna": 2, "double": 2, "twice": 2, "hundred": 100, "sau": 100, "hazaar": 1000, "thousand": 1000}
+_HI_NEG = {"nahi", "nahin", "nhi", "mat", "na", "not", "no", "never", "without", "bina"}
+_EN_NEG = {"not", "no", "never", "without", "don't", "doesn't", "didn't", "isn't", "aren't", "wasn't", "won't",
+           "can't", "cannot", "nobody", "nothing", "none", "neither", "nor", "n't"}
+
+
+def _nums(t: str) -> set[str]:
+    return {n.replace(",", "") for n in _NUM.findall(t)}
+
+
+def verify(hinglish: str, english: str) -> tuple[bool, list[str]]:
+    """Cheap fidelity checks for a translation; any failure -> send the original instead."""
+    from gateway.modules.m2_compressor.guarded import split_options
+
+    why = []
+    hn, en = _nums(hinglish), _nums(english)
+    if not hn <= en:
+        why.append("number dropped")
+    words = {w.strip(",.!?;:\"'()").lower() for w in hinglish.split()}
+    allowed = {str(v) if v >= 1 else "0.5" for k, v in _NUM_WORDS.items() if k in words}
+    if en - hn - allowed:
+        why.append("new number")
+    opts = re.findall(r"(?m)^([A-H])\)", split_options(hinglish)[1])
+    if opts and not all(re.search(rf"(?<![A-Za-z]){L}\)", english) for L in opts):
+        why.append("option label lost")
+    if "?" in hinglish and "?" not in english:
+        why.append("question lost")
+    if words & (_HI_NEG - {"na"}) and not {w.strip(",.!?;:\"'()").lower() for w in english.split()} & _EN_NEG:
+        if not re.search(r"n't\b", english):
+            why.append("negation lost")
+    r = len(english.split()) / max(1, len(hinglish.split()))
+    if not 0.6 <= r <= 1.6:
+        why.append("length")
+    return not why, why
 
 
 def evaluate() -> None:
@@ -111,11 +149,19 @@ def evaluate() -> None:
                           "options_labels_kept": round(float(np.mean(opt_ok)), 4) if opt_ok else None,
                           "sim_mt_vs_english_original": round(float(np.mean((e1 * e2).sum(1))), 4),
                           "sim_hinglish_vs_english_original": round(float(np.mean((e3 * e2).sum(1))), 4)}
-        for name in ("o200k", "qwen"):
+        for name in ("o200k", "qwen2.5"):
             tk = toks[name]
             n = lambda t: len(tk.encode(t, add_special_tokens=False).ids)
             report["gold"][f"token_ratio_mt_over_hinglish[{name}]"] = round(sum(n(x["english"]) for x in gold) / sum(n(x["text"]) for x in gold), 4)
             report["gold"][f"token_ratio_english_original_over_hinglish[{name}]"] = round(sum(map(n, en_orig)) / sum(n(x["text"]) for x in gold), 4)
+        ver = [verify(x["text"], x["english"]) for x in gold]
+        acc = np.array([v[0] for v in ver])
+        sims = (e1 * e2).sum(1)
+        from collections import Counter
+        report["gold"]["verified_share"] = round(float(acc.mean()), 4)
+        report["gold"]["reject_reasons"] = dict(Counter(r for v in ver for r in v[1]).most_common())
+        report["gold"]["sim_to_english_original_accepted"] = round(float(sims[acc].mean()), 4) if acc.any() else None
+        report["gold"]["sim_to_english_original_rejected"] = round(float(sims[~acc].mean()), 4) if (~acc).any() else None
     top = {r["id"]: r for r in read_jsonl(BENCH / "top" / "items.jsonl")}
     tr = [x for (k, _), x in mt.items() if k == "top" and x["id"] in top]
     if tr:
@@ -127,6 +173,10 @@ def evaluate() -> None:
         ref = [all(kept(s, top[x["id"]]["english"]) for s in top[x["id"]]["slots_english"]) for x in tr]
         report["top"] = {"n": len(tr), "english_slot_values_in_translation": round(float(np.mean(s_ok)), 4),
                          "queries_all_slots": round(float(np.mean(q_ok)), 4), "sanity_reference_english": round(float(np.mean(ref)), 4)}
+        tv = np.array([verify(x["text"], x["english"])[0] for x in tr])
+        report["top"]["verified_share"] = round(float(tv.mean()), 4)
+        report["top"]["queries_all_slots_if_verified"] = round(float(np.mean(np.array(q_ok)[tv])), 4) if tv.any() else None
+        report["top"]["queries_all_slots_if_rejected"] = round(float(np.mean(np.array(q_ok)[~tv])), 4) if (~tv).any() else None
         report["top"]["examples_missing"] = [{"hi": x["text"], "mt": x["english"], "gold_en": top[x["id"]]["english"]}
                                              for x, ok in zip(tr, q_ok) if not ok][:5]
     (BENCH / "mt_report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
