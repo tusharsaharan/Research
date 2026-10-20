@@ -286,3 +286,23 @@ shifts of ≤ 0.1 pts, e.g. Hinglish base 49.2 → 49.3%, LLMLingua @0.7 −5.6 
 - Mild, near-lossless edits are harmless for 7B (filler pruning, neg-safe stopwords n.s.),
   unlike 3B (−1 to −3): small models are more brittle to any edit.
 - Sentence selection is again no better than token deletion on short reading passages.
+
+## N. Long English contexts: HotpotQA distractor (pilot, Qwen2.5-1.5B on CPU)
+
+Source: `hotpot.py grade` -> `hotpot/report.json`. 127 questions × 12 context versions
+(~1,300-token contexts, 10 paragraphs); F1 vs gold; Wilcoxon p. Uncompressed F1 0.489.
+
+| Method | kept | ΔF1 pts (p) |
+|---|---|---|
+| filler pruning | 1.00 | −0.2 (0.92) |
+| negation-safe stopwords | 0.77 | −6.1 (0.06) |
+| LLMLingua-2 @0.5 / guarded / question-aware guard | 0.52 / 0.55 / 0.55 | −10.2 / −5.9 / −9.7 |
+| LLMLingua-2 @0.33 / guarded / question-aware guard | 0.37 / 0.41 / 0.41 | −13.8 / −12.2 / −15.2 |
+| Selective Context (Qwen-0.5B self-information) @0.5 / @0.33 | 0.58 / 0.41 | −14.2 / −18.5 |
+| sentence selection @0.5 / @0.33 | 0.50 / 0.33 | −10.2 / −11.2 |
+
+- On long multi-paragraph contexts sentence selection is the best method at the tightest
+  budget (0.33 kept: −11.2 vs −13.8 LLMLingua-2, −18.5 Selective Context) — unlike short
+  Belebele passages (M), where it was no better than deletion.
+- Selective Context is the weakest; forcing question words (LongLLMLingua's idea) did not help.
+- Pilot only: 1.5B answerer, n = 127.

@@ -50,3 +50,13 @@
 - 2026-10-20 check 6/16 · 7B RUNNING; hotpot answering · no action
 - 2026-10-20 check 6/16 (05:25) · 7B Belebele done + graded (bare-letter parser fix in grade.py) -> KEY_RESULTS M2. Kaggle idle now. hotpot 878.
 - 2026-10-20 check 6b (05:40) · 7B round 2 pushed: CondaQA 600 Qs (4,209) + main GSM8K/ARC/MMLU HI+EN 5 methods (5,264); log kaggle-7b/run2.log.
+- 2026-10-20 check 7/16 · 7B round 2 running; hotpot answering · no action
+- 2026-10-20 check 8/16 · 7B round 2 running; hotpot answering · no action
+- 2026-10-20 check 9/16 · 7B round 2 running; hotpot answering · no action
+- 2026-10-20 check 10/16 · 7B round 2 running; hotpot answering · no action
+- 2026-10-20 check 11/16 · 7B round 2 running; hotpot answering · no action
+- 2026-10-20 check 12/16 · 7B round 2 running; hotpot answering · no action
+- 2026-10-20 check 13/16 · 7B round 2 running; hotpot answering · no action
+- 2026-10-20 check 14/16 · 7B round 2 running; hotpot answering · no action
+- 2026-10-20 check 15/16 · 7B round 2 running; hotpot answering · no action
+- 2026-10-20 check 16/16 (10:20) · overnight done. HotpotQA pilot (n=127) -> KEY_RESULTS N (sentence selection best at 0.33 on long contexts). 7B round 2 (CondaQA + main) still RUNNING on Kaggle (log kaggle-7b/run2.log; runner pid 3080 downloads automatically); grade with KAGGLE_TAG=-7b condaqa.py grade --answers data/bench/kaggle-7b/answers.jsonl. Cron deleted.
