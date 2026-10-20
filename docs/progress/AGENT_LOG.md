@@ -68,3 +68,4 @@
 - 2026-10-20 21:00 · Overnight2: overnight2.ps1 (pid 18808) builds Belebele graded2 (spread 1.5/2.0, lexical-weighted relevance; 4 shards), waits for teammate HotpotQA round, then runs graded2 on teammate Kaggle. Status: data/bench/overnight2.status. hybrid_select now unions kaggle + kaggle-hp answers (same 3B). Hourly cron :13.
 - 2026-10-20 check 1/8 (21:38) · graded2 building; hotpot hp round running
 - 2026-10-20 check 1/8 (21:45) · teammate HotpotQA kernel COMPLETE but 0 answers: no internet on teammate kernel (HF download failed; account likely not phone-verified -> no internet/GPU). Needs teammate phone verification. graded2 builds continue.
+- 2026-10-20 · teammate phone-verified; HotpotQA round re-pushed (kernel v4, runner pid 19576, log kaggle-hp/run3.log).
