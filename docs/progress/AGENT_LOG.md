@@ -71,3 +71,6 @@
 - 2026-10-20 · teammate phone-verified; HotpotQA round re-pushed (kernel v4, runner pid 19576, log kaggle-hp/run3.log).
 - 2026-10-20 check 2/8 · see overnight2.status; hp round run3 running
 - 2026-10-20 22:40 · orchestrator bug (premature runner check; '--tag -hp' argparse) -> killed its duplicate runner + orchestrator; exported graded2 (14,400) to kaggle-hp manually (now 28,252 prompts). Runner 19576 (run3.log) will answer them in its next round. Kernel QUEUED.
+- 2026-10-20 check 3/8 · hp round (run3) status logged
+- 2026-10-21 check 4/8 · hp round running
+- 2026-10-21 check 4/8 (00:45) · HotpotQA-500 graded -> KEY_RESULTS O2: hybrid beats LLMLingua-2 by +5 to +12 F1 at every budget (p<=0.005) with fewer tokens. graded2 Belebele round now on teammate Kaggle.

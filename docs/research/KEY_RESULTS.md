@@ -329,3 +329,10 @@ questions with the 3B answerer and budgets down to 0.2 is in progress.
   (10 candidates, 287 dev items: selection noise). Mechanism-consistent pattern: hard sentence
   dropping helps English, soft grading helps Hinglish (weaker relevance for romanized Hindi).
   To confirm as a pre-declared per-language rule on fresh data.
+
+### O2. HotpotQA at scale (500 questions, Qwen2.5-3B on Kaggle; `hotpot.py grade` on kaggle-hp/answers.jsonl)
+Uncompressed F1 48.6. Hybrid (sentence selection + guarded in-sentence deletion) vs LLMLingua-2,
+paired Wilcoxon, hybrid always at FEWER tokens: 0.51 vs 0.52 kept **+5.1 F1 (p=0.005)**, 0.35 vs 0.37
+**+10.1 (p=1e-6)**, 0.26 vs 0.31 **+10.6 (p=2e-7)**, 0.22 vs 0.27 **+11.8 (p=2e-7)**. At 0.5 the hybrid
+loses nothing (+1.5, n.s.); at 4.6x compression it loses 9.3 F1 vs 21.1 for LLMLingua-2. Sentence-heavy
+splits win at tight budgets; vs sentence selection alone +1.7 at 0.33 (n.s.). Selective Context worst.
