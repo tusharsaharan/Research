@@ -19,6 +19,31 @@ from common import BENCH, read_jsonl
 from hybrid import SPLITS, hybrid
 
 
+GRID = {0.5: (0.55, 0.65, 0.75, 0.9), 0.33: (0.37, 0.5, 0.7, 0.85)}  # extra sentence shares
+
+
+def build_grid() -> None:
+    """Extra budget splits (hybrid-s{share}@{target}) for learning the split on a dev set."""
+    from gateway.modules.m2_compressor.llmlingua2 import get_compressor
+    from gateway.modules.m4_router.certified import _encoder
+    from gateway.tokenizer import TokenCounter
+
+    items = read_jsonl(OUT / "items.jsonl")
+    enc, tc, lingua = _encoder(), TokenCounter(), get_compressor()
+    with (OUT / "hybrid_grid.jsonl").open("w", encoding="utf-8") as fh:
+        for n, it in enumerate(items):
+            row = {"id": it["id"], "variants": {}}
+            for lang, tag in (("hinglish", "hi"), ("english", "en")):
+                p, q = it[lang]["passage"], it[lang]["question"]
+                for target, shares in GRID.items():
+                    for s in shares:
+                        row["variants"][f"{tag}:hybrid-s{s}@{target}"] = hybrid(p, q, target, s, enc, tc.count, lingua)
+            fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+            if n % 100 == 0:
+                print(n, flush=True)
+    print("done ->", OUT / "hybrid_grid.jsonl", flush=True)
+
+
 def build() -> None:
     from belebele_extra import sentsel
     from gateway.modules.m2_compressor.guarded import compress_guarded
@@ -45,7 +70,7 @@ def build() -> None:
     print("done ->", OUT / "hybrid.jsonl", flush=True)
 
 
-def export(tag: str) -> None:
+def export(tag: str, src: str = "hybrid.jsonl") -> None:
     from collect import SYSTEM
 
     items = {r["id"]: r for r in read_jsonl(OUT / "items.jsonl")}
@@ -53,16 +78,16 @@ def export(tag: str) -> None:
     have = {json.loads(x)["key"] for x in open(kfile, encoding="utf-8") if x.strip()}
     n = 0
     with kfile.open("a", encoding="utf-8") as fh:
-        for x in read_jsonl(OUT / "hybrid.jsonl"):
+        for x in read_jsonl(OUT / src):
             it = items[x["id"]]
             for m, passage in x["variants"].items():
                 lang = "hinglish" if m.startswith("hi:") else "english"
                 key = f"{x['id']}|{lang}|{m}"
                 if key in have:
                     continue
-                src = it[lang]
+                q = it[lang]
                 fh.write(json.dumps({"key": key, "item_id": x["id"], "lang": lang, "methods": [m], "task": "mcq",
-                                     "system": SYSTEM["mcq"], "prompt": mcq(passage, src["question"], src["options"])},
+                                     "system": SYSTEM["mcq"], "prompt": mcq(passage, q["question"], q["options"])},
                                     ensure_ascii=False) + "\n")
                 n += 1
     print(f"appended {n} prompts -> {kfile}")
@@ -71,7 +96,8 @@ def export(tag: str) -> None:
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["build", "export"])
+    ap.add_argument("cmd", choices=["build", "build-grid", "export", "export-grid"])
     ap.add_argument("--tag", default="")
     a = ap.parse_args()
-    build() if a.cmd == "build" else export(a.tag)
+    {"build": build, "build-grid": build_grid, "export": lambda: export(a.tag),
+     "export-grid": lambda: export(a.tag, "hybrid_grid.jsonl")}[a.cmd]()
