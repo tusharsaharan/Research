@@ -69,3 +69,5 @@
 - 2026-10-20 check 1/8 (21:38) · graded2 building; hotpot hp round running
 - 2026-10-20 check 1/8 (21:45) · teammate HotpotQA kernel COMPLETE but 0 answers: no internet on teammate kernel (HF download failed; account likely not phone-verified -> no internet/GPU). Needs teammate phone verification. graded2 builds continue.
 - 2026-10-20 · teammate phone-verified; HotpotQA round re-pushed (kernel v4, runner pid 19576, log kaggle-hp/run3.log).
+- 2026-10-20 check 2/8 · see overnight2.status; hp round run3 running
+- 2026-10-20 22:40 · orchestrator bug (premature runner check; '--tag -hp' argparse) -> killed its duplicate runner + orchestrator; exported graded2 (14,400) to kaggle-hp manually (now 28,252 prompts). Runner 19576 (run3.log) will answer them in its next round. Kernel QUEUED.
