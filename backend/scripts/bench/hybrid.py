@@ -36,6 +36,40 @@ def hybrid(passage: str, question: str, target: float, sent_share: float, enc, c
     return fine
 
 
+def graded(passage: str, question: str, target: float, enc, count, lingua, spread: float = 0.6) -> str:
+    """Relevance-graded variant: no sentence is dropped outright; each sentence gets its own keep
+    rate r_i = clip(c + spread * (rel_i - mean rel), 0.2, 1.0), with c set by bisection so the
+    total meets the target (LongLLMLingua-style dynamic ratio, with our guards and the hybrid
+    embedding + lexical relevance that also works for romanized Hinglish)."""
+    import numpy as np
+
+    from belebele_extra import _SENT, _words
+
+    sents = [s for s in _SENT.split(passage.strip()) if s]
+    if len(sents) <= 1:
+        return compress_guarded(passage, target, lingua) or passage
+    e = enc.encode(sents + [question], normalize_embeddings=True, show_progress_bar=False)
+    qw = _words(question)
+    rel = 0.5 * (e[:-1] @ e[-1]) + 0.5 * np.array([len(qw & _words(s)) / max(1, len(qw)) for s in sents])
+    rel = (rel - rel.min()) / max(1e-6, rel.max() - rel.min())
+    lens = np.array([count(s) for s in sents], float)
+
+    def rates(c):
+        return np.clip(c + spread * (rel - rel.mean()), 0.2, 1.0)
+
+    lo, hi = 0.0, 1.5
+    for _ in range(30):
+        mid = (lo + hi) / 2
+        if (rates(mid) * lens).sum() / lens.sum() > target:
+            hi = mid
+        else:
+            lo = mid
+    out = []
+    for s, r in zip(sents, rates(lo)):
+        out.append(s if r >= 0.97 else (compress_guarded(s, float(r), lingua) or s))
+    return " ".join(out)
+
+
 # Budget splits tried at each target (sentence share of tokens). Chosen a priori, not tuned on test:
 # "s-heavy" = most of the cut from dropping sentences, "t-heavy" = most from in-sentence deletion.
 SPLITS = {0.5: {"s-heavy": 0.6, "t-heavy": 0.8}, 0.33: {"s-heavy": 0.42, "t-heavy": 0.6}}

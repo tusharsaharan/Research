@@ -62,7 +62,7 @@ def main() -> None:
     for tag in ("hi", "en"):
         for t in (0.5, 0.33):
             cands = [m for m in {m for _, m in ok if m.startswith(tag + ":")}
-                     if m.endswith(f"@{t}") and ("hybrid" in m or "guarded" in m or "sentsel" in m)]
+                     if m.endswith(f"@{t}") and ("hybrid" in m or "guarded" in m or "sentsel" in m or "graded" in m)]
             ids_all = [i for i in items if all((i, m) in ok for m in cands + [f"{tag}:none"])]
             dev = [i for i in ids_all if split(i) == "dev"]
             test = [i for i in ids_all if split(i) == "test"]

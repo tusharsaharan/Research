@@ -12,6 +12,8 @@ from __future__ import annotations
 
 import argparse
 import json
+
+NL = chr(10)
 import sys
 
 from belebele_cm import OUT, mcq
@@ -70,6 +72,29 @@ def build() -> None:
     print("done ->", OUT / "hybrid.jsonl", flush=True)
 
 
+def build_graded() -> None:
+    """Relevance-graded variants (hybrid.graded): graded{spread}@{target}."""
+    from gateway.modules.m2_compressor.llmlingua2 import get_compressor
+    from gateway.modules.m4_router.certified import _encoder
+    from gateway.tokenizer import TokenCounter
+    from hybrid import graded
+
+    items = read_jsonl(OUT / "items.jsonl")
+    enc, tc, lingua = _encoder(), TokenCounter(), get_compressor()
+    with (OUT / "hybrid_graded.jsonl").open("w", encoding="utf-8") as fh:
+        for n, it in enumerate(items):
+            row = {"id": it["id"], "variants": {}}
+            for lang, tag in (("hinglish", "hi"), ("english", "en")):
+                p, q = it[lang]["passage"], it[lang]["question"]
+                for t in (0.5, 0.33):
+                    for sp in (0.6, 1.0):
+                        row["variants"][f"{tag}:graded{sp}@{t}"] = graded(p, q, t, enc, tc.count, lingua, spread=sp)
+            fh.write(json.dumps(row, ensure_ascii=False) + NL)
+            if n % 100 == 0:
+                print(n, flush=True)
+    print("done ->", OUT / "hybrid_graded.jsonl", flush=True)
+
+
 def export(tag: str, src: str = "hybrid.jsonl") -> None:
     from collect import SYSTEM
 
@@ -96,8 +121,9 @@ def export(tag: str, src: str = "hybrid.jsonl") -> None:
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["build", "build-grid", "export", "export-grid"])
+    ap.add_argument("cmd", choices=["build", "build-grid", "build-graded", "export", "export-grid", "export-graded"])
     ap.add_argument("--tag", default="")
     a = ap.parse_args()
     {"build": build, "build-grid": build_grid, "export": lambda: export(a.tag),
-     "export-grid": lambda: export(a.tag, "hybrid_grid.jsonl")}[a.cmd]()
+     "export-grid": lambda: export(a.tag, "hybrid_grid.jsonl"),
+     "build-graded": build_graded, "export-graded": lambda: export(a.tag, "hybrid_graded.jsonl")}[a.cmd]()
