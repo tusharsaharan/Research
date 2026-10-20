@@ -36,7 +36,7 @@ def hybrid(passage: str, question: str, target: float, sent_share: float, enc, c
     return fine
 
 
-def graded(passage: str, question: str, target: float, enc, count, lingua, spread: float = 0.6) -> str:
+def graded(passage: str, question: str, target: float, enc, count, lingua, spread: float = 0.6, lexw: float = 0.5) -> str:
     """Relevance-graded variant: no sentence is dropped outright; each sentence gets its own keep
     rate r_i = clip(c + spread * (rel_i - mean rel), 0.2, 1.0), with c set by bisection so the
     total meets the target (LongLLMLingua-style dynamic ratio, with our guards and the hybrid
@@ -50,7 +50,7 @@ def graded(passage: str, question: str, target: float, enc, count, lingua, sprea
         return compress_guarded(passage, target, lingua) or passage
     e = enc.encode(sents + [question], normalize_embeddings=True, show_progress_bar=False)
     qw = _words(question)
-    rel = 0.5 * (e[:-1] @ e[-1]) + 0.5 * np.array([len(qw & _words(s)) / max(1, len(qw)) for s in sents])
+    rel = (1 - lexw) * (e[:-1] @ e[-1]) + lexw * np.array([len(qw & _words(s)) / max(1, len(qw)) for s in sents])
     rel = (rel - rel.min()) / max(1e-6, rel.max() - rel.min())
     lens = np.array([count(s) for s in sents], float)
 

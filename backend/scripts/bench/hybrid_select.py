@@ -36,7 +36,8 @@ def main() -> None:
     from gateway.tokenizer import TokenCounter
 
     items = {r["id"]: r for r in read_jsonl(OUT / "items.jsonl")}
-    prompts = {p["key"]: p for p in read_jsonl(K / "prompts.jsonl") if p["item_id"] in items and p["task"] == "mcq"}
+    dirs = [K] + ([BENCH / "kaggle-hp"] if not TAG and (BENCH / "kaggle-hp" / "answers.jsonl").exists() else [])  # same 3B model
+    prompts = {p["key"]: p for d in dirs for p in read_jsonl(d / "prompts.jsonl") if p["item_id"] in items and p["task"] == "mcq"}
     tc = TokenCounter()
     ok, kept = {}, defaultdict(list)
     base_tok = {}
@@ -45,7 +46,7 @@ def main() -> None:
             base_tok[(it["id"], lang)] = tc.count(it[lang]["passage"])
     alias = {"llmlingua2@0.5": "hi:llmlingua2@0.5", "llmlingua2@0.7": "hi:llmlingua2@0.7", "guarded@0.7": "hi:guarded@0.7",
              "original": "hi:none", "english": "en:none"}
-    for a in read_jsonl(K / "answers.jsonl"):
+    for a in [x for d in dirs for x in read_jsonl(d / "answers.jsonl")]:
         p = prompts.get(a["key"])
         if not p:
             continue

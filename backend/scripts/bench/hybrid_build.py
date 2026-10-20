@@ -95,6 +95,29 @@ def build_graded() -> None:
     print("done ->", OUT / "hybrid_graded.jsonl", flush=True)
 
 
+def build_graded2(shard: str) -> None:
+    """Hinglish-focused round: stronger grading and lexical-weighted relevance. Sharded (i/n)."""
+    from common import in_shard
+    from gateway.modules.m2_compressor.llmlingua2 import get_compressor
+    from gateway.modules.m4_router.certified import _encoder
+    from gateway.tokenizer import TokenCounter
+    from hybrid import graded
+
+    items = [it for it in read_jsonl(OUT / "items.jsonl") if in_shard(it["id"], shard)]
+    enc, tc, lingua = _encoder(), TokenCounter(), get_compressor()
+    with (OUT / f"graded2.{shard.replace('/', 'of')}.jsonl").open("w", encoding="utf-8") as fh:
+        for it in items:
+            row = {"id": it["id"], "variants": {}}
+            for lang, tag in (("hinglish", "hi"), ("english", "en")):
+                p, q = it[lang]["passage"], it[lang]["question"]
+                for t in (0.5, 0.33):
+                    for sp, lw in ((1.5, 0.5), (2.0, 0.5), (1.0, 0.8), (1.5, 0.8)):
+                        name = f"{tag}:graded{sp}" + ("-lex" if lw > 0.5 else "") + f"@{t}"
+                        row["variants"][name] = graded(p, q, t, enc, tc.count, lingua, spread=sp, lexw=lw)
+            fh.write(json.dumps(row, ensure_ascii=False) + NL)
+    print("done", shard, flush=True)
+
+
 def export(tag: str, src: str = "hybrid.jsonl") -> None:
     from collect import SYSTEM
 
@@ -103,7 +126,7 @@ def export(tag: str, src: str = "hybrid.jsonl") -> None:
     have = {json.loads(x)["key"] for x in open(kfile, encoding="utf-8") if x.strip()}
     n = 0
     with kfile.open("a", encoding="utf-8") as fh:
-        for x in read_jsonl(OUT / src):
+        for x in [r for f in sorted(OUT.glob(src)) for r in read_jsonl(f)]:
             it = items[x["id"]]
             for m, passage in x["variants"].items():
                 lang = "hinglish" if m.startswith("hi:") else "english"
@@ -121,9 +144,11 @@ def export(tag: str, src: str = "hybrid.jsonl") -> None:
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["build", "build-grid", "build-graded", "export", "export-grid", "export-graded"])
+    ap.add_argument("cmd", choices=["build", "build-grid", "build-graded", "build-graded2", "export", "export-grid", "export-graded", "export-graded2"])
     ap.add_argument("--tag", default="")
+    ap.add_argument("--shard", default="1/1")
     a = ap.parse_args()
     {"build": build, "build-grid": build_grid, "export": lambda: export(a.tag),
      "export-grid": lambda: export(a.tag, "hybrid_grid.jsonl"),
-     "build-graded": build_graded, "export-graded": lambda: export(a.tag, "hybrid_graded.jsonl")}[a.cmd]()
+     "build-graded": build_graded, "build-graded2": lambda: build_graded2(a.shard),
+     "export-graded2": lambda: export(a.tag, "graded2.*.jsonl"), "export-graded": lambda: export(a.tag, "hybrid_graded.jsonl")}[a.cmd]()
