@@ -306,3 +306,26 @@ Source: `hotpot.py grade` -> `hotpot/report.json`. 127 questions × 12 context v
   Belebele passages (M), where it was no better than deletion.
 - Selective Context is the weakest; forcing question words (LongLLMLingua's idea) did not help.
 - Pilot only: 1.5B answerer, n = 127.
+
+## O. Our method: language-aware coarse-to-fine compression (hybrid.py)
+
+Coarse = query-aware sentence selection (embedding + lexical relevance, works for romanized
+Hinglish); fine = guarded token deletion inside kept sentences; budget split between the two
+(`hybrid`), or relevance-graded per-sentence keep rates without dropping sentences (`graded`).
+Splits are chosen on a dev third (hash of item id) and reported on the held-out two thirds.
+
+**Long contexts (HotpotQA, 1.5B answerer, ~140 questions, paired Wilcoxon):** hybrid with a
+token-heavy split at target 0.5 keeps 0.52 of tokens at −1.3 F1 (n.s.) and beats LLMLingua-2
+at the same budget by **+8.1 F1 (p = 0.014)**; vs guarded deletion +6.0 (p = 0.10), vs sentence
+selection +7.4 (p = 0.06). At 0.33: +2 to +4 F1 over all baselines (n.s.). Scaling to 500
+questions with the 3B answerer and budgets down to 0.2 is in progress.
+
+**Short passages (code-mixed Belebele, 3B, test n = 613; `hybrid_select.py` -> belebele/hybrid_select.json):**
+- English @0.33: dev-selected hybrid (s=0.7) keeps 0.34 at 52.0% vs guarded deletion 0.44 at
+  47.0% (**+5.1 pts with 22% fewer tokens, p = 0.043**) and vs sentence selection +5.9 (p = 0.015).
+  English @0.5: same accuracy as guarded deletion (56.1 vs 55.9%) at 0.49 vs 0.57 kept.
+- Hinglish: relevance-graded (spread 1.0) is best on test at both budgets (0.5: 41.6% vs guarded
+  39.8%; 0.33: 36.0% vs 33.4%), differences n.s.; dev selection at 0.5 picked a weaker split
+  (10 candidates, 287 dev items: selection noise). Mechanism-consistent pattern: hard sentence
+  dropping helps English, soft grading helps Hinglish (weaker relevance for romanized Hindi).
+  To confirm as a pre-declared per-language rule on fresh data.
