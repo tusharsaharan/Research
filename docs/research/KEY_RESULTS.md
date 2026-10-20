@@ -336,3 +336,11 @@ paired Wilcoxon, hybrid always at FEWER tokens: 0.51 vs 0.52 kept **+5.1 F1 (p=0
 **+10.1 (p=1e-6)**, 0.26 vs 0.31 **+10.6 (p=2e-7)**, 0.22 vs 0.27 **+11.8 (p=2e-7)**. At 0.5 the hybrid
 loses nothing (+1.5, n.s.); at 4.6x compression it loses 9.3 F1 vs 21.1 for LLMLingua-2. Sentence-heavy
 splits win at tight budgets; vs sentence selection alone +1.7 at 0.33 (n.s.). Selective Context worst.
+
+### O3. Hinglish-focused graded variants (Belebele, 3B, budget-faithful dev selection)
+`hybrid_select.py` now only selects variants within 10% of the target budget (strong spreads overshoot:
+graded2.0@0.33 keeps 0.45). Dev-selected for Hinglish at both budgets: **graded, spread 1.0, lexical-weighted
+relevance** (0.8 word overlap). Test (n=613): @0.5 41.3% vs guarded 39.8% (+1.5, n.s.), vs sentence
+selection +5.9 (p=0.01); @0.33 (0.326 vs 0.311 kept) 37.4% vs guarded 33.4% (**+3.9, p=0.06**), vs sentence
+selection +8.3 (p=0.0003). English keeps the sentence-dropping hybrid (O). Per-language rule: hard
+sentence selection for English, soft lexical-graded thinning for Hinglish.
