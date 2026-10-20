@@ -61,3 +61,4 @@
 - 2026-10-20 check 15/16 · 7B round 2 running; hotpot answering · no action
 - 2026-10-20 check 16/16 (10:20) · overnight done. HotpotQA pilot (n=127) -> KEY_RESULTS N (sentence selection best at 0.33 on long contexts). 7B round 2 (CondaQA + main) still RUNNING on Kaggle (log kaggle-7b/run2.log; runner pid 3080 downloads automatically); grade with KAGGLE_TAG=-7b condaqa.py grade --answers data/bench/kaggle-7b/answers.jsonl. Cron deleted.
 - 2026-10-20 12:45 · Hybrid coarse-to-fine compressor (hybrid.py): 12,600 Belebele prompts queued -> 3B Kaggle runner (log kaggle/run6.log); HotpotQA hybrid variants compressed, answering resumed (2 shards). 7B round 2 still RUNNING (kaggle-7b/run2.log). Next: grade belebele_extra (hybrid rows) + hotpot.
+- 2026-10-20 15:40 · 3B hybrid graded (hybrid_select.py): EN hybrid = deletion accuracy at 13-31% fewer tokens; HI no gain. Queued split grid + relevance-graded variants (7,200) -> Kaggle v10 (run7.log). 7B round 2 still RUNNING.
