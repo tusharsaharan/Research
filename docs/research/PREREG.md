@@ -86,3 +86,5 @@ Interim runs on partial data are allowed for debugging and are labelled
   multiple-choice sources ARC-Challenge test (all) and an MMLU test sample
   (1,000, seeded) under the same splits and analysis; results are reported
   pooled and per dataset.
+
+- 2026-10-21 (pre-registered before any out-of-domain result): hybrid settings FROZEN from HotpotQA - target 0.5 -> hybrid-s0.7, 0.33 -> hybrid-t-heavy (s=0.6), 0.25 -> hybrid-s0.5, 0.2 -> hybrid-s0.45 (backend/scripts/bench/longqa.py FROZEN). Evaluated unchanged on MuSiQue, 2WikiMultiHopQA, SQuAD v2 (answerable), MeetingBank-QA (<=2,500-token meetings), 400 questions each, Qwen2.5-3B, F1, paired Wilcoxon vs LLMLingua-2 at each budget. Claim succeeds only if the hybrid beats LLMLingua-2 at matched-or-fewer tokens on most datasets.

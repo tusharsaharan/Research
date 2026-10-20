@@ -281,8 +281,11 @@ def grade(files: list[str]) -> None:
     comp = compressed()
     report = {}
     for fpat in files:
-        rows = [r for f in sorted(Path(".").glob(fpat)) if f.exists() for r in read_jsonl(f)] or \
-               [r for f in sorted(OUT.glob(fpat)) for r in read_jsonl(f)]
+        if Path(fpat).is_absolute():
+            rows = read_jsonl(Path(fpat))
+        else:
+            rows = [r for f in sorted(Path(".").glob(fpat)) if f.exists() for r in read_jsonl(f)] or \
+                   [r for f in sorted(OUT.glob(fpat)) for r in read_jsonl(f)]
         sc = {}
         for r in rows:
             if r["item_id"] in items:

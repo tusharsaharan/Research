@@ -74,3 +74,4 @@
 - 2026-10-20 check 3/8 · hp round (run3) status logged
 - 2026-10-21 check 4/8 · hp round running
 - 2026-10-21 check 4/8 (00:45) · HotpotQA-500 graded -> KEY_RESULTS O2: hybrid beats LLMLingua-2 by +5 to +12 F1 at every budget (p<=0.005) with fewer tokens. graded2 Belebele round now on teammate Kaggle.
+- 2026-10-21 01:00 · Out-of-domain check with FROZEN hybrid settings (PREREG 2026-10-21): longqa.py + run_longqa.ps1 compress MuSiQue/2Wiki/SQuAD/MeetingBank (400 each, 3 shards each) then export to kaggle-hp; status data/bench/longqa.status. Grade: longqa.py grade --ds X --answers data/bench/kaggle-hp/answers.jsonl
