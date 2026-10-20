@@ -31,7 +31,10 @@ OUT = BENCH / "hotpot"
 RATES = (0.5, 0.33)
 METHODS = ["heuristic", "lexical-safe", *[f"{m}@{r}" for r in RATES for m in ("llmlingua2", "guarded", "qaware")],
            "selective@0.5", "selective@0.33", "sentsel@0.5", "sentsel@0.33",
-           "hybrid-s-heavy@0.5", "hybrid-t-heavy@0.5", "hybrid-s-heavy@0.33", "hybrid-t-heavy@0.33"]
+           "hybrid-s-heavy@0.5", "hybrid-t-heavy@0.5", "hybrid-s-heavy@0.33", "hybrid-t-heavy@0.33",
+           # round 2: finer splits around the winner, tighter budgets, relevance-graded
+           "hybrid-s0.7@0.5", "hybrid-s0.9@0.5", "hybrid-s0.5@0.25", "hybrid-s0.7@0.25", "hybrid-s0.45@0.2",
+           "hybrid-s0.65@0.2", "graded0.6@0.5", "graded0.6@0.33", "graded0.6@0.25", "llmlingua2@0.25", "llmlingua2@0.2"]
 SYSTEM = "Answer the question using the context. Reply with the short answer only (a few words, or yes/no)."
 STOP = set("a an the of in on at to for by with from and or is are was were be been what which who whom whose when "
            "where why how did does do that this these those as it its into than then there their they he she his her".split())
@@ -132,18 +135,28 @@ def compress(shard: str | None, only: list[str] | None, limit: int = 0) -> None:
     fns = {"heuristic": lambda t, q: comp.compress_heuristic(t).compressed, "lexical-safe": lambda t, q: compress_lexical_safe(t)}
     for r in RATES:
         fns |= {f"llmlingua2@{r}": plain(r), f"guarded@{r}": guarded(r), f"qaware@{r}": guarded(r, True)}
+    fns |= {"llmlingua2@0.25": plain(0.25), "llmlingua2@0.2": plain(0.2)}
     if any(m.startswith("sentsel") for m in methods):
         from belebele_extra import sentsel
         from gateway.modules.m4_router.certified import _encoder
         enc = _encoder()
         fns |= {f"sentsel@{r}": (lambda t, q, r=r: sentsel(t, q, r, enc, comp.counter.count)) for r in (0.5, 0.33)}
-    if any(m.startswith("hybrid") for m in methods):
-        from hybrid import SPLITS, hybrid
+    if any(m.startswith(("hybrid", "graded")) for m in methods):
+        from hybrid import SPLITS, graded, hybrid
         from gateway.modules.m4_router.certified import _encoder
         henc = _encoder()
         for tgt, sp in SPLITS.items():
             for name, sh in sp.items():
                 fns[f"hybrid-{name}@{tgt}"] = (lambda t, q, tgt=tgt, sh=sh: hybrid(t, q, tgt, sh, henc, comp.counter.count, lingua))
+        for m in methods:  # generic names: hybrid-s{share}@{target}, graded{spread}@{target}
+            if m in fns:
+                continue
+            g = re.fullmatch(r"hybrid-s([\d.]+)@([\d.]+)", m)
+            if g:
+                fns[m] = (lambda t, q, sh=float(g[1]), tgt=float(g[2]): hybrid(t, q, tgt, sh, henc, comp.counter.count, lingua))
+            g = re.fullmatch(r"graded([\d.]+)@([\d.]+)", m)
+            if g:
+                fns[m] = (lambda t, q, sp=float(g[1]), tgt=float(g[2]): graded(t, q, tgt, henc, comp.counter.count, lingua, spread=sp))
     if sel:
         fns |= {"selective@0.5": lambda t, q: sel.compress(t, 0.5), "selective@0.33": lambda t, q: sel.compress(t, 0.33)}
     tag = shard.replace("/", "of") if shard else "all"
@@ -192,6 +205,20 @@ def export(limit: int) -> None:
         for r in rows:
             fh.write(json.dumps(r, ensure_ascii=False) + "\n")
     print(len(rows), "prompts ->", OUT / "prompts.jsonl")
+
+
+def export_kaggle(limit: int) -> None:
+    """Append HotpotQA prompts (all compressed versions) to the Kaggle queue (KAGGLE_TAG selects the folder).
+    Grade afterwards from that folder: cd data/bench/kaggle && python ../../../scripts/bench/hotpot.py grade --answers answers.jsonl"""
+    kfile = BENCH / f"kaggle{os.environ.get('KAGGLE_TAG', '')}" / "prompts.jsonl"
+    have = {json.loads(x)["key"] for x in open(kfile, encoding="utf-8") if x.strip()}
+    n = 0
+    with kfile.open("a", encoding="utf-8") as fh:
+        for r in prompts(limit):
+            if r["key"] not in have:
+                fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+                n += 1
+    print(f"appended {n} HotpotQA prompts -> {kfile}")
 
 
 def answer(model: str, limit: int, shard: str | None) -> None:
@@ -285,7 +312,7 @@ def grade(files: list[str]) -> None:
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["build", "compress", "export", "answer", "grade"])
+    ap.add_argument("cmd", choices=["build", "compress", "export", "export-kaggle", "answer", "grade"])
     ap.add_argument("--n", type=int, default=1000)
     ap.add_argument("--shard", default=None)
     ap.add_argument("--methods", default=None)
@@ -299,6 +326,8 @@ if __name__ == "__main__":
         compress(a.shard, a.methods.split(",") if a.methods else None, a.limit)
     elif a.cmd == "export":
         export(a.limit)
+    elif a.cmd == "export-kaggle":
+        export_kaggle(a.limit)
     elif a.cmd == "answer":
         answer(a.model, a.limit, a.shard)
     else:
