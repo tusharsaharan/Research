@@ -77,3 +77,10 @@
 - 2026-10-21 01:00 · Out-of-domain check with FROZEN hybrid settings (PREREG 2026-10-21): longqa.py + run_longqa.ps1 compress MuSiQue/2Wiki/SQuAD/MeetingBank (400 each, 3 shards each) then export to kaggle-hp; status data/bench/longqa.status. Grade: longqa.py grade --ds X --answers data/bench/kaggle-hp/answers.jsonl
 - 2026-10-21 check 5/8 · graded2 kaggle running; longqa compressing
 - 2026-10-21 check 5/8 (01:55) · graded2 graded -> KEY_RESULTS O3 (HI: graded1.0-lex best, +3.9 vs guarded at 0.33, p=.06). Teammate runner finished; longqa needs a NEW teammate runner after run_longqa export (longqa.status).
+- 2026-10-21 check 6/8 · longqa compressing (see longqa.status)
+- 2026-10-21 check 7/12 · longqa compressing
+- 2026-10-21 check 8/12 · longqa compressing
+- 2026-10-21 check 9/12 · longqa status logged
+- 2026-10-21 check 10/12 � longqa Kaggle round running
+- 2026-10-21 check 11/12 � longqa Kaggle round running
+- 2026-10-21 check 11/12 (07:35) · OOD frozen-hybrid graded -> KEY_RESULTS P: SQuAD +12..+20 F1, MeetingBank +12..+16 at <=0.25, 2Wiki +4 at 0.2 (p<.05); prereg criterion met. 600 prompts remain for next round.

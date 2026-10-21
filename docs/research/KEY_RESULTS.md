@@ -344,3 +344,15 @@ relevance** (0.8 word overlap). Test (n=613): @0.5 41.3% vs guarded 39.8% (+1.5,
 selection +5.9 (p=0.01); @0.33 (0.326 vs 0.311 kept) 37.4% vs guarded 33.4% (**+3.9, p=0.06**), vs sentence
 selection +8.3 (p=0.0003). English keeps the sentence-dropping hybrid (O). Per-language rule: hard
 sentence selection for English, soft lexical-graded thinning for Hinglish.
+
+## P. Out-of-domain test of the FROZEN hybrid (pre-registered 2026-10-21; Qwen2.5-3B, kaggle-hp)
+Hybrid settings fixed from HotpotQA before these runs. F1 difference hybrid − LLMLingua-2 (paired
+Wilcoxon), hybrid at equal or fewer tokens, budgets 0.5 / 0.33 / 0.25 / 0.2:
+| Dataset (n) | uncompressed F1 | Δ hybrid − LLMLingua-2 |
+|---|---|---|
+| SQuAD v2, answerable (400) | 76.1 | +11.5 / +16.7 / +18.4 / +19.8 (all p < 1e-6) |
+| MeetingBank-QA (367; LLMLingua-2's training domain) | 59.1 | +1.6 / +4.3 (p=0.05) / +11.9 (p=2e-6) / +15.6 (p=5e-8) |
+| 2WikiMultiHopQA (394) | 40.9 | −1.3 / +0.8 / +2.9 / +4.3 (p=0.048) |
+| MuSiQue-answerable (151 graded) | 10.0 | ties (floor: 3B cannot solve it) |
+Pre-registered criterion met: better than LLMLingua-2 at matched-or-fewer tokens on 3 of 4 unseen datasets
+(never significantly worse). On MeetingBank the hybrid keeps F1 at the uncompressed level down to 0.2 of tokens.
