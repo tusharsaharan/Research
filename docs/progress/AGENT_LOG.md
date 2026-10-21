@@ -84,3 +84,4 @@
 - 2026-10-21 check 10/12 · longqa Kaggle round running
 - 2026-10-21 check 11/12 · longqa Kaggle round running
 - 2026-10-21 check 11/12 (07:35) Â· OOD frozen-hybrid graded -> KEY_RESULTS P: SQuAD +12..+20 F1, MeetingBank +12..+16 at <=0.25, 2Wiki +4 at 0.2 (p<.05); prereg criterion met. 600 prompts remain for next round.
+- 2026-10-21 check 12/12 · final check; cron deleted; remaining 600 OOD prompts in next teammate round
