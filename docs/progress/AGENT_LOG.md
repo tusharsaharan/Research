@@ -85,3 +85,4 @@
 - 2026-10-21 check 11/12 · longqa Kaggle round running
 - 2026-10-21 check 11/12 (07:35) Â· OOD frozen-hybrid graded -> KEY_RESULTS P: SQuAD +12..+20 F1, MeetingBank +12..+16 at <=0.25, 2Wiki +4 at 0.2 (p<.05); prereg criterion met. 600 prompts remain for next round.
 - 2026-10-21 check 12/12 · final check; cron deleted; remaining 600 OOD prompts in next teammate round
+- 2026-10-21 · Stronger baselines (baselines2.py: LLMLingua-2 large, LongLLMLingua w/ Qwen0.5B, BM25) building via run_baselines2.ps1 -> kaggle-hp round (status data/bench/baselines2.status, log kaggle-hp/run5.log). Belebele HI+EN, SQuAD, MeetingBank, HotpotQA-300.
