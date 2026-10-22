@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import pickle
 from pathlib import Path
 
@@ -72,6 +73,10 @@ def load_certified(data_dir: Path | str) -> tuple[CertifiedScorer, dict] | None:
     if not (model.exists() and thr.exists()):
         return None
     try:
+        if os.environ.get("ROUTER_SCORER", "").lower() == "v2" and (d / "router_v2.pkl").exists():
+            from gateway.modules.m4_router.router_v2 import V2Scorer  # exploratory; default stays prereg
+
+            return V2Scorer(pickle.loads((d / "router_v2.pkl").read_bytes())), json.loads(thr.read_text(encoding="utf-8"))
         bundle = pickle.loads(model.read_bytes())
         return CertifiedScorer(bundle), json.loads(thr.read_text(encoding="utf-8"))
     except Exception:

@@ -1,0 +1,155 @@
+{
+  "protocol": "item-grouped 5-fold CV on scorer_train only",
+  "n_rows": 222,
+  "n_items": 118,
+  "u_rate": {
+    "english": 0.0254,
+    "hinglish": 0.0192
+  },
+  "cheap_share": 0.5,
+  "rows_with_token_counts": 222,
+  "new_embeddings_encoded": 0,
+  "selection_rule": "v2 iff best candidate mean per-language-min AUROC - prereg >= 0.02, and AUROC defined (both classes) in all 5 folds per language",
+  "all_folds_valid": false,
+  "n_positives": {
+    "english": 3,
+    "hinglish": 2
+  },
+  "candidates": {
+    "prereg": {
+      "auroc": {
+        "english": {
+          "mean": 0.1449,
+          "sd": 0.1478,
+          "n_folds_valid": 3
+        },
+        "hinglish": {
+          "mean": 0.0789,
+          "sd": 0.0,
+          "n_folds_valid": 1
+        }
+      },
+      "fold_min_auroc_mean": 0.0553,
+      "pooled_oof_auroc": {
+        "english": 0.1652,
+        "hinglish": 0.0147
+      },
+      "proxy_at_cheap_share": {
+        "english": {
+          "risk": 0.0508,
+          "usd_saving": 0.289,
+          "prem_completion_tokens_per_cheap_query": 105.8305,
+          "net_completion_tokens_saved_per_cheap_query": 26.1186
+        },
+        "hinglish": {
+          "risk": 0.0385,
+          "usd_saving": 0.3092,
+          "prem_completion_tokens_per_cheap_query": 111.4423,
+          "net_completion_tokens_saved_per_cheap_query": 26.9423
+        }
+      }
+    },
+    "lex": {
+      "auroc": {
+        "english": {
+          "mean": 0.1021,
+          "sd": 0.0815,
+          "n_folds_valid": 3
+        },
+        "hinglish": {
+          "mean": 0.0526,
+          "sd": 0.0,
+          "n_folds_valid": 1
+        }
+      },
+      "fold_min_auroc_mean": 0.0472,
+      "pooled_oof_auroc": {
+        "english": 0.1043,
+        "hinglish": 0.0098
+      },
+      "proxy_at_cheap_share": {
+        "english": {
+          "risk": 0.0508,
+          "usd_saving": 0.3083,
+          "prem_completion_tokens_per_cheap_query": 112.0169,
+          "net_completion_tokens_saved_per_cheap_query": 32.1186
+        },
+        "hinglish": {
+          "risk": 0.0385,
+          "usd_saving": 0.3149,
+          "prem_completion_tokens_per_cheap_query": 117.1154,
+          "net_completion_tokens_saved_per_cheap_query": 25.9615
+        }
+      }
+    },
+    "lex_tuned": {
+      "auroc": {
+        "english": {
+          "mean": 0.2075,
+          "sd": 0.0947,
+          "n_folds_valid": 3
+        },
+        "hinglish": {
+          "mean": 0.0789,
+          "sd": 0.0,
+          "n_folds_valid": 1
+        }
+      },
+      "fold_min_auroc_mean": 0.1614,
+      "pooled_oof_auroc": {
+        "english": 0.1391,
+        "hinglish": 0.0147
+      },
+      "proxy_at_cheap_share": {
+        "english": {
+          "risk": 0.0508,
+          "usd_saving": 0.3589,
+          "prem_completion_tokens_per_cheap_query": 132.2712,
+          "net_completion_tokens_saved_per_cheap_query": 42.8644
+        },
+        "hinglish": {
+          "risk": 0.0385,
+          "usd_saving": 0.3358,
+          "prem_completion_tokens_per_cheap_query": 122.7692,
+          "net_completion_tokens_saved_per_cheap_query": 33.2308
+        }
+      }
+    },
+    "gbm": {
+      "auroc": {
+        "english": {
+          "mean": 0.4361,
+          "sd": 0.2663,
+          "n_folds_valid": 3
+        },
+        "hinglish": {
+          "mean": 0.4211,
+          "sd": 0.0,
+          "n_folds_valid": 1
+        }
+      },
+      "fold_min_auroc_mean": 0.3301,
+      "pooled_oof_auroc": {
+        "english": 0.3536,
+        "hinglish": 0.2647
+      },
+      "proxy_at_cheap_share": {
+        "english": {
+          "risk": 0.0339,
+          "usd_saving": 0.2606,
+          "prem_completion_tokens_per_cheap_query": 92.2542,
+          "net_completion_tokens_saved_per_cheap_query": 23.0
+        },
+        "hinglish": {
+          "risk": 0.0192,
+          "usd_saving": 0.2747,
+          "prem_completion_tokens_per_cheap_query": 100.4615,
+          "net_completion_tokens_saved_per_cheap_query": 18.3462
+        }
+      }
+    }
+  },
+  "best_candidate": "gbm",
+  "gain_vs_prereg": 0.2748,
+  "v2_selected": false
+}

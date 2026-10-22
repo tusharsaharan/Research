@@ -50,6 +50,19 @@ The owner is on a limited plan. **Spend tokens like they are money.**
 
 Sub-agents and side sessions only when the user asks for them by name.
 
+## Router track (cheap vs premium, certified per language)
+
+- Code: scorer + certification `backend/scripts/bench/certify.py`; offline v2 scorer
+  `backend/scripts/bench/router_v2.py`; serving `backend/src/gateway/modules/m4_router/certified.py`;
+  artifacts `backend/data/router_artifacts/`. Labels: `backend/data/bench/grades*.jsonl`.
+- Splits are frozen (`scorer_train` 30 / `pilot` 10 / `cert` 60). Select models on
+  `scorer_train` (item-grouped CV) only; `cert` is touched once, by `certify.py`.
+- Defaults stay pre-registered; any new scorer is opt-in via `ROUTER_SCORER=v2`.
+- More labels = the real lever, and they cost API quota: only via `run_daily.py`.
+- Project subagents (`.claude/agents/`): `log-reader` (Haiku, status checks),
+  `router-builder` (Sonnet, router code), `stats-reviewer` (Opus, validity review).
+  Use them only when the user asks for sub-agents; pick the cheapest that fits.
+
 ## Token discipline
 
 - Do exactly what was asked. No unrequested refactors, reports, docs or "while I'm here" fixes; propose them in one line instead.
