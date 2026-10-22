@@ -12,11 +12,13 @@ Runs on Belebele (Hinglish + English) and on SQuAD / MeetingBank / HotpotQA cont
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import re
 import sys
 from collections import Counter
+from pathlib import Path
 
 from common import BENCH, in_shard, read_jsonl
 
@@ -139,12 +141,152 @@ def export(name: str, tag_dir: str) -> None:
     print(f"appended {n} -> {kfile}")
 
 
+def grade(name: str, answers_path: str | None = None) -> None:
+    """Score saved Kaggle answers for the stronger-baseline batch."""
+    from scipy.stats import binomtest, wilcoxon
+
+    answers_path = Path(answers_path or BENCH / "kaggle-hp" / "answers.jsonl")
+    variants = {}
+    for f in sorted((BENCH / "baselines2").glob(f"{name}.*.jsonl")):
+        for x in read_jsonl(f):
+            for m, kept in x["kept"].items():
+                variants[(x["id"], x.get("tag", ""), m)] = kept
+
+    if name == "belebele":
+        items = {r["id"]: r for r in read_jsonl(BENCH / "belebele" / "items.jsonl")}
+        from grade import extract_letter
+
+        base_names = {"hi": "original", "en": "english"}
+        scores = {}
+        answer_files = [answers_path]
+        main_answers = BENCH / "kaggle" / "answers.jsonl"
+        if main_answers != answers_path:
+            answer_files.append(main_answers)
+        for answer_file in answer_files:
+            for a in read_jsonl(answer_file):
+                if a.get("model") != "Qwen/Qwen2.5-3B-Instruct":
+                    continue
+                tag = "hi" if a.get("lang") == "hinglish" else "en"
+                for m in a.get("methods", []):
+                    if a["item_id"] not in items:
+                        continue
+                    score_name = m
+                    if tag == "hi" and m in ("llmlingua2@0.5", "llmlingua2@0.33"):
+                        score_name = "hi:" + m
+                    if m == base_names[tag] or m.startswith(tag + ":") or m in ("llmlingua2@0.5", "llmlingua2@0.33"):
+                        scores[(a["item_id"], tag, score_name)] = extract_letter(a["content"]) == items[a["item_id"]]["gold"]
+
+        report = {}
+        for tag, lang in (("hi", "hinglish"), ("en", "english")):
+            base = base_names[tag]
+            ids = [i for i in items if (i, tag, base) in scores]
+            res = {"n_original": len(ids), "accuracy_original": round(sum(scores[(i, tag, base)] for i in ids) / max(1, len(ids)), 4), "methods": {}}
+            for m in METHODS:
+                method = f"{tag}:{m}"
+                common = [i for i in ids if (i, tag, method) in scores]
+                if not common:
+                    continue
+                wins = sum(scores[(i, tag, method)] and not scores[(i, tag, base)] for i in common)
+                losses = sum(scores[(i, tag, base)] and not scores[(i, tag, method)] for i in common)
+                kept = sum(variants.get((i, tag, m), 0.0) for i in common) / len(common)
+                res["methods"][method] = {
+                    "n": len(common), "accuracy": round(sum(scores[(i, tag, method)] for i in common) / len(common), 4),
+                    "accuracy_original_paired": round(sum(scores[(i, tag, base)] for i in common) / len(common), 4),
+                    "delta_vs_original_pts": round(100 * sum(scores[(i, tag, method)] - scores[(i, tag, base)] for i in common) / len(common), 2),
+                    "p_mcnemar": float(binomtest(wins, wins + losses).pvalue) if wins + losses else 1.0,
+                    "context_tokens_kept": round(kept, 4),
+                }
+            report[lang] = res
+
+        selected = json.loads((BENCH / "belebele" / "hybrid_select.json").read_text(encoding="utf-8"))
+        report["heldout_test"] = {}
+        for tag, lang in (("hi", "hinglish"), ("en", "english")):
+            for rate in (0.5, 0.33):
+                split_key = f"{tag}@{rate}"
+                hybrid = selected[split_key]["selected_on_dev"]
+                test_ids = [i for i in items if int(hashlib.sha256(f"hybrid-dev|{i}".encode()).hexdigest(), 16) % 3 != 0]
+                small = next((m for m in (f"{tag}:llmlingua2@{rate}", f"llmlingua2@{rate}")
+                              if all((i, tag, m) in scores for i in test_ids)), None)
+                split_report = {"n_test": len(test_ids), "hybrid_selected_on_dev": hybrid, "methods": {}}
+                for m in (f"{tag}:{x}@{rate}" for x in ("llml2L", "longllml", "bm25")):
+                    common = [i for i in test_ids if (i, tag, m) in scores and (i, tag, hybrid) in scores]
+                    if not common:
+                        continue
+                    comp = {"hybrid": hybrid}
+                    if small:
+                        comp["llmlingua2_small"] = small
+                    split_report["methods"][m] = {"n": len(common), "accuracy": round(sum(scores[(i, tag, m)] for i in common) / len(common), 4), "comparisons": {}}
+                    for label, ref in comp.items():
+                        wins = sum(scores[(i, tag, m)] and not scores[(i, tag, ref)] for i in common)
+                        losses = sum(scores[(i, tag, ref)] and not scores[(i, tag, m)] for i in common)
+                        split_report["methods"][m]["comparisons"][label] = {
+                            "method": ref,
+                            "accuracy": round(sum(scores[(i, tag, ref)] for i in common) / len(common), 4),
+                            "delta_pts": round(100 * sum(scores[(i, tag, m)] - scores[(i, tag, ref)] for i in common) / len(common), 2),
+                            "p_mcnemar": float(binomtest(wins, wins + losses).pvalue) if wins + losses else 1.0,
+                        }
+                report["heldout_test"][split_key] = split_report
+    else:
+        from hotpot import clean, f1
+
+        folder = BENCH / ("hotpot" if name == "hotpot" else f"longqa_{name}")
+        items = {r["id"]: r for r in read_jsonl(folder / "items.jsonl")}
+        scores = {}
+        for a in read_jsonl(answers_path):
+            if a["item_id"] not in items:
+                continue
+            for m in a.get("methods", []):
+                if m == "original" or m.startswith("hybrid-") or m.startswith("llmlingua2@") or (m in METHODS and "|b2:" in a.get("key", "")):
+                    scores[(a["item_id"], m)] = f1(clean(a["content"]), items[a["item_id"]]["answer"])
+        ids = [i for i in items if (i, "original") in scores]
+        report = {"n_original": len(ids), "f1_original": round(sum(scores[(i, "original")] for i in ids) / max(1, len(ids)), 4), "methods": {}}
+        for m in METHODS:
+            common = [i for i in ids if (i, m) in scores]
+            if not common:
+                continue
+            diffs = [scores[(i, m)] - scores[(i, "original")] for i in common]
+            p = float(wilcoxon(diffs).pvalue) if any(diffs) else 1.0
+            kept = sum(variants.get((i, "", m), 0.0) for i in common) / len(common)
+            report["methods"][m] = {
+                "n": len(common), "f1": round(sum(scores[(i, m)] for i in common) / len(common), 4),
+                "f1_original_paired": round(sum(scores[(i, "original")] for i in common) / len(common), 4),
+                "delta_vs_original_f1_pts": round(100 * sum(diffs) / len(common), 2),
+                "p_wilcoxon": p, "context_tokens_kept": round(kept, 4),
+            }
+            rate = "0.5" if m.endswith("@0.5") else "0.33"
+            refs = (f"llmlingua2@{rate}", f"hybrid-s0.7@0.5" if rate == "0.5" else "hybrid-t-heavy@0.33")
+            comparisons = {}
+            for label, ref in zip(("llmlingua2_small", "frozen_hybrid"), refs):
+                paired = [i for i in common if (i, ref) in scores]
+                if not paired:
+                    continue
+                delta = [scores[(i, m)] - scores[(i, ref)] for i in paired]
+                comparisons[label] = {
+                    "method": ref, "n": len(paired),
+                    "reference_f1": round(sum(scores[(i, ref)] for i in paired) / len(paired), 4),
+                    "delta_f1_pts": round(100 * sum(delta) / len(paired), 2),
+                    "p_wilcoxon": float(wilcoxon(delta).pvalue) if any(delta) else 1.0,
+                }
+            report["methods"][m]["comparisons"] = comparisons
+
+    out = BENCH / "baselines2" / f"{name}_report.json"
+    out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    print(json.dumps(report, indent=2))
+    print(f"saved {out}")
+
+
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["build", "export"])
+    ap.add_argument("cmd", choices=["build", "export", "grade"])
     ap.add_argument("--set", required=True, choices=["belebele", "squad", "meetingbank", "hotpot"])
     ap.add_argument("--shard", default="1/1")
     ap.add_argument("--tag", default="")
+    ap.add_argument("--answers", default=None)
     a = ap.parse_args()
-    build(a.set, a.shard) if a.cmd == "build" else export(a.set, a.tag)
+    if a.cmd == "build":
+        build(a.set, a.shard)
+    elif a.cmd == "export":
+        export(a.set, a.tag)
+    else:
+        grade(a.set, a.answers)

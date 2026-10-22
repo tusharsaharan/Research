@@ -4,7 +4,7 @@
 - 2026-10-16 · Compression study on 8,000 prompts (heuristic, CRF, tokopt, LLMLingua-2 @0.7/0.5; o200k/Qwen/XLM-R tokenizers) → docs/research/COMPRESSION_STUDY.md. Fixed CRF task-altering edits (numeric groups/quotes/math now protected spans). compress_eval.py has --shard/--summarize. Answer-level compression check runs daily (compress_answers.py). Next: simulation sweeps (sim_tax.py), then answer-level results when quota allows.
 - 2026-10-17 · Guarded LLMLingua-2 (forces negations/question words, keeps MCQ options verbatim, restores split numbers) → commit c7d4bb1. Detached run `scripts/bench/run_guarded.ps1` finishing guarded shards (resumable), then --summarize + sem_sim.py; done-marker `backend/data/bench/run_guarded.done`. Interim (79%): guarded@0.5 keeps 66% EN / 50% HI tokens with 0 negation loss vs plain LLMLingua-2 ~57-59%. Next: read final summary + sem_sim, update COMPRESSION_STUDY.md.
 - 2026-10-17 · compress_answers default methods now guarded@0.5 vs llmlingua2@0.5 vs crf+tokopt (paired, daily API). Queued detached `run_sweep.ps1` (waits for run_guarded.done; rates 0.3/0.6/0.8 guarded + 0.3/0.4/0.6/0.8 plain; done-marker run_sweep.done). Next: rate-distortion table + sem_sim into COMPRESSION_STUDY.md.
-- 2026-10-17 � Guarded results + embedding-blindness finding in COMPRESSION_STUDY.md. Fixed guard to force digit-containing words (5kg/10am were dropped). Running: run_sweep.ps1 (? run_sweep.done), then queued run_guarded2.ps1 (guarded2@0.4�0.8, ? run_guarded2.done). Next: rate-distortion table from both.
+- 2026-10-17 · Guarded results + embedding-blindness finding in COMPRESSION_STUDY.md. Fixed guard to force digit-containing words (5kg/10am were dropped). Running: run_sweep.ps1 (? run_sweep.done), then queued run_guarded2.ps1 (guarded2@0.4–0.8, ? run_guarded2.done). Next: rate-distortion table from both.
 - 2026-10-17 hourly check 1/8 · sweep 14,666/56,000 rows, guarded2 queued, CPU 100%. No change.
 - 2026-10-17 hourly check 2/8 · sweep 28,245/56,000 (~13.6k/h), ETA ~2h; guarded2 queued.
 - 2026-10-17 hourly check 3/8 · sweep 41,820/56,000, ETA ~1h; guarded2 queued.
@@ -81,8 +81,9 @@
 - 2026-10-21 check 7/12 · longqa compressing
 - 2026-10-21 check 8/12 · longqa compressing
 - 2026-10-21 check 9/12 · longqa status logged
-- 2026-10-21 check 10/12 � longqa Kaggle round running
-- 2026-10-21 check 11/12 � longqa Kaggle round running
+- 2026-10-21 check 10/12 · longqa Kaggle round running
+- 2026-10-21 check 11/12 · longqa Kaggle round running
 - 2026-10-21 check 11/12 (07:35) · OOD frozen-hybrid graded -> KEY_RESULTS P: SQuAD +12..+20 F1, MeetingBank +12..+16 at <=0.25, 2Wiki +4 at 0.2 (p<.05); prereg criterion met. 600 prompts remain for next round.
-- 2026-10-21 check 12/12 � final check; cron deleted; remaining 600 OOD prompts in next teammate round
-- 2026-10-21 � Stronger baselines (baselines2.py: LLMLingua-2 large, LongLLMLingua w/ Qwen0.5B, BM25) building via run_baselines2.ps1 -> kaggle-hp round (status data/bench/baselines2.status, log kaggle-hp/run5.log). Belebele HI+EN, SQuAD, MeetingBank, HotpotQA-300.
+- 2026-10-21 check 12/12 · final check; cron deleted; remaining 600 OOD prompts in next teammate round
+- 2026-10-21 · Stronger baselines (baselines2.py: LLMLingua-2 large, LongLLMLingua w/ Qwen0.5B, BM25) building via run_baselines2.ps1 -> kaggle-hp round (status data/bench/baselines2.status, log kaggle-hp/run5.log). Belebele HI+EN, SQuAD, MeetingBank, HotpotQA-300.
+- 2026-10-22 · Added baselines2 grading and extracted saved Kaggle results for Hinglish/English Belebele, SQuAD, MeetingBank and HotpotQA; reports under backend/data/bench/baselines2. Latest local run5 status RUNNING at 16:23; next: check completion and fill partial MeetingBank/Hotpot coverage.
