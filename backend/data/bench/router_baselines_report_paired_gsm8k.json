@@ -1,0 +1,1047 @@
+{
+ "grades_pair2": {
+  "scorer": "paraphrase-multilingual-MiniLM-L12-v2 + lang/CMI/length | logistic regression (balanced)",
+  "n_cert_items": 307,
+  "n_cert_rows": 614,
+  "splits": 1000,
+  "delta": 0.1,
+  "auroc_cert": {
+   "english": {
+    "lr": 0.6351988519885199,
+    "knn": 0.5230627306273062,
+    "n": 307,
+    "n_u1": 36
+   },
+   "hinglish": {
+    "lr": 0.5792907502893824,
+    "knn": 0.5452488687782806,
+    "n": 307,
+    "n_u1": 86
+   }
+  },
+  "results": [
+   {
+    "method": "always_premium",
+    "alpha": 0.05,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.0,
+    "cheap_share": 0.0,
+    "cost_saving": 0.0,
+    "apgr": 1.0
+   },
+   {
+    "method": "always_premium",
+    "alpha": 0.05,
+    "lang": "hinglish",
+    "violation_rate": 0.0,
+    "mean_risk": 0.0,
+    "cheap_share": 0.0,
+    "cost_saving": 0.0,
+    "apgr": 1.0
+   },
+   {
+    "method": "always_cheap",
+    "alpha": 0.05,
+    "lang": "english",
+    "violation_rate": 1.0,
+    "mean_risk": 0.1186,
+    "cheap_share": 1.0,
+    "cost_saving": 1.0,
+    "apgr": 0.0
+   },
+   {
+    "method": "always_cheap",
+    "alpha": 0.05,
+    "lang": "hinglish",
+    "violation_rate": 1.0,
+    "mean_risk": 0.2806,
+    "cheap_share": 1.0,
+    "cost_saving": 1.0,
+    "apgr": 0.0
+   },
+   {
+    "method": "random_matched",
+    "alpha": 0.05,
+    "lang": "english",
+    "violation_rate": 0.087,
+    "mean_risk": 0.0302,
+    "cheap_share": 0.25,
+    "cost_saving": 0.25,
+    "apgr": 0.75
+   },
+   {
+    "method": "random_matched",
+    "alpha": 0.05,
+    "lang": "hinglish",
+    "violation_rate": 0.032,
+    "mean_risk": 0.0229,
+    "cheap_share": 0.081,
+    "cost_saving": 0.081,
+    "apgr": 0.919
+   },
+   {
+    "method": "emp_marginal",
+    "alpha": 0.05,
+    "lang": "english",
+    "violation_rate": 0.953,
+    "mean_risk": 0.0886,
+    "cheap_share": 0.866,
+    "cost_saving": 0.831,
+    "apgr": 0.273
+   },
+   {
+    "method": "emp_marginal",
+    "alpha": 0.05,
+    "lang": "hinglish",
+    "violation_rate": 0.039,
+    "mean_risk": 0.0161,
+    "cheap_share": 0.075,
+    "cost_saving": 0.07,
+    "apgr": 0.953
+   },
+   {
+    "method": "emp_perlang",
+    "alpha": 0.05,
+    "lang": "english",
+    "violation_rate": 0.542,
+    "mean_risk": 0.052,
+    "cheap_share": 0.582,
+    "cost_saving": 0.532,
+    "apgr": 0.577
+   },
+   {
+    "method": "emp_perlang",
+    "alpha": 0.05,
+    "lang": "hinglish",
+    "violation_rate": 0.423,
+    "mean_risk": 0.0501,
+    "cheap_share": 0.222,
+    "cost_saving": 0.201,
+    "apgr": 0.832
+   },
+   {
+    "method": "crc_marginal",
+    "alpha": 0.05,
+    "lang": "english",
+    "violation_rate": 0.932,
+    "mean_risk": 0.0853,
+    "cheap_share": 0.846,
+    "cost_saving": 0.807,
+    "apgr": 0.3
+   },
+   {
+    "method": "crc_marginal",
+    "alpha": 0.05,
+    "lang": "hinglish",
+    "violation_rate": 0.02,
+    "mean_risk": 0.0126,
+    "cheap_share": 0.061,
+    "cost_saving": 0.057,
+    "apgr": 0.966
+   },
+   {
+    "method": "crc_perlang",
+    "alpha": 0.05,
+    "lang": "english",
+    "violation_rate": 0.429,
+    "mean_risk": 0.0456,
+    "cheap_share": 0.525,
+    "cost_saving": 0.477,
+    "apgr": 0.632
+   },
+   {
+    "method": "crc_perlang",
+    "alpha": 0.05,
+    "lang": "hinglish",
+    "violation_rate": 0.395,
+    "mean_risk": 0.0437,
+    "cheap_share": 0.189,
+    "cost_saving": 0.172,
+    "apgr": 0.853
+   },
+   {
+    "method": "ltt_marginal",
+    "alpha": 0.05,
+    "lang": "english",
+    "violation_rate": 0.644,
+    "mean_risk": 0.0573,
+    "cheap_share": 0.625,
+    "cost_saving": 0.575,
+    "apgr": 0.528
+   },
+   {
+    "method": "ltt_marginal",
+    "alpha": 0.05,
+    "lang": "hinglish",
+    "violation_rate": 0.001,
+    "mean_risk": 0.0017,
+    "cheap_share": 0.012,
+    "cost_saving": 0.013,
+    "apgr": 0.997
+   },
+   {
+    "method": "ltt_perlang",
+    "alpha": 0.05,
+    "lang": "english",
+    "violation_rate": 0.058,
+    "mean_risk": 0.0194,
+    "cheap_share": 0.25,
+    "cost_saving": 0.226,
+    "apgr": 0.861
+   },
+   {
+    "method": "ltt_perlang",
+    "alpha": 0.05,
+    "lang": "hinglish",
+    "violation_rate": 0.054,
+    "mean_risk": 0.0186,
+    "cheap_share": 0.081,
+    "cost_saving": 0.077,
+    "apgr": 0.944
+   },
+   {
+    "method": "ltt_marginal_worstgroup",
+    "alpha": 0.05,
+    "lang": "english",
+    "violation_rate": 0.058,
+    "mean_risk": 0.0194,
+    "cheap_share": 0.25,
+    "cost_saving": 0.226,
+    "apgr": 0.861
+   },
+   {
+    "method": "ltt_marginal_worstgroup",
+    "alpha": 0.05,
+    "lang": "hinglish",
+    "violation_rate": 0.0,
+    "mean_risk": 0.0,
+    "cheap_share": 0.0,
+    "cost_saving": 0.0,
+    "apgr": 1.0
+   },
+   {
+    "method": "knn_ltt_perlang",
+    "alpha": 0.05,
+    "lang": "english",
+    "violation_rate": 0.026,
+    "mean_risk": 0.0168,
+    "cheap_share": 0.16,
+    "cost_saving": 0.159,
+    "apgr": 0.854
+   },
+   {
+    "method": "knn_ltt_perlang",
+    "alpha": 0.05,
+    "lang": "hinglish",
+    "violation_rate": 0.041,
+    "mean_risk": 0.0186,
+    "cheap_share": 0.075,
+    "cost_saving": 0.071,
+    "apgr": 0.932
+   },
+   {
+    "method": "always_premium",
+    "alpha": 0.1,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.0,
+    "cheap_share": 0.0,
+    "cost_saving": 0.0,
+    "apgr": 1.0
+   },
+   {
+    "method": "always_premium",
+    "alpha": 0.1,
+    "lang": "hinglish",
+    "violation_rate": 0.0,
+    "mean_risk": 0.0,
+    "cheap_share": 0.0,
+    "cost_saving": 0.0,
+    "apgr": 1.0
+   },
+   {
+    "method": "always_cheap",
+    "alpha": 0.1,
+    "lang": "english",
+    "violation_rate": 0.829,
+    "mean_risk": 0.1186,
+    "cheap_share": 1.0,
+    "cost_saving": 1.0,
+    "apgr": 0.0
+   },
+   {
+    "method": "always_cheap",
+    "alpha": 0.1,
+    "lang": "hinglish",
+    "violation_rate": 1.0,
+    "mean_risk": 0.2806,
+    "cheap_share": 1.0,
+    "cost_saving": 1.0,
+    "apgr": 0.0
+   },
+   {
+    "method": "random_matched",
+    "alpha": 0.1,
+    "lang": "english",
+    "violation_rate": 0.107,
+    "mean_risk": 0.0702,
+    "cheap_share": 0.582,
+    "cost_saving": 0.582,
+    "apgr": 0.418
+   },
+   {
+    "method": "random_matched",
+    "alpha": 0.1,
+    "lang": "hinglish",
+    "violation_rate": 0.11,
+    "mean_risk": 0.0628,
+    "cheap_share": 0.222,
+    "cost_saving": 0.222,
+    "apgr": 0.778
+   },
+   {
+    "method": "emp_marginal",
+    "alpha": 0.1,
+    "lang": "english",
+    "violation_rate": 0.711,
+    "mean_risk": 0.112,
+    "cheap_share": 0.974,
+    "cost_saving": 0.967,
+    "apgr": 0.062
+   },
+   {
+    "method": "emp_marginal",
+    "alpha": 0.1,
+    "lang": "hinglish",
+    "violation_rate": 0.305,
+    "mean_risk": 0.087,
+    "cheap_share": 0.4,
+    "cost_saving": 0.374,
+    "apgr": 0.714
+   },
+   {
+    "method": "emp_perlang",
+    "alpha": 0.1,
+    "lang": "english",
+    "violation_rate": 0.534,
+    "mean_risk": 0.1037,
+    "cheap_share": 0.934,
+    "cost_saving": 0.916,
+    "apgr": 0.15
+   },
+   {
+    "method": "emp_perlang",
+    "alpha": 0.1,
+    "lang": "hinglish",
+    "violation_rate": 0.471,
+    "mean_risk": 0.0985,
+    "cheap_share": 0.442,
+    "cost_saving": 0.415,
+    "apgr": 0.676
+   },
+   {
+    "method": "crc_marginal",
+    "alpha": 0.1,
+    "lang": "english",
+    "violation_rate": 0.7,
+    "mean_risk": 0.1113,
+    "cheap_share": 0.972,
+    "cost_saving": 0.964,
+    "apgr": 0.069
+   },
+   {
+    "method": "crc_marginal",
+    "alpha": 0.1,
+    "lang": "hinglish",
+    "violation_rate": 0.243,
+    "mean_risk": 0.0818,
+    "cheap_share": 0.379,
+    "cost_saving": 0.354,
+    "apgr": 0.731
+   },
+   {
+    "method": "crc_perlang",
+    "alpha": 0.1,
+    "lang": "english",
+    "violation_rate": 0.453,
+    "mean_risk": 0.0982,
+    "cheap_share": 0.908,
+    "cost_saving": 0.884,
+    "apgr": 0.198
+   },
+   {
+    "method": "crc_perlang",
+    "alpha": 0.1,
+    "lang": "hinglish",
+    "violation_rate": 0.426,
+    "mean_risk": 0.0916,
+    "cheap_share": 0.422,
+    "cost_saving": 0.396,
+    "apgr": 0.701
+   },
+   {
+    "method": "ltt_marginal",
+    "alpha": 0.1,
+    "lang": "english",
+    "violation_rate": 0.501,
+    "mean_risk": 0.0999,
+    "cheap_share": 0.929,
+    "cost_saving": 0.907,
+    "apgr": 0.173
+   },
+   {
+    "method": "ltt_marginal",
+    "alpha": 0.1,
+    "lang": "hinglish",
+    "violation_rate": 0.015,
+    "mean_risk": 0.0367,
+    "cheap_share": 0.162,
+    "cost_saving": 0.149,
+    "apgr": 0.879
+   },
+   {
+    "method": "ltt_perlang",
+    "alpha": 0.1,
+    "lang": "english",
+    "violation_rate": 0.042,
+    "mean_risk": 0.052,
+    "cheap_share": 0.582,
+    "cost_saving": 0.532,
+    "apgr": 0.577
+   },
+   {
+    "method": "ltt_perlang",
+    "alpha": 0.1,
+    "lang": "hinglish",
+    "violation_rate": 0.056,
+    "mean_risk": 0.0501,
+    "cheap_share": 0.222,
+    "cost_saving": 0.201,
+    "apgr": 0.832
+   },
+   {
+    "method": "ltt_marginal_worstgroup",
+    "alpha": 0.1,
+    "lang": "english",
+    "violation_rate": 0.042,
+    "mean_risk": 0.0573,
+    "cheap_share": 0.625,
+    "cost_saving": 0.575,
+    "apgr": 0.528
+   },
+   {
+    "method": "ltt_marginal_worstgroup",
+    "alpha": 0.1,
+    "lang": "hinglish",
+    "violation_rate": 0.0,
+    "mean_risk": 0.0017,
+    "cheap_share": 0.012,
+    "cost_saving": 0.013,
+    "apgr": 0.997
+   },
+   {
+    "method": "knn_ltt_perlang",
+    "alpha": 0.1,
+    "lang": "english",
+    "violation_rate": 0.046,
+    "mean_risk": 0.0533,
+    "cheap_share": 0.431,
+    "cost_saving": 0.437,
+    "apgr": 0.559
+   },
+   {
+    "method": "knn_ltt_perlang",
+    "alpha": 0.1,
+    "lang": "hinglish",
+    "violation_rate": 0.03,
+    "mean_risk": 0.0507,
+    "cheap_share": 0.219,
+    "cost_saving": 0.21,
+    "apgr": 0.814
+   },
+   {
+    "method": "always_premium",
+    "alpha": 0.2,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.0,
+    "cheap_share": 0.0,
+    "cost_saving": 0.0,
+    "apgr": 1.0
+   },
+   {
+    "method": "always_premium",
+    "alpha": 0.2,
+    "lang": "hinglish",
+    "violation_rate": 0.0,
+    "mean_risk": 0.0,
+    "cheap_share": 0.0,
+    "cost_saving": 0.0,
+    "apgr": 1.0
+   },
+   {
+    "method": "always_cheap",
+    "alpha": 0.2,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.1186,
+    "cheap_share": 1.0,
+    "cost_saving": 1.0,
+    "apgr": 0.0
+   },
+   {
+    "method": "always_cheap",
+    "alpha": 0.2,
+    "lang": "hinglish",
+    "violation_rate": 1.0,
+    "mean_risk": 0.2806,
+    "cheap_share": 1.0,
+    "cost_saving": 1.0,
+    "apgr": 0.0
+   },
+   {
+    "method": "random_matched",
+    "alpha": 0.2,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.1176,
+    "cheap_share": 0.989,
+    "cost_saving": 0.989,
+    "apgr": 0.011
+   },
+   {
+    "method": "random_matched",
+    "alpha": 0.2,
+    "lang": "hinglish",
+    "violation_rate": 0.089,
+    "mean_risk": 0.1475,
+    "cheap_share": 0.522,
+    "cost_saving": 0.522,
+    "apgr": 0.478
+   },
+   {
+    "method": "emp_marginal",
+    "alpha": 0.2,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.1177,
+    "cheap_share": 0.999,
+    "cost_saving": 0.999,
+    "apgr": 0.009
+   },
+   {
+    "method": "emp_marginal",
+    "alpha": 0.2,
+    "lang": "hinglish",
+    "violation_rate": 0.953,
+    "mean_risk": 0.2707,
+    "cheap_share": 0.969,
+    "cost_saving": 0.96,
+    "apgr": 0.041
+   },
+   {
+    "method": "emp_perlang",
+    "alpha": 0.2,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.1186,
+    "cheap_share": 1.0,
+    "cost_saving": 1.0,
+    "apgr": 0.0
+   },
+   {
+    "method": "emp_perlang",
+    "alpha": 0.2,
+    "lang": "hinglish",
+    "violation_rate": 0.51,
+    "mean_risk": 0.1984,
+    "cheap_share": 0.762,
+    "cost_saving": 0.733,
+    "apgr": 0.311
+   },
+   {
+    "method": "crc_marginal",
+    "alpha": 0.2,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.1174,
+    "cheap_share": 0.999,
+    "cost_saving": 0.998,
+    "apgr": 0.011
+   },
+   {
+    "method": "crc_marginal",
+    "alpha": 0.2,
+    "lang": "hinglish",
+    "violation_rate": 0.942,
+    "mean_risk": 0.2679,
+    "cheap_share": 0.961,
+    "cost_saving": 0.951,
+    "apgr": 0.052
+   },
+   {
+    "method": "crc_perlang",
+    "alpha": 0.2,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.1186,
+    "cheap_share": 1.0,
+    "cost_saving": 1.0,
+    "apgr": 0.0
+   },
+   {
+    "method": "crc_perlang",
+    "alpha": 0.2,
+    "lang": "hinglish",
+    "violation_rate": 0.44,
+    "mean_risk": 0.1919,
+    "cheap_share": 0.743,
+    "cost_saving": 0.713,
+    "apgr": 0.334
+   },
+   {
+    "method": "ltt_marginal",
+    "alpha": 0.2,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.1153,
+    "cheap_share": 0.991,
+    "cost_saving": 0.989,
+    "apgr": 0.029
+   },
+   {
+    "method": "ltt_marginal",
+    "alpha": 0.2,
+    "lang": "hinglish",
+    "violation_rate": 0.533,
+    "mean_risk": 0.204,
+    "cheap_share": 0.778,
+    "cost_saving": 0.749,
+    "apgr": 0.29
+   },
+   {
+    "method": "ltt_perlang",
+    "alpha": 0.2,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.116,
+    "cheap_share": 0.989,
+    "cost_saving": 0.986,
+    "apgr": 0.031
+   },
+   {
+    "method": "ltt_perlang",
+    "alpha": 0.2,
+    "lang": "hinglish",
+    "violation_rate": 0.046,
+    "mean_risk": 0.1255,
+    "cheap_share": 0.522,
+    "cost_saving": 0.491,
+    "apgr": 0.577
+   },
+   {
+    "method": "ltt_marginal_worstgroup",
+    "alpha": 0.2,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.0999,
+    "cheap_share": 0.929,
+    "cost_saving": 0.907,
+    "apgr": 0.173
+   },
+   {
+    "method": "ltt_marginal_worstgroup",
+    "alpha": 0.2,
+    "lang": "hinglish",
+    "violation_rate": 0.0,
+    "mean_risk": 0.0367,
+    "cheap_share": 0.162,
+    "cost_saving": 0.149,
+    "apgr": 0.879
+   },
+   {
+    "method": "knn_ltt_perlang",
+    "alpha": 0.2,
+    "lang": "english",
+    "violation_rate": 0.0,
+    "mean_risk": 0.1159,
+    "cheap_share": 0.982,
+    "cost_saving": 0.982,
+    "apgr": 0.032
+   },
+   {
+    "method": "knn_ltt_perlang",
+    "alpha": 0.2,
+    "lang": "hinglish",
+    "violation_rate": 0.041,
+    "mean_risk": 0.1252,
+    "cheap_share": 0.496,
+    "cost_saving": 0.505,
+    "apgr": 0.565
+   }
+  ],
+  "mix_shift_violation": [
+   {
+    "method": "always_premium",
+    "alpha": 0.05,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "always_premium",
+    "alpha": 0.05,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "always_cheap",
+    "alpha": 0.05,
+    "hinglish_share": 0.1,
+    "violation_rate": 1.0
+   },
+   {
+    "method": "always_cheap",
+    "alpha": 0.05,
+    "hinglish_share": 0.9,
+    "violation_rate": 1.0
+   },
+   {
+    "method": "emp_marginal",
+    "alpha": 0.05,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.913
+   },
+   {
+    "method": "emp_marginal",
+    "alpha": 0.05,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.061
+   },
+   {
+    "method": "emp_perlang",
+    "alpha": 0.05,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.509
+   },
+   {
+    "method": "emp_perlang",
+    "alpha": 0.05,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.408
+   },
+   {
+    "method": "crc_marginal",
+    "alpha": 0.05,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.876
+   },
+   {
+    "method": "crc_marginal",
+    "alpha": 0.05,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.033
+   },
+   {
+    "method": "crc_perlang",
+    "alpha": 0.05,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.382
+   },
+   {
+    "method": "crc_perlang",
+    "alpha": 0.05,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.339
+   },
+   {
+    "method": "ltt_marginal",
+    "alpha": 0.05,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.458
+   },
+   {
+    "method": "ltt_marginal",
+    "alpha": 0.05,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.001
+   },
+   {
+    "method": "ltt_perlang",
+    "alpha": 0.05,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.043
+   },
+   {
+    "method": "ltt_perlang",
+    "alpha": 0.05,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.038
+   },
+   {
+    "method": "ltt_marginal_worstgroup",
+    "alpha": 0.05,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.039
+   },
+   {
+    "method": "ltt_marginal_worstgroup",
+    "alpha": 0.05,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "knn_ltt_perlang",
+    "alpha": 0.05,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.022
+   },
+   {
+    "method": "knn_ltt_perlang",
+    "alpha": 0.05,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.036
+   },
+   {
+    "method": "always_premium",
+    "alpha": 0.1,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "always_premium",
+    "alpha": 0.1,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "always_cheap",
+    "alpha": 0.1,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.973
+   },
+   {
+    "method": "always_cheap",
+    "alpha": 0.1,
+    "hinglish_share": 0.9,
+    "violation_rate": 1.0
+   },
+   {
+    "method": "emp_marginal",
+    "alpha": 0.1,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.688
+   },
+   {
+    "method": "emp_marginal",
+    "alpha": 0.1,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.323
+   },
+   {
+    "method": "emp_perlang",
+    "alpha": 0.1,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.536
+   },
+   {
+    "method": "emp_perlang",
+    "alpha": 0.1,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.499
+   },
+   {
+    "method": "crc_marginal",
+    "alpha": 0.1,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.672
+   },
+   {
+    "method": "crc_marginal",
+    "alpha": 0.1,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.266
+   },
+   {
+    "method": "crc_perlang",
+    "alpha": 0.1,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.447
+   },
+   {
+    "method": "crc_perlang",
+    "alpha": 0.1,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.404
+   },
+   {
+    "method": "ltt_marginal",
+    "alpha": 0.1,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.385
+   },
+   {
+    "method": "ltt_marginal",
+    "alpha": 0.1,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.016
+   },
+   {
+    "method": "ltt_perlang",
+    "alpha": 0.1,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.031
+   },
+   {
+    "method": "ltt_perlang",
+    "alpha": 0.1,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.044
+   },
+   {
+    "method": "ltt_marginal_worstgroup",
+    "alpha": 0.1,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.028
+   },
+   {
+    "method": "ltt_marginal_worstgroup",
+    "alpha": 0.1,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "knn_ltt_perlang",
+    "alpha": 0.1,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.039
+   },
+   {
+    "method": "knn_ltt_perlang",
+    "alpha": 0.1,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.026
+   },
+   {
+    "method": "always_premium",
+    "alpha": 0.2,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "always_premium",
+    "alpha": 0.2,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "always_cheap",
+    "alpha": 0.2,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "always_cheap",
+    "alpha": 0.2,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.995
+   },
+   {
+    "method": "emp_marginal",
+    "alpha": 0.2,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "emp_marginal",
+    "alpha": 0.2,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.908
+   },
+   {
+    "method": "emp_perlang",
+    "alpha": 0.2,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "emp_perlang",
+    "alpha": 0.2,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.405
+   },
+   {
+    "method": "crc_marginal",
+    "alpha": 0.2,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "crc_marginal",
+    "alpha": 0.2,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.896
+   },
+   {
+    "method": "crc_perlang",
+    "alpha": 0.2,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "crc_perlang",
+    "alpha": 0.2,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.387
+   },
+   {
+    "method": "ltt_marginal",
+    "alpha": 0.2,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "ltt_marginal",
+    "alpha": 0.2,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.441
+   },
+   {
+    "method": "ltt_perlang",
+    "alpha": 0.2,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "ltt_perlang",
+    "alpha": 0.2,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.026
+   },
+   {
+    "method": "ltt_marginal_worstgroup",
+    "alpha": 0.2,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "ltt_marginal_worstgroup",
+    "alpha": 0.2,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "knn_ltt_perlang",
+    "alpha": 0.2,
+    "hinglish_share": 0.1,
+    "violation_rate": 0.0
+   },
+   {
+    "method": "knn_ltt_perlang",
+    "alpha": 0.2,
+    "hinglish_share": 0.9,
+    "violation_rate": 0.024
+   }
+  ]
+ }
+}

@@ -1,0 +1,10 @@
+{
+ "n_items": 307,
+ "u_english": 36,
+ "u_hinglish": 86,
+ "u_rate_english": 0.1173,
+ "u_rate_hinglish": 0.2801,
+ "discordant_hinglish_only": 71,
+ "discordant_english_only": 21,
+ "mcnemar_exact_p": 1.6168121721594925e-07
+}

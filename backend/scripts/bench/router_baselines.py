@@ -114,8 +114,14 @@ def random_metrics(sub, p):
             "apgr": float((acc - a_c) / (a_p - a_c)) if a_p - a_c > 1e-9 else np.nan}
 
 
-def run(grades_name, splits, alphas, delta, seed):
+def run(grades_name, splits, alphas, delta, seed, paired_gsm8k=False):
     grades = [r for r in read_jsonl(BENCH / grades_name) if r["lang"] in LANGS]
+    if paired_gsm8k:  # same GSM8K items in both languages: removes the task/language confound
+        grades = [r for r in grades if r["source"] == "gsm8k"]
+        langs_of = {}
+        for r in grades:
+            langs_of.setdefault(r["item_id"], set()).add(r["lang"])
+        grades = [r for r in grades if langs_of[r["item_id"]] >= set(LANGS)]
     texts = {(r["item_id"], "english"): r["question_en"] for r in read_jsonl(BENCH / "items.jsonl")}
     texts |= {(v["item_id"], v["lang"]): v["text"] for v in latest_variants()}
     C.featurize = cached_featurize  # same features, cached embeddings
@@ -267,10 +273,13 @@ def main():
     ap.add_argument("--delta", type=float, default=0.10)
     ap.add_argument("--seed", type=int, default=20261015)
     ap.add_argument("--out-suffix", default="")
+    ap.add_argument("--paired-gsm8k", action="store_true", help="pair 2 only, GSM8K items present in both languages")
     a = ap.parse_args()
     alphas = [float(x) for x in a.alphas.split(",")]
-    rep = {Path(g).stem: run(g, a.splits, alphas, a.delta, a.seed) for g in ("grades_pair2.jsonl", "grades.jsonl")}
-    rep["grades"]["note"] = "pair 1 is underpowered (very few u=1 rows)"
+    names = ("grades_pair2.jsonl",) if a.paired_gsm8k else ("grades_pair2.jsonl", "grades.jsonl")
+    rep = {Path(g).stem: run(g, a.splits, alphas, a.delta, a.seed, a.paired_gsm8k) for g in names}
+    if "grades" in rep:
+        rep["grades"]["note"] = "pair 1 is underpowered (very few u=1 rows)"
     (BENCH / f"router_baselines_report{a.out_suffix}.json").write_text(json.dumps(rep, indent=1), encoding="utf-8")
     (BENCH / f"router_baselines_table{a.out_suffix}.md").write_text(table(rep, alphas), encoding="utf-8")
     print("done")
