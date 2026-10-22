@@ -87,3 +87,4 @@
 - 2026-10-21 check 12/12 · final check; cron deleted; remaining 600 OOD prompts in next teammate round
 - 2026-10-21 · Stronger baselines (baselines2.py: LLMLingua-2 large, LongLLMLingua w/ Qwen0.5B, BM25) building via run_baselines2.ps1 -> kaggle-hp round (status data/bench/baselines2.status, log kaggle-hp/run5.log). Belebele HI+EN, SQuAD, MeetingBank, HotpotQA-300.
 - 2026-10-22 · Added baselines2 grading and extracted saved Kaggle results for Hinglish/English Belebele, SQuAD, MeetingBank and HotpotQA; reports under backend/data/bench/baselines2. Latest local run5 status RUNNING at 16:23; next: check completion and fill partial MeetingBank/Hotpot coverage.
+- 2026-10-22 23:59 · Stronger baselines graded -> KEY_RESULTS Q: LLMLingua-2 large ties our hybrid on long contexts and wins on Hinglish@0.5; BM25 beats hybrid on SQuAD; LongLLMLingua config invalid. Claim narrowed.

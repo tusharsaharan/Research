@@ -356,3 +356,16 @@ Wilcoxon), hybrid at equal or fewer tokens, budgets 0.5 / 0.33 / 0.25 / 0.2:
 | MuSiQue-answerable (151 graded) | 10.0 | ties (floor: 3B cannot solve it) |
 Pre-registered criterion met: better than LLMLingua-2 at matched-or-fewer tokens on 3 of 4 unseen datasets
 (never significantly worse). On MeetingBank the hybrid keeps F1 at the uncompressed level down to 0.2 of tokens.
+
+## Q. Stronger baselines (2026-10-22) — the compressor claim must be narrowed
+Source: baselines2.py (LLMLingua-2 XLM-R-large, LongLLMLingua, BM25 sentence retrieval), answers kaggle-hp (3B).
+Hybrid − baseline F1 at 0.5 / 0.33 (paired Wilcoxon):
+- vs **LLMLingua-2 large**: SQuAD +7.4 / +10.9 (p<0.001); MeetingBank +0.8 / −0.2 (tie); HotpotQA (n=144) −0.1 / −3.6 (n.s.).
+  Belebele Hinglish: LLMLingua-2 large 43.2% vs our graded 41.3% @0.5 (it wins), tie @0.33 (36.5 vs 37.4).
+  Most of the earlier margin (O2, P) came from the small LLMLingua-2 checkpoint.
+- vs **BM25 sentence retrieval**: SQuAD −3.8 / −11.2 (BM25 better, p<0.05); MeetingBank +5.9 (p=0.02) / +3.4;
+  HotpotQA +1.4 / +4.2 (n.s.). Our embedding+lexical relevance is weaker than BM25 on single-paragraph text.
+- **LongLLMLingua** (Qwen-0.5B, sentence-level contexts) missed its budgets (kept 0.5–1.0): configuration not
+  valid as a baseline yet; not reported.
+Honest status: the hybrid is competitive, not state of the art. Next: BM25 relevance inside the hybrid's coarse
+stage; paragraph-level LongLLMLingua with a correct budget.
