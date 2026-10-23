@@ -14,23 +14,24 @@ from pathlib import Path
 from common import BACKEND
 from compressor_pilot import OUT, grade
 
-DATASET_SLUG = "tokenopt-compressor-pilot-v2"
-KERNEL_SLUG = "tokenopt-compressor-gpu-pilot-v2"
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("cmd", choices=("push", "status", "download", "quota", "logs", "files"))
+    ap.add_argument("cmd", choices=("push", "status", "download", "quota", "logs", "files", "watch"))
     ap.add_argument("--account-dir", type=Path, default=Path.home() / ".kaggle_team")
-    ap.add_argument("--out", type=Path, default=OUT)
+    ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument("--revision", type=int, default=2)
     ap.add_argument("--retry-failed", action="store_true")
     args = ap.parse_args()
+    if args.out is None:
+        args.out = OUT.parent / f"compressor_pilot_v{args.revision}"
     env = dict(os.environ, KAGGLE_CONFIG_DIR=str(args.account_dir), PYTHONIOENCODING="utf-8", PYTHONUTF8="1")
     user = (args.account_dir / "username").read_text().strip()
     env["KAGGLE_USERNAME"] = user
     env["KAGGLE_API_TOKEN"] = (args.account_dir / "access_token").read_text().strip()
-    identity = f"{user}/{KERNEL_SLUG}"
-    dataset_identity = f"{user}/{DATASET_SLUG}"
+    if args.revision < 2:
+        raise ValueError("revision must be at least 2")
+    identity = f"{user}/tokenopt-compressor-gpu-pilot-v{args.revision}"
+    dataset_identity = f"{user}/tokenopt-compressor-pilot-v{args.revision}"
 
     def kaggle(*parts, check=True):
         result = subprocess.run(["kaggle", *parts], env=env, capture_output=True, text=True,
@@ -46,6 +47,19 @@ def main():
         return
     if args.cmd == "status":
         kaggle("kernels", "status", identity)
+        return
+    if args.cmd == "watch":
+        os.environ.update(env)
+        from kaggle.api.kaggle_api_extended import KaggleApi
+        api = KaggleApi()
+        api.authenticate()
+        with (args.out / "live.log").open("a", encoding="utf-8") as log:
+            for event in api.kernels_logs_stream(identity):
+                data = event.get("data", "")
+                log.write(data)
+                log.flush()
+                if any(word in data for word in ("Traceback", "Error", "compression finished", "answers ", "report")):
+                    print(data[-1800:], flush=True)
         return
     if args.cmd == "files":
         kaggle("datasets", "files", dataset_identity)
@@ -78,7 +92,7 @@ def main():
     for filename in ("source.zip", "inputs.jsonl", "manifest.json"):
         shutil.copy2(args.out / filename, dataset / filename)
     (dataset / "dataset-metadata.json").write_text(json.dumps({
-        "title": "TokenOpt compressor pilot v2", "id": dataset_identity, "licenses": [{"name": "other"}],
+        "title": f"TokenOpt compressor pilot v{args.revision}", "id": dataset_identity, "licenses": [{"name": "other"}],
     }), encoding="utf-8")
     uploaded = args.out / "dataset_created.json"
     if uploaded.exists():
@@ -103,7 +117,7 @@ def main():
     bootstrap = bootstrap.replace("EXPECTED_SOURCE_FILES = {}", "EXPECTED_SOURCE_FILES = " + repr(fingerprints))
     (kernel / "compressor_pilot.py").write_text(bootstrap, encoding="utf-8")
     (kernel / "kernel-metadata.json").write_text(json.dumps({
-        "id": identity, "title": "TokenOpt compressor GPU pilot v2", "code_file": "compressor_pilot.py",
+        "id": identity, "title": f"TokenOpt compressor GPU pilot v{args.revision}", "code_file": "compressor_pilot.py",
         "language": "python", "kernel_type": "script", "is_private": True,
         "enable_gpu": True, "enable_internet": True, "machine_shape": "NvidiaTeslaP100",
         "dataset_sources": [dataset_identity], "competition_sources": [], "kernel_sources": [],

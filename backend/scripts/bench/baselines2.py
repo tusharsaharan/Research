@@ -306,7 +306,7 @@ def grade(name: str, answers_path: str | None = None, methods=None, outdir: str 
                 "n_with_kept_metadata": len(kept_values),
             }
             rate = "0.5" if m.endswith("@0.5") else "0.33"
-            refs = (f"llmlingua2@{rate}", f"hybrid-s0.7@0.5" if rate == "0.5" else "hybrid-t-heavy@0.33")
+            refs = (f"llmlingua2@{rate}", "hybrid-s0.7@0.5" if rate == "0.5" else "hybrid-t-heavy@0.33")
             comparisons = {}
             for label, ref in zip(("llmlingua2_small", "frozen_hybrid"), refs):
                 paired = [i for i in common if (i, ref) in scores]

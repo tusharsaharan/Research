@@ -15,7 +15,6 @@ import json
 import math
 import os
 import subprocess
-import sys
 import time
 import zipfile
 from collections import defaultdict
@@ -75,7 +74,7 @@ def prepare(n: int, out: Path):
         for file in sorted(sources):
             bundle.write(file, str(file.relative_to(BACKEND)).replace("\\", "/"))
     manifest = {
-        "study": "exploratory compressor pilot v2", "n_per_dataset": n, "units": len(rows),
+        "study": f"exploratory compressor pilot ({out.name})", "n_per_dataset": n, "units": len(rows),
         "rates": RATES, "methods": METHODS, "answer_model": MODEL,
         "budget_tokenizer": MODEL, "max_new_tokens": 128, "max_seconds": 3300,
         "source_sha256": hashlib.sha256((out / "source.zip").read_bytes()).hexdigest(),
@@ -120,7 +119,7 @@ def gpu(data: Path, out: Path):
     if hashlib.sha256((data / "inputs.jsonl").read_bytes()).hexdigest() != manifest["inputs_sha256"]:
         raise ValueError("Input fingerprint mismatch")
     config = manifest["source_sha256"] + ":" + manifest["inputs_sha256"]
-    metadata = dict(manifest, config=config, gpu=torch.cuda.get_device_name(),
+    metadata = dict(manifest, config=config, gpu=torch.cuda.get_device_name(), gpu_count=torch.cuda.device_count(),
                     versions={name: importlib.metadata.version(name) for name in ("torch", "transformers", "llmlingua")})
     (out / "run_metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
     tok = AutoTokenizer.from_pretrained(MODEL, padding_side="left")

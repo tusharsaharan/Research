@@ -71,8 +71,49 @@ def test_checked_refuses_more_than_ninety_distinct_number_unit_guards():
 def test_split_units_keeps_protected_internal_boundaries():
     quote = '"Keep this. It matters."'
     code = "```python\nvalue = 7\nprint(value)\n```"
-    source = f"First sentence.\n{quote}\n{code}\nList [1, 2, 3].\nEnd."
+    source = f"First sentence.\n\n{quote}\n\n{code}\n\nList [1, 2, 3].\nEnd."
     assert budgeted.split_units(source) == ["First sentence.", quote, code, "List [1, 2, 3].", "End."]
+
+
+def test_split_units_preserves_chemical_and_prose_soft_wraps():
+    first = "The gas is O\n2 at normal pressure and\nordinary prose continues here."
+    assert budgeted.split_units(first + " Another sentence.") == [first, "Another sentence."]
+
+
+def test_split_units_recognizes_titled_hotpot_paragraphs():
+    source = "Alpha (film): First fact\nwith a soft wrap\nBeta: Second fact\nGamma: Third fact."
+    assert budgeted.split_units(source) == [
+        "Alpha (film): First fact\nwith a soft wrap", "Beta: Second fact", "Gamma: Third fact.",
+    ]
+
+
+def test_budget_feedback_fills_threshold_gap_and_always_tests_minimum_rate():
+    source = " ".join(["word"] * 100)
+
+    def response(text, rate):
+        return " ".join(text.split()[:int(100 * rate + 20)])
+
+    lingua = FakeLingua(response)
+    result = budgeted.compress_bm25_budgeted(source, "", 0.5, word_count, lingua)
+    assert result.actual_tokens == result.target_tokens == 50
+    assert result.budget_met
+    assert any(call[2] == 0.05 for call in lingua.calls)
+    assert len(lingua.calls) <= 7
+
+
+def test_budget_nonmonotonic_feedback_retains_prior_fullest_safe_candidate():
+    source = " ".join(["word"] * 100)
+
+    def response(text, rate):
+        n = 49 if rate == 0.5 else 70 if rate == 0.05 else 20 if rate < 0.7 else 60
+        return " ".join(text.split()[:n])
+
+    lingua = FakeLingua(response)
+    result = budgeted.compress_bm25_budgeted(source, "", 0.5, word_count, lingua)
+    assert result.actual_tokens == 49
+    assert result.budget_met
+    assert any(call[2] == 0.05 for call in lingua.calls)
+    assert len(lingua.calls) <= 7
 
 
 def test_budget_recounts_joined_text_with_nonadditive_tokenizer(monkeypatch):

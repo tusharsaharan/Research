@@ -18,7 +18,7 @@ from gateway.modules.m2_compressor.guarded import _guard_words, _restore_numbers
 from gateway.modules.m2_compressor.llmlingua2 import MAX_FORCE_MARKERS
 from gateway.modules.m2_compressor.safety_span import detect_spans, mask, reinject
 
-_BOUNDARY = re.compile(r"(?<=[.!?।])\s+|\n+")
+_BOUNDARY = re.compile(r"(?<=[.!?।])\s+|\n[ \t]*\n(?:[ \t]*\n)*|\n(?=[ \t]*[^\n:]{1,80}:[ \t]+\S)")
 _WORD = re.compile(r"[^\W_]+", re.UNICODE)
 _STOP = set("a an the of to in is was and or ke ki ka ko se mein me hai hain tha thi par what who which".split())
 
@@ -33,7 +33,7 @@ class BudgetedCompression:
 
 
 def split_units(text: str) -> list[str]:
-    """Sentence/paragraph units, never split inside a protected span."""
+    """Split sentences, blank paragraphs and titled records; keep soft wraps."""
     spans = detect_spans(text)
     out, start = [], 0
     for match in _BOUNDARY.finditer(text):
@@ -104,7 +104,7 @@ def compress_bm25_budgeted(
     lingua,
     *,
     sent_share: float | None = None,
-    max_passes: int = 5,
+    max_passes: int = 7,
 ) -> BudgetedCompression:
     """Retrieve, keep the best evidence intact where feasible, then thin.
 
@@ -147,12 +147,12 @@ def compress_bm25_budgeted(
         preserve_anchor = count(units[anchor]) <= budget and len(selected) > 1
         mutable = [i for i in sorted(selected) if not preserve_anchor or i != anchor]
         source = joined(mutable)
-        # Start near the measured desired rate, then bracket down to the model's
-        # minimum rate. Forced tokens make the rate/output relation discontinuous.
+        # Measure the desired rate and the minimum, then refine the fit/overshoot
+        # bracket. Keep every candidate: model output need not be monotonic.
         fixed_n = count(units[anchor]) if preserve_anchor else 0
         initial = min(0.95, max(0.05, (budget - fixed_n) / max(1, count(source))))
-        rates = [initial * (0.05 / initial) ** (i / (max_passes - 1)) for i in range(max_passes)]
-        for rate in rates:
+
+        def evaluate(rate):
             if preserve_anchor:
                 # Keep the compressed block on the same side of the anchor.
                 # Compress before/after separately when the anchor is internal.
@@ -168,6 +168,30 @@ def compress_bm25_budgeted(
             else:
                 candidate = compress_checked(source, question, rate, lingua)
             candidates.append(candidate)
+            return count(candidate)
+
+        observations = [(initial, evaluate(initial))]
+        if initial != 0.05:
+            observations.append((0.05, evaluate(0.05)))
+        safe = [(rate, n) for rate, n in observations if n <= budget]
+        if safe:
+            low, low_n = max(safe)
+            upper = [(rate, n) for rate, n in observations if rate > low and n > budget]
+            high, high_n = min(upper) if upper else (1.0, count(coarse))
+            for _ in range(max_passes - len(observations)):
+                if any(n == budget for _, n in observations):
+                    break
+                fraction = (budget - low_n) / max(1, high_n - low_n)
+                fraction = min(0.8, max(0.2, fraction))
+                rate = min(0.95, low + fraction * (high - low))
+                if rate <= low or rate >= high:
+                    break
+                n = evaluate(rate)
+                observations.append((rate, n))
+                if n <= budget:
+                    low, low_n = rate, n
+                else:
+                    high, high_n = rate, n
         measured = [(text, count(text)) for text in candidates]
         fits = [(text, n) for text, n in measured if n <= budget and text.strip()]
         if fits:
