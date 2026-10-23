@@ -23,8 +23,9 @@ CHEAP_SHARE = 0.5
 SEED = 20261015
 def embeddings(texts):
     cache = {}
-    z = np.load(BENCH / "adaptive_emb_cache.npz", allow_pickle=True)
-    cache.update(zip(map(str, z["keys"]), z["vecs"]))
+    if (BENCH / "adaptive_emb_cache.npz").exists():
+        with np.load(BENCH / "adaptive_emb_cache.npz", allow_pickle=True) as z:
+            cache.update(zip(map(str, z["keys"]), z["vecs"]))
     own = BENCH / "router_v2_emb_cache.npz"
     if own.exists():
         z = np.load(own, allow_pickle=True)
@@ -34,7 +35,7 @@ def embeddings(texts):
         from sentence_transformers import SentenceTransformer
         v = SentenceTransformer(ENCODER).encode(miss, batch_size=32, normalize_embeddings=True, show_progress_bar=False)
         cache.update(zip(miss, v))
-        np.savez(own, keys=np.array(miss, dtype=object), vecs=np.asarray(v))
+        np.savez(own, keys=np.array(list(cache), dtype=object), vecs=np.asarray(list(cache.values())))
     return np.array([cache[t] for t in texts]), len(miss)
 
 
@@ -79,7 +80,9 @@ def proxy(rows, s, share):
     sub = [rows[i] for i in idx]
     base = sum(r["cost_premium_usd"] for r in rows)
     cost = sum(r["cost_cheap_usd"] if i in idx else r["cost_premium_usd"] for i, r in enumerate(rows))
-    out = {"risk": float(np.mean([r["u"] for r in sub])), "usd_saving": float(1 - cost / base) if base else 0.0}
+    out = {"risk": float(sum(r["u"] for r in sub) / len(rows)),
+           "conditional_cheap_risk": float(np.mean([r["u"] for r in sub])),
+           "usd_saving": float(1 - cost / base) if base else 0.0}
     pt = [r["prem_ct"] for r in sub if r.get("prem_ct") is not None]
     nt = [r["prem_ct"] - r["cheap_ct"] for r in sub if r.get("prem_ct") is not None and r.get("cheap_ct") is not None]
     out["prem_completion_tokens_per_cheap_query"] = float(np.mean(pt)) if pt else None
@@ -87,14 +90,15 @@ def proxy(rows, s, share):
     return out
 
 
-def load_rows():
+def load_rows(grades="grades.jsonl", include_pilot=True):
     texts = {(r["item_id"], "english"): r["question_en"] for r in read_jsonl(BENCH / "items.jsonl")}
     texts |= {(v["item_id"], v["lang"]): v["text"] for v in latest_variants()}
     tok = {}
-    for a in read_jsonl(BENCH / "answers.jsonl"):
+    for a in (read_jsonl(BENCH / "answers.jsonl") if grades == "grades.jsonl" else []):
         if a.get("status") == "ok" and a.get("usage"):
             tok[(a["item_id"], a["lang"], a["tier"])] = a["usage"].get("completion_tokens")  # includes reasoning tokens
-    rows = [r for r in read_jsonl(BENCH / "grades.jsonl") if r["lang"] in LANGS and r["split"] in ("scorer_train", "pilot")]
+    splits = ("scorer_train", "pilot") if include_pilot else ("scorer_train",)
+    rows = [r for r in read_jsonl(BENCH / grades) if r["lang"] in LANGS and r["split"] in splits]
     for r in rows:  # cert rows are deliberately not loaded
         r["text"] = texts[(r["item_id"], r["lang"])]
         r["prem_ct"] = tok.get((r["item_id"], r["lang"], "premium"))

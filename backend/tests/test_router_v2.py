@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import pickle
+import hashlib
+import json
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression
@@ -37,4 +39,29 @@ def test_env_flag_default_prereg(tmp_path, monkeypatch):
     Xv = build_X("lex", ["a 1"], [False], np.zeros((1, 4)))
     m = LogisticRegression().fit(np.vstack([Xv, Xv + 1]), [0, 1])
     (d / "router_v2.pkl").write_bytes(pickle.dumps({"clf": m, "kind": "lex", "pca": None, "description": "v2"}))
-    assert type(load_certified(tmp_path)[0]).__name__ == "V2Scorer"
+    assert type(load_certified(tmp_path)[0]).__name__ == "CertifiedScorer"  # uncalibrated v2 must not use prereg thresholds
+    metadata = {"model_sha256": hashlib.sha256((d / "router_v2.pkl").read_bytes()).hexdigest(),
+                "grades": "grades.jsonl", "thresholds": {"test": "v2-only"}}
+    (d / "router_v2_thresholds.json").write_text(json.dumps(metadata))
+    scorer, thresholds = load_certified(tmp_path)
+    assert type(scorer).__name__ == "V2Scorer" and thresholds == metadata
+    metadata["grades"] = "grades_pair2.jsonl"
+    (d / "router_v2_thresholds.json").write_text(json.dumps(metadata))
+    assert type(load_certified(tmp_path)[0]).__name__ == "CertifiedScorer"
+    metadata.update(grades="grades.jsonl", model_sha256="stale")
+    (d / "router_v2_thresholds.json").write_text(json.dumps(metadata))
+    assert type(load_certified(tmp_path)[0]).__name__ == "CertifiedScorer"
+    (d / "router_v2_thresholds.json").write_text("broken json")
+    assert type(load_certified(tmp_path)[0]).__name__ == "CertifiedScorer"
+
+
+def test_serving_keeps_certified_score_precision(monkeypatch):
+    from gateway.modules.m4_router import certified
+
+    class Classifier:
+        def predict_proba(self, X):
+            return np.array([[1 - 0.12345649, 0.12345649]])
+
+    scorer = certified.CertifiedScorer({"clf": Classifier(), "use_embeddings": False, "description": "test"})
+    assert scorer.score("test") == 0.12345649
+    assert scorer.score("test") > 0.1234564  # rounding would change this routing decision

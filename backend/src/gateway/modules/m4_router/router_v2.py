@@ -31,16 +31,6 @@ def base_features(texts, flags):
 
 def extra_matrix(texts):
     X = np.array([lexical_features(t) for t in texts]).reshape(len(texts), len(EXTRA_NAMES))
-    return np.log1p(X)  # compress counts; no fitted scaler, so serving == training
-
-
-
-def base_features(texts, flags):
-    return np.array([[float(h), code_mix_ratio(t), np.log1p(len(t.split()))] for t, h in zip(texts, flags)]).reshape(len(texts), 3)
-
-
-def extra_matrix(texts):
-    X = np.array([lexical_features(t) for t in texts]).reshape(len(texts), len(EXTRA_NAMES))
     return np.log1p(X)  # no fitted scaler, so serving == training
 
 
@@ -63,25 +53,6 @@ class V2Scorer:
         self.use_embeddings = True
 
     def score(self, text: str) -> float:
-        from gateway.modules.m1_pipeline.hinglish import language_group
-        from gateway.modules.m4_router.certified import _encoder
-
-        flag = language_group(text) == "hinglish"
-        emb = _encoder().encode([text], normalize_embeddings=True, show_progress_bar=False)
-        X = build_X(self.kind, [text], [flag], emb, self.pca)
-        return round(float(self.clf.predict_proba(X)[0, 1]), 6)
-
-
-
-class V2Scorer:
-    """Serving wrapper around the router_v2.pkl bundle: .score(text) -> P(u=1)."""
-
-    def __init__(self, bundle: dict) -> None:
-        self.clf, self.description, self.kind = bundle["clf"], bundle["description"], bundle["kind"]
-        self.pca = bundle.get("pca")
-        self.use_embeddings = True
-
-    def score(self, text: str) -> float:
         from gateway.modules.m4_router.certified import _encoder
 
         enc = _encoder()
@@ -89,4 +60,4 @@ class V2Scorer:
             raise RuntimeError("sentence-transformers unavailable")
         emb = enc.encode([text], normalize_embeddings=True, show_progress_bar=False)
         X = build_X(self.kind, [text], [language_group(text) == "hinglish"], emb, self.pca)
-        return round(float(self.clf.predict_proba(X)[0, 1]), 6)
+        return float(self.clf.predict_proba(X)[0, 1])

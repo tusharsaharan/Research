@@ -12,6 +12,7 @@ Artifacts (written by certify.py, git-ignored):
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 import os
 import pickle
@@ -63,22 +64,34 @@ class CertifiedScorer:
 
     def score(self, text: str) -> float:
         x = featurize([text], [language_group(text) == "hinglish"], self.use_embeddings)
-        return round(float(self.clf.predict_proba(x)[0, 1]), 6)
+        return float(self.clf.predict_proba(x)[0, 1])
 
 
 def load_certified(data_dir: Path | str) -> tuple[CertifiedScorer, dict] | None:
     """Return (scorer, thresholds) if certify.py has produced artifacts, else None."""
     d = artifacts_dir(data_dir)
     model, thr = d / "certified_router.pkl", d / "certified_thresholds.json"
+    v2_model, v2_thr = d / "router_v2.pkl", d / "router_v2_thresholds.json"
+    if os.environ.get("ROUTER_SCORER", "").lower() == "v2" and v2_model.exists() and v2_thr.exists():
+        try:
+            from gateway.modules.m4_router.router_v2 import V2Scorer
+
+            model_bytes = v2_model.read_bytes()
+            thresholds = json.loads(v2_thr.read_text(encoding="utf-8"))
+            # A changed ranking needs its own calibration for the gateway's model pair.
+            if (thresholds.get("model_sha256") == hashlib.sha256(model_bytes).hexdigest()
+                    and thresholds.get("grades") == "grades.jsonl"):
+                return V2Scorer(pickle.loads(model_bytes)), thresholds
+        except Exception:
+            pass  # Invalid/incomplete experimental artifacts leave the prereg router active.
     if not (model.exists() and thr.exists()):
         return None
     try:
-        if os.environ.get("ROUTER_SCORER", "").lower() == "v2" and (d / "router_v2.pkl").exists():
-            from gateway.modules.m4_router.router_v2 import V2Scorer  # exploratory; default stays prereg
-
-            return V2Scorer(pickle.loads((d / "router_v2.pkl").read_bytes())), json.loads(thr.read_text(encoding="utf-8"))
-        bundle = pickle.loads(model.read_bytes())
-        return CertifiedScorer(bundle), json.loads(thr.read_text(encoding="utf-8"))
+        model_bytes = model.read_bytes()
+        thresholds = json.loads(thr.read_text(encoding="utf-8"))
+        if thresholds.get("model_sha256", hashlib.sha256(model_bytes).hexdigest()) != hashlib.sha256(model_bytes).hexdigest():
+            return None
+        return CertifiedScorer(pickle.loads(model_bytes)), thresholds
     except Exception:
         return None
 

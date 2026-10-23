@@ -19,6 +19,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import random
@@ -26,7 +27,7 @@ from pathlib import Path
 from collections import defaultdict
 
 import numpy as np
-from common import BENCH, GRADES, latest_variants, read_jsonl
+from common import BENCH, latest_variants, read_jsonl
 from scipy.stats import binom
 
 from gateway.modules.m4_router.certified import ENCODER, artifacts_dir, featurize
@@ -101,6 +102,8 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=20261015)
     ap.add_argument("--grades", default="grades.jsonl", help="grades file in data/bench (e.g. grades_pair2.jsonl)")
     ap.add_argument("--serve-alpha", type=float, default=0.10, help="alpha the gateway serves (must be in --alphas)")
+    ap.add_argument("--scorer", choices=("prereg", "v2"), default="prereg")
+    ap.add_argument("--candidate", type=Path, help="selected router_train.py candidate; required for v2")
     args = ap.parse_args()
     alphas = [float(a) for a in args.alphas.split(",")]
 
@@ -109,7 +112,14 @@ def main() -> None:
     texts |= {(v["item_id"], v["lang"]): v["text"] for v in latest_variants()}
     if not grades:
         raise SystemExit("no graded rows yet: run collect.py and grade.py first")
-    scores, scorer_desc, bundle = train_scorer(grades, texts)
+    if args.serve_alpha not in alphas:
+        raise SystemExit("--serve-alpha must be in --alphas")
+    if args.scorer == "v2":
+        if not args.candidate:
+            raise SystemExit("--scorer v2 requires --candidate from train-only selection")
+        scores, scorer_desc, bundle = score_v2(grades, texts, args)
+    else:
+        scores, scorer_desc, bundle = train_scorer(grades, texts)
 
     train_scores = np.array([scores[(r["item_id"], r["lang"])] for r in grades if r["split"] == "scorer_train"])
     grid = np.unique(np.quantile(train_scores, np.linspace(0, 1, 101))) if len(train_scores) else np.linspace(0, 1, 101)
@@ -161,8 +171,9 @@ def main() -> None:
                                   "mean_risk": round(float(np.mean(m["risk"])), 4),
                                   "cheap_share": round(float(np.mean(m["cheap_share"])), 3),
                                   "cost_saving": round(float(np.mean(m["saving"])), 3)})
-    (BENCH / ("certify_report.json" if args.grades == "grades.jsonl"
-              else f"certify_report_{Path(args.grades).stem}.json")).write_text(json.dumps(report, indent=2), encoding="utf-8")
+    suffix = "" if args.grades == "grades.jsonl" else f"_{Path(args.grades).stem}"
+    suffix += "_v2" if args.scorer == "v2" else ""
+    (BENCH / f"certify_report{suffix}.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     print(f"scorer: {scorer_desc}\ncert items: {len(items)}  rows: {len(cert)}  delta={args.delta}  splits={args.splits}")
     print("u rate (cheap wrong & premium right):", {k: round(v, 3) for k, v in report["u_rate_by_lang"].items()})
@@ -175,6 +186,25 @@ def main() -> None:
     print("report ->", BENCH / "certify_report.json")
     if args.grades == "grades.jsonl":  # only pair 1 (the gateway's own models) is served
         export_router(bundle, cert, scores, grid, args)
+
+
+def score_v2(rows, texts, args):
+    import pickle
+    from router_train import fingerprint, training_rows
+    from router_v2 import embeddings
+    from gateway.modules.m4_router.router_v2 import build_X
+
+    bundle = pickle.loads(args.candidate.read_bytes())
+    if bundle.get("grades") != Path(args.grades).name:
+        raise ValueError("candidate belongs to a different model pair")
+    training = training_rows(args.grades, bundle.get("paired_gsm8k", False))
+    if bundle.get("training_sha256") != fingerprint(training):
+        raise ValueError("training rows changed since candidate selection")
+    keys = [(r["item_id"], r["lang"]) for r in rows]
+    queries = [texts[k] for k in keys]
+    emb, _ = embeddings(queries)
+    X = build_X(bundle["kind"], queries, [k[1] == "hinglish" for k in keys], emb, bundle.get("pca"))
+    return dict(zip(keys, bundle["clf"].predict_proba(X)[:, 1])), bundle["description"], bundle
 
 
 def by_source(grades: list[dict]) -> dict:
@@ -225,8 +255,11 @@ def export_router(bundle: dict | None, cert: list[dict], scores: dict, grid: np.
                                          fixed_sequence(s, u, grid, alpha, args.delta / A))}}
     d = artifacts_dir(BENCH.parent)
     d.mkdir(parents=True, exist_ok=True)
-    (d / "certified_router.pkl").write_bytes(pickle.dumps(bundle))
-    (d / "certified_thresholds.json").write_text(json.dumps({
+    v2 = getattr(args, "scorer", "prereg") == "v2"
+    model_bytes = pickle.dumps(bundle)
+    (d / ("router_v2.pkl" if v2 else "certified_router.pkl")).write_bytes(model_bytes)
+    (d / ("router_v2_thresholds.json" if v2 else "certified_thresholds.json")).write_text(json.dumps({
+        "model_sha256": hashlib.sha256(model_bytes).hexdigest(), "grades": args.grades,
         "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "delta": args.delta, "alphas": alphas, "serve_alpha": f"{args.serve_alpha:.2f}",
         "guarantee": "per language: P(quality lost vs always-premium > alpha) <= delta, "
