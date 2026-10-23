@@ -90,7 +90,7 @@ def test_prepare_preserves_paired_languages_and_dev_split(pilot, monkeypatch, tm
                     ("common", "compressor_pilot", "baselines2", "hybrid", "belebele_extra", "belebele_cm", "hotpot", "grade")}
         expected |= {f"src/gateway/{name}.py" for name in ("__init__", "schemas", "tokenizer", "pricing", "modules/__init__")}
         expected |= {f"src/gateway/modules/m2_compressor/{name}.py" for name in
-                     ("__init__", "budgeted", "guarded", "llmlingua2", "safety_span")}
+                     ("__init__", "budgeted", "document", "guarded", "llmlingua2", "safety_span")}
         assert set(bundle.namelist()) == expected
         extracted = tmp_path / "extracted"
         bundle.extractall(extracted)
@@ -150,6 +150,31 @@ def test_grade_reports_complete_only_for_full_expected_coverage(pilot, grading_f
     report = pilot.grade(data, out)
     assert report["complete"]
     assert report["groups"]["belebele|english"]["n_complete_paired"] == 2
+
+
+def test_fair_comparison_excludes_budget_misses_and_extra_context(pilot, grading_files):
+    data, out, variants, _ = grading_files
+    for record in variants:
+        if record["method"] == "bhybrid_v2@0.5" and record["uid"] == "first":
+            record.update(actual_tokens=6, kept_ratio=0.6, budget_met=False)
+    dump_rows(out / "variants.jsonl", variants)
+    result = pilot.grade(data, out)["groups"]["belebele|english"]["methods"]["bhybrid_v2@0.5"]
+    assert result["comparisons_at_no_more_context_tokens"]["bm25@0.5"]["n"] == 1
+    for record in variants:
+        if record["method"] == "bm25@0.5" and record["uid"] == "second":
+            record.update(actual_tokens=4, kept_ratio=0.4)
+    dump_rows(out / "variants.jsonl", variants)
+    result = pilot.grade(data, out)["groups"]["belebele|english"]["methods"]["bhybrid_v2@0.5"]
+    assert result["comparisons_at_no_more_context_tokens"]["bm25@0.5"]["n"] == 0
+
+
+def test_grade_uses_frozen_manifest_methods_for_old_pilots(pilot, grading_files, monkeypatch):
+    data, out, _, _ = grading_files
+    manifest = json.loads((data / "manifest.json").read_text())
+    manifest.update(methods=list(pilot.METHODS), rates=list(pilot.RATES))
+    (data / "manifest.json").write_text(json.dumps(manifest))
+    monkeypatch.setattr(pilot, "METHODS", (*pilot.METHODS, "new_experimental_method"))
+    assert pilot.grade(data, out)["complete"]
 
 
 def test_merge_disjoint_gpu_workers_keeps_full_paired_coverage(pilot, grading_files, tmp_path):

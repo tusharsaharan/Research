@@ -27,7 +27,7 @@ OUT = BENCH / "compressor_pilot_v2"
 MODEL = "Qwen/Qwen2.5-3B-Instruct"
 LARGE = "microsoft/llmlingua-2-xlm-roberta-large-meetingbank"
 RATES = (0.5, 0.33)
-METHODS = ("bhybrid_v2", "bhybrid", "bgraded", "bm25", "llml2L")
+METHODS = ("bhybrid_v2", "bhybrid_doc", "bextract_doc", "bhybrid", "bgraded", "bm25", "llml2L")
 
 
 def write_rows(path, rows):
@@ -68,7 +68,7 @@ def prepare(n: int, out: Path):
     sources = [BACKEND / "scripts" / "bench" / f"{name}.py" for name in scripts]
     sources += [BACKEND / "src" / "gateway" / name for name in (
         "__init__.py", "schemas.py", "tokenizer.py", "pricing.py", "modules/__init__.py",
-        *[f"modules/m2_compressor/{name}.py" for name in ("__init__", "budgeted", "guarded", "llmlingua2", "safety_span")],
+        *[f"modules/m2_compressor/{name}.py" for name in ("__init__", "budgeted", "document", "guarded", "llmlingua2", "safety_span")],
     )]
     with zipfile.ZipFile(out / "source.zip", "w", zipfile.ZIP_DEFLATED) as bundle:
         for file in sorted(sources):
@@ -102,6 +102,7 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
     from baselines2 import bm25_select
     from hybrid import bgraded, bhybrid
     from gateway.modules.m2_compressor.budgeted import compress_bm25_budgeted
+    from gateway.modules.m2_compressor.document import compress_document, extract_document
     from gateway.modules.m2_compressor.llmlingua2 import DEFAULT_MODEL, LLMLingua2Compressor
 
     if not torch.cuda.is_available():
@@ -157,6 +158,11 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
                     t0 = time.monotonic()
                     if method == "original":
                         compressed = text
+                    elif method.startswith(("bhybrid_doc@", "bextract_doc@")):
+                        compressor = extract_document if method.startswith("bextract_doc@") else compress_document
+                        result = compressor(text, q, rate, count, lingua)
+                        detail = asdict(result)
+                        compressed = detail.pop("text")
                     elif method.startswith("bhybrid_v2@"):
                         result = compress_bm25_budgeted(text, q, rate, count, lingua,
                                                        sent_share={0.5: 0.7, 0.33: 0.6}[rate])
@@ -236,14 +242,19 @@ def grade(data: Path, out: Path):
         raise ValueError("Cannot grade mixed configurations")
     if any(r.get("model") != MODEL for r in answers.values()):
         raise ValueError("Cannot grade mixed answer models")
-    methods = ["original", *[f"{method}@{rate}" for rate in RATES for method in METHODS]]
+    configured_methods = manifest.get("methods", METHODS)
+    configured_rates = manifest.get("rates", RATES)
+    methods = ["original", *[f"{method}@{rate}" for rate in configured_rates for method in configured_methods]]
     expected_keys = {row["uid"] + "|" + method for row in rows for method in methods}
     if set(answers) - expected_keys or set(variants) - expected_keys:
         raise ValueError("Unexpected answer/variant keys in pilot output")
     if set(answers) - set(variants):
         raise ValueError("Answer is missing its compression variant")
+    if any(v["budget_met"] != (v["actual_tokens"] <= v["target_tokens"]) for v in variants.values()):
+        raise ValueError("Inconsistent actual token-budget metadata")
     report = {"study": manifest["study"], "config": config, "expected_answers": len(rows) * len(methods),
-              "answered": len(answers), "complete": set(answers) == expected_keys, "groups": {}}
+              "answered": len(answers), "complete": set(answers) == expected_keys, "groups": {},
+              "analysis_code_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
     groups = defaultdict(list)
     for row in rows:
         groups[f"{row['dataset']}|{row['lang']}"].append(row)
@@ -267,6 +278,22 @@ def grade(data: Path, out: Path):
                               budget_misses=sum(not v["budget_met"] for v in compressed))
             if complete:
                 result["score_all_methods_paired"] = sum(score(row, method) for row in complete) / len(complete)
+            comparisons = {}
+            if "@" in method:
+                rate = method.rsplit("@", 1)[1]
+                for family in ("bm25", "llml2L", "bhybrid"):
+                    reference = f"{family}@{rate}"
+                    if reference not in methods or reference == method:
+                        continue
+                    fair = [row for row in paired if row["uid"] + "|" + reference in answers
+                            and variants[row["uid"] + "|" + method]["budget_met"]
+                            and variants[row["uid"] + "|" + method]["actual_tokens"]
+                            <= variants[row["uid"] + "|" + reference]["actual_tokens"]]
+                    comparisons[reference] = {"n": len(fair), "delta_score": None}
+                    if fair:
+                        comparisons[reference]["delta_score"] = sum(
+                            score(row, method) - score(row, reference) for row in fair) / len(fair)
+            result["comparisons_at_no_more_context_tokens"] = comparisons
             summary["methods"][method] = result
         report["groups"][group] = summary
     (out / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
@@ -330,9 +357,47 @@ def audit(shard: str, out: Path):
     print(f"audit {shard}: {len(groups)} groups, {len(examples)} saved examples", flush=True)
 
 
+def audit_documents(shard: str, out: Path):
+    """Model-free corpus audit of quotation envelopes and protected-span pressure."""
+    from gateway.modules.m2_compressor.document import unwrap_document
+    from gateway.modules.m2_compressor.safety_span import detect_spans
+    from gateway.tokenizer import TokenCounter
+    counter = TokenCounter()
+    if counter.backend != "tiktoken_cl100k_base":
+        raise RuntimeError("Exact tokenizer required for the corpus audit")
+    groups = {}
+    for name in ("belebele", "squad", "meetingbank", "hotpot"):
+        folder = "belebele" if name == "belebele" else "hotpot" if name == "hotpot" else f"longqa_{name}"
+        for row in read_jsonl(BENCH / folder / "items.jsonl"):
+            if not in_shard(row["id"], shard):
+                continue
+            passages = [(lang, row[lang]["passage"]) for lang in ("english", "hinglish")] if name == "belebele" else [("english", row["context"])]
+            for lang, text in passages:
+                group = groups.setdefault(f"{name}|{lang}", dict(n=0, envelopes=0, before={}, after={}, examples=[]))
+                group["n"] += 1
+                unwrapped = unwrap_document(text)
+                changed = unwrapped != text
+                group["envelopes"] += changed
+                n = counter.count(text)
+                sizes = [max((counter.count(span.text) for span in detect_spans(value)), default=0)
+                         for value in (text, unwrapped)]
+                for label, largest in zip(("before", "after"), sizes):
+                    for rate in RATES:
+                        key = str(rate)
+                        group[label][key] = group[label].get(key, 0) + (largest > max(1, math.floor(rate * n)))
+                if changed and len(group["examples"]) < 3:
+                    group["examples"].append(dict(id=row["id"], context_tokens=n,
+                                                   largest_span_before=sizes[0], largest_span_after=sizes[1]))
+    out.mkdir(parents=True, exist_ok=True)
+    report = dict(shard=shard, tokenizer=counter.backend, groups=groups,
+                  note="Span-size pressure is a diagnostic, not a formal token lower bound or quality score.")
+    (out / f"documents.{shard.replace('/', 'of')}.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    print(f"document audit {shard}: {sum(g['n'] for g in groups.values())} passages", flush=True)
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("cmd", choices=("prepare", "gpu", "grade", "audit", "merge"))
+    ap.add_argument("cmd", choices=("prepare", "gpu", "grade", "audit", "merge", "audit-documents"))
     ap.add_argument("--n", type=int, default=12)
     ap.add_argument("--out", type=Path, default=OUT)
     ap.add_argument("--data", type=Path, default=OUT)
@@ -349,5 +414,7 @@ if __name__ == "__main__":
         if not args.workers:
             ap.error("merge requires --workers")
         merge_workers(args.data, args.out, args.workers)
+    elif args.cmd == "audit-documents":
+        audit_documents(args.shard, args.out)
     else:
         audit(args.shard, args.out)
