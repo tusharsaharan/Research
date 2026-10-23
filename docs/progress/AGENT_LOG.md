@@ -99,3 +99,4 @@
 - 2026-10-23 13:47 � Round 3 resumed (run_round3.ps1).
 - 2026-10-23 · -cc round RUNNING on teammate account: kernel tusharsuharan/tokenopt-local-answers-cc v1 (1,326 prompts x16 samples, ~0.5-1 GPU-h), runner = kaggle_run.py --until-complete (log backend/data/bench/kaggle-cc/run_team.log). It downloads answers to kaggle-cc/answers.jsonl. Then: python backend/scripts/bench/conformal_cascade.py and add CC row to paper_router/main.tex. Round 3 will push to the same teammate account after its build.
 - 2026-10-23 · User asked to reduce load: now max 4 build procs at BelowNormal (run_round3b.ps1: belebele 4 -> squad+meetingbank 4 -> hotpot 2 -> export -> teammate Kaggle run6.log). Stopped old run5 kaggle runner.
+- 2026-10-23 14:05 · first -cc waiter died (exit 255, kernel unaffected); restarted detached: kaggle_run.py --wait-only --until-complete (pid 16828, log backend/data/bench/kaggle-cc/run_team2.log). Kernel RUNNING.
