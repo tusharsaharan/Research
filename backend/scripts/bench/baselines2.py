@@ -305,11 +305,13 @@ if __name__ == "__main__":
     ap.add_argument("--set", required=True, choices=["belebele", "squad", "meetingbank", "hotpot"])
     ap.add_argument("--shard", default="1/1")
     ap.add_argument("--tag", default="")
+    ap.add_argument("--methods", default="llml2L,longllml,bm25")
+    ap.add_argument("--out", default="baselines2")
     ap.add_argument("--answers", default=None)
     a = ap.parse_args()
     if a.cmd == "build":
-        build(a.set, a.shard)
+        build(a.set, a.shard, a.methods.split(","), a.out)
     elif a.cmd == "export":
-        export(a.set, a.tag)
+        export(a.set, a.tag, a.out)
     else:
         grade(a.set, a.answers)
