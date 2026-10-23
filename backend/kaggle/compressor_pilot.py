@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 import time
@@ -33,7 +34,10 @@ def locate_source(input_root, working):
     for name, digest in EXPECTED_SOURCE_FILES.items():
         if hashlib.sha256((root / name).read_bytes()).hexdigest() != digest:
             raise RuntimeError(f"Source file fingerprint mismatch: {name}")
-    return data, root
+    destination = pathlib.Path(working) / "pilot_source"
+    if root != destination:
+        shutil.copytree(root, destination, dirs_exist_ok=True)
+    return data, destination
 
 
 def main():

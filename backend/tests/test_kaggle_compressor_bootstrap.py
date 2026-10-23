@@ -92,13 +92,26 @@ def test_raw_archive_also_checks_injected_per_file_hashes(bootstrap, dataset):
         bootstrap.locate_source(inputs, working)
 
 
-def test_autoextracted_source_uses_read_only_dataset_layout(bootstrap, dataset):
+def test_autoextracted_source_is_copied_to_writable_working_root(bootstrap, dataset):
     inputs, data, working = dataset
-    expected_root = create_extracted_source(data)
+    dataset_root = create_extracted_source(data)
     actual_data, root = bootstrap.locate_source(inputs, working)
     assert actual_data == data
-    assert root == expected_root
-    assert not working.exists()
+    assert root == working / "pilot_source"
+    assert root.resolve().is_relative_to(working.resolve())
+    assert root.resolve() != dataset_root.resolve()
+    assert all((root / name).read_bytes() == content for name, content in FILES.items())
+    # common.py initializes backend/data/bench at import time. The code root
+    # must support that write even when /kaggle/input is mounted read-only.
+    runtime_data = root / "data" / "bench"
+    runtime_data.mkdir(parents=True)
+    (runtime_data / "runtime.json").write_text("{}", encoding="utf-8")
+    assert not (dataset_root / "data").exists()
+    copied_script = root / "scripts" / "bench" / "compressor_pilot.py"
+    copied_script.write_bytes(b"runtime change\n")
+    assert (dataset_root / "scripts" / "bench" / "compressor_pilot.py").read_bytes() == FILES[
+        "scripts/bench/compressor_pilot.py"
+    ]
 
 
 @pytest.mark.parametrize("name", list(FILES))
@@ -108,6 +121,7 @@ def test_modified_autoextracted_source_file_is_rejected(bootstrap, dataset, name
     (root / name).write_bytes(b"modified source\n")
     with pytest.raises(RuntimeError, match="Source file fingerprint mismatch"):
         bootstrap.locate_source(inputs, working)
+    assert not working.exists()
 
 
 def test_autoextracted_source_requires_injected_fingerprints(bootstrap, dataset):
