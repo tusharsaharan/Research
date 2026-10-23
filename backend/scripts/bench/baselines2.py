@@ -1,6 +1,6 @@
 """Stronger baselines for the hybrid claim (reviewer-proofing):
   llml2L@r    LLMLingua-2, XLM-RoBERTa-large checkpoint (the one Microsoft's papers report)
-  longllml@r  LongLLMLingua: question-aware coarse-to-fine (llmlingua lib, Qwen2.5-0.5B as the small LM)
+  longllml2@r LongLLMLingua: question-aware coarse-to-fine (llmlingua lib, Qwen2.5-0.5B as the small LM)
   bm25@r      question-aware BM25 sentence retrieval to the budget (classic extractive baseline)
 Runs on Belebele (Hinglish + English) and on SQuAD / MeetingBank / HotpotQA contexts, budgets 0.5 and 0.33.
 
@@ -23,7 +23,14 @@ from pathlib import Path
 from common import BENCH, in_shard, read_jsonl
 
 RATES = (0.5, 0.33)
-METHODS = [f"{m}@{r}" for r in RATES for m in ("llml2L", "longllml", "bm25")]
+# Historical longllml labels remain separate from corrected longllml2 outputs.
+METHODS = [f"{m}@{r}" for r in RATES for m in ("llml2L", "longllml", "longllml2", "bm25")]
+
+
+def method_variants(methods):
+    return [v for m in methods for v in ([m] if "@" in m else [f"{m}@{r}" for r in RATES])]
+
+
 _SENT = re.compile(r"(?<=[.!?।])\s+")
 _TOK = re.compile(r"[a-z0-9]+")
 
@@ -60,8 +67,9 @@ def chunks(text: str) -> list[str]:
 
 class Compressors:
     def __init__(self, methods=("llml2L", "longllml", "bm25")):
-        self.methods = set(methods)
-        from llmlingua import PromptCompressor
+        self.methods = {"longllml" if m == "longllml2" else m for m in methods}
+        if self.methods & {"llml2L", "longllml"}:
+            from llmlingua import PromptCompressor
 
         from gateway.tokenizer import TokenCounter
         self.count = TokenCounter().count
@@ -72,16 +80,20 @@ class Compressors:
             from gateway.modules.m2_compressor.llmlingua2 import get_compressor
             self.small = get_compressor()
 
-    def run(self, text: str, question: str) -> dict:
-        from hybrid import bgraded, bhybrid
+    def run(self, text: str, question: str, variants=None) -> dict:
+        if self.methods & {"bhybrid", "bgraded"}:
+            from hybrid import bgraded, bhybrid
+        wanted = set(method_variants(self.methods)) if variants is None else set(variants)
+        if "longllml" in self.methods:
+            wanted = {m.replace("longllml@", "longllml2@") for m in wanted}
         out = {}
         n = self.count(text)
         for r in RATES:
-            if "bhybrid" in self.methods:
+            if f"bhybrid@{r}" in wanted:
                 out[f"bhybrid@{r}"] = bhybrid(text, question, r, {0.5: 0.7, 0.33: 0.6}[r], self.count, self.small)
-            if "bgraded" in self.methods:
+            if f"bgraded@{r}" in wanted:
                 out[f"bgraded@{r}"] = bgraded(text, question, r, self.count, self.small)
-            if "longllml" in self.methods:
+            if f"longllml2@{r}" in wanted:
                 try:
                     out[f"longllml2@{r}"] = self.long.compress_prompt(
                         chunks(text), question=question, target_token=int(r * n), rank_method="longllmlingua",
@@ -89,13 +101,12 @@ class Compressors:
                         dynamic_context_compression_ratio=0.4, context_budget="+0")["compressed_prompt"]
                 except Exception as e:
                     print("longllml failed:", repr(e)[:200], file=sys.stderr, flush=True)
-            if not self.methods & {"llml2L", "bm25"}:
-                continue
-            try:
-                out[f"llml2L@{r}"] = self.large.compress_prompt(text, rate=r, force_tokens=["\n", "?", "."])["compressed_prompt"]
-            except Exception:
-                out[f"llml2L@{r}"] = text
-            if "bm25" in self.methods:
+            if f"llml2L@{r}" in wanted:
+                try:
+                    out[f"llml2L@{r}"] = self.large.compress_prompt(text, rate=r, force_tokens=["\n", "?", "."])["compressed_prompt"]
+                except Exception as e:
+                    print("llml2L failed:", repr(e)[:200], file=sys.stderr, flush=True)
+            if f"bm25@{r}" in wanted:
                 out[f"bm25@{r}"] = bm25_select(text, question, r, self.count)
         return out
 
@@ -115,18 +126,27 @@ def units(name: str):
 def build(name: str, shard: str, methods: list[str], outdir: str) -> None:
     import torch
     torch.set_num_threads(4)
-    c = Compressors(methods)
+    c = None
     path = BENCH / outdir / f"{name}.{shard.replace('/', 'of')}.jsonl"
     path.parent.mkdir(parents=True, exist_ok=True)
-    done = {(x["id"], x["tag"]) for x in read_jsonl(path)} if path.exists() else set()
+    done = {}
+    for x in read_jsonl(path):
+        done.setdefault((x["id"], x.get("tag", "")), set()).update(x["variants"])
+    requested = {m.replace("longllml@", "longllml2@") for m in method_variants(methods)}
     with path.open("a", encoding="utf-8") as fh:
         for iid, tag, text, q in units(name):
-            if (iid, tag) in done or not in_shard(iid, shard):
+            missing = requested - done.get((iid, tag), set())
+            if not missing or not in_shard(iid, shard):
                 continue
-            v = c.run(text, q)
+            if c is None:
+                c = Compressors(methods)
+            v = c.run(text, q, variants=missing)
+            if not v:
+                continue
             fh.write(json.dumps({"id": iid, "tag": tag, "variants": v,
                                  "kept": {m: c.count(t) / max(1, c.count(text)) for m, t in v.items()}}, ensure_ascii=False) + "\n")
             fh.flush()
+            done.setdefault((iid, tag), set()).update(v)
     print("done", name, shard, flush=True)
 
 
@@ -136,7 +156,8 @@ def export(name: str, tag_dir: str, outdir: str = "baselines2") -> None:
     from hotpot import SYSTEM as HSYS
 
     kfile = BENCH / f"kaggle{tag_dir}" / "prompts.jsonl"
-    have = {json.loads(x)["key"] for x in open(kfile, encoding="utf-8") if x.strip()}
+    kfile.parent.mkdir(parents=True, exist_ok=True)
+    have = {x["key"] for x in read_jsonl(kfile)}
     items = {}
     if name == "belebele":
         items = {r["id"]: r for r in read_jsonl(BENCH / "belebele" / "items.jsonl")}
@@ -160,17 +181,19 @@ def export(name: str, tag_dir: str, outdir: str = "baselines2") -> None:
                                "system": HSYS, "prompt": f"Context:\n{t}\n\nQuestion: {it['question']}"}
                     if key not in have:
                         fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+                        have.add(key)
                         n += 1
     print(f"appended {n} -> {kfile}")
 
 
-def grade(name: str, answers_path: str | None = None) -> None:
+def grade(name: str, answers_path: str | None = None, methods=None, outdir: str = "baselines2") -> None:
     """Score saved Kaggle answers for the stronger-baseline batch."""
     from scipy.stats import binomtest, wilcoxon
 
     answers_path = Path(answers_path or BENCH / "kaggle-hp" / "answers.jsonl")
+    selected_methods = METHODS if methods is None else method_variants(methods)
     variants = {}
-    for f in sorted((BENCH / "baselines2").glob(f"{name}.*.jsonl")):
+    for f in sorted((BENCH / outdir).glob(f"{name}.*.jsonl")):
         for x in read_jsonl(f):
             for m, kept in x["kept"].items():
                 variants[(x["id"], x.get("tag", ""), m)] = kept
@@ -204,20 +227,22 @@ def grade(name: str, answers_path: str | None = None) -> None:
             base = base_names[tag]
             ids = [i for i in items if (i, tag, base) in scores]
             res = {"n_original": len(ids), "accuracy_original": round(sum(scores[(i, tag, base)] for i in ids) / max(1, len(ids)), 4), "methods": {}}
-            for m in METHODS:
+            for m in selected_methods:
                 method = f"{tag}:{m}"
                 common = [i for i in ids if (i, tag, method) in scores]
                 if not common:
                     continue
                 wins = sum(scores[(i, tag, method)] and not scores[(i, tag, base)] for i in common)
                 losses = sum(scores[(i, tag, base)] and not scores[(i, tag, method)] for i in common)
-                kept = sum(variants.get((i, tag, m), 0.0) for i in common) / len(common)
+                kept_values = [variants[(i, tag, m)] for i in common if (i, tag, m) in variants]
+                kept = sum(kept_values) / len(common) if len(kept_values) == len(common) else None
                 res["methods"][method] = {
                     "n": len(common), "accuracy": round(sum(scores[(i, tag, method)] for i in common) / len(common), 4),
                     "accuracy_original_paired": round(sum(scores[(i, tag, base)] for i in common) / len(common), 4),
                     "delta_vs_original_pts": round(100 * sum(scores[(i, tag, method)] - scores[(i, tag, base)] for i in common) / len(common), 2),
                     "p_mcnemar": float(binomtest(wins, wins + losses).pvalue) if wins + losses else 1.0,
-                    "context_tokens_kept": round(kept, 4),
+                    "context_tokens_kept": round(kept, 4) if kept is not None else None,
+                    "n_with_kept_metadata": len(kept_values),
                 }
             report[lang] = res
 
@@ -231,7 +256,7 @@ def grade(name: str, answers_path: str | None = None) -> None:
                 small = next((m for m in (f"{tag}:llmlingua2@{rate}", f"llmlingua2@{rate}")
                               if all((i, tag, m) in scores for i in test_ids)), None)
                 split_report = {"n_test": len(test_ids), "hybrid_selected_on_dev": hybrid, "methods": {}}
-                for m in (f"{tag}:{x}@{rate}" for x in ("llml2L", "longllml", "bm25")):
+                for m in (f"{tag}:{x}" for x in selected_methods if x.endswith(f"@{rate}")):
                     common = [i for i in test_ids if (i, tag, m) in scores and (i, tag, hybrid) in scores]
                     if not common:
                         continue
@@ -256,25 +281,29 @@ def grade(name: str, answers_path: str | None = None) -> None:
         items = {r["id"]: r for r in read_jsonl(folder / "items.jsonl")}
         scores = {}
         for a in read_jsonl(answers_path):
+            if a.get("model") != "Qwen/Qwen2.5-3B-Instruct":
+                continue
             if a["item_id"] not in items:
                 continue
             for m in a.get("methods", []):
-                if m == "original" or m.startswith("hybrid-") or m.startswith("llmlingua2@") or (m in METHODS and "|b2:" in a.get("key", "")):
+                if m == "original" or m.startswith("hybrid-") or m.startswith("llmlingua2@") or (m in selected_methods and "|b2:" in a.get("key", "")):
                     scores[(a["item_id"], m)] = f1(clean(a["content"]), items[a["item_id"]]["answer"])
         ids = [i for i in items if (i, "original") in scores]
         report = {"n_original": len(ids), "f1_original": round(sum(scores[(i, "original")] for i in ids) / max(1, len(ids)), 4), "methods": {}}
-        for m in METHODS:
+        for m in selected_methods:
             common = [i for i in ids if (i, m) in scores]
             if not common:
                 continue
             diffs = [scores[(i, m)] - scores[(i, "original")] for i in common]
             p = float(wilcoxon(diffs).pvalue) if any(diffs) else 1.0
-            kept = sum(variants.get((i, "", m), 0.0) for i in common) / len(common)
+            kept_values = [variants[(i, "", m)] for i in common if (i, "", m) in variants]
+            kept = sum(kept_values) / len(common) if len(kept_values) == len(common) else None
             report["methods"][m] = {
                 "n": len(common), "f1": round(sum(scores[(i, m)] for i in common) / len(common), 4),
                 "f1_original_paired": round(sum(scores[(i, "original")] for i in common) / len(common), 4),
                 "delta_vs_original_f1_pts": round(100 * sum(diffs) / len(common), 2),
-                "p_wilcoxon": p, "context_tokens_kept": round(kept, 4),
+                "p_wilcoxon": p, "context_tokens_kept": round(kept, 4) if kept is not None else None,
+                "n_with_kept_metadata": len(kept_values),
             }
             rate = "0.5" if m.endswith("@0.5") else "0.33"
             refs = (f"llmlingua2@{rate}", f"hybrid-s0.7@0.5" if rate == "0.5" else "hybrid-t-heavy@0.33")
@@ -292,7 +321,8 @@ def grade(name: str, answers_path: str | None = None) -> None:
                 }
             report["methods"][m]["comparisons"] = comparisons
 
-    out = BENCH / "baselines2" / f"{name}_report.json"
+    out = BENCH / outdir / f"{name}_report.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps(report, indent=2))
     print(f"saved {out}")
@@ -305,13 +335,13 @@ if __name__ == "__main__":
     ap.add_argument("--set", required=True, choices=["belebele", "squad", "meetingbank", "hotpot"])
     ap.add_argument("--shard", default="1/1")
     ap.add_argument("--tag", default="")
-    ap.add_argument("--methods", default="llml2L,longllml,bm25")
+    ap.add_argument("--methods", default=None)
     ap.add_argument("--out", default="baselines2")
     ap.add_argument("--answers", default=None)
     a = ap.parse_args()
     if a.cmd == "build":
-        build(a.set, a.shard, a.methods.split(","), a.out)
+        build(a.set, a.shard, a.methods.split(",") if a.methods is not None else ["llml2L", "longllml", "bm25"], a.out)
     elif a.cmd == "export":
         export(a.set, a.tag, a.out)
     else:
-        grade(a.set, a.answers)
+        grade(a.set, a.answers, a.methods.split(",") if a.methods is not None else None, a.out)
