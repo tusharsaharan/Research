@@ -95,7 +95,7 @@ def _prompt(row, context):
     return SYSTEM, f"Context:\n{context}\n\nQuestion: {row['question']}"
 
 
-def gpu(data: Path, out: Path):
+def gpu(data: Path, out: Path, shard: str = "1/1"):
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -114,14 +114,19 @@ def gpu(data: Path, out: Path):
             raise TimeoutError("Pilot time cap reached; partial outputs retained")
 
     out.mkdir(parents=True, exist_ok=True)
-    rows = read_jsonl(data / "inputs.jsonl")
+    rows = [row for row in read_jsonl(data / "inputs.jsonl") if in_shard(row["item_id"], shard)]
     manifest = json.loads((data / "manifest.json").read_text(encoding="utf-8"))
     if hashlib.sha256((data / "inputs.jsonl").read_bytes()).hexdigest() != manifest["inputs_sha256"]:
         raise ValueError("Input fingerprint mismatch")
     config = manifest["source_sha256"] + ":" + manifest["inputs_sha256"]
     metadata = dict(manifest, config=config, gpu=torch.cuda.get_device_name(), gpu_count=torch.cuda.device_count(),
+                    shard=shard, worker_inputs=len(rows),
                     versions={name: importlib.metadata.version(name) for name in ("torch", "transformers", "llmlingua")})
     (out / "run_metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+    if not rows:
+        write_rows(out / "variants.jsonl", [])
+        write_rows(out / "answers.jsonl", [])
+        return
     tok = AutoTokenizer.from_pretrained(MODEL, padding_side="left")
     tok.pad_token = tok.eos_token
 
@@ -269,6 +274,25 @@ def grade(data: Path, out: Path):
     return report
 
 
+def merge_workers(data: Path, out: Path, workers: list[Path]):
+    """Merge disjoint GPU shards without silently accepting duplicate work."""
+    for filename in ("variants.jsonl", "answers.jsonl"):
+        merged = {}
+        for worker in workers:
+            for row in read_jsonl(worker / filename):
+                if row["key"] in merged:
+                    raise ValueError(f"Overlapping GPU shards: {row['key']}")
+                merged[row["key"]] = row
+        write_rows(out / filename, [merged[key] for key in sorted(merged)])
+    metadata = [json.loads((worker / "run_metadata.json").read_text(encoding="utf-8"))
+                for worker in workers if (worker / "run_metadata.json").exists()]
+    if metadata:
+        summary = dict(metadata[0], gpu_count=len(workers), worker_shards=[m.get("shard") for m in metadata],
+                       worker_inputs=sum(m.get("worker_inputs", 0) for m in metadata))
+        (out / "run_metadata.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    return grade(data, out)
+
+
 def audit(shard: str, out: Path):
     """Count saved Round 3 outputs using its original cl100k tokenizer."""
     from gateway.tokenizer import TokenCounter
@@ -308,17 +332,22 @@ def audit(shard: str, out: Path):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("cmd", choices=("prepare", "gpu", "grade", "audit"))
+    ap.add_argument("cmd", choices=("prepare", "gpu", "grade", "audit", "merge"))
     ap.add_argument("--n", type=int, default=12)
     ap.add_argument("--out", type=Path, default=OUT)
     ap.add_argument("--data", type=Path, default=OUT)
     ap.add_argument("--shard", default="1/1")
+    ap.add_argument("--workers", type=Path, nargs="+", default=[])
     args = ap.parse_args()
     if args.cmd == "prepare":
         prepare(args.n, args.out)
     elif args.cmd == "gpu":
-        gpu(args.data, args.out)
+        gpu(args.data, args.out, args.shard)
     elif args.cmd == "grade":
         grade(args.data, args.out)
+    elif args.cmd == "merge":
+        if not args.workers:
+            ap.error("merge requires --workers")
+        merge_workers(args.data, args.out, args.workers)
     else:
         audit(args.shard, args.out)

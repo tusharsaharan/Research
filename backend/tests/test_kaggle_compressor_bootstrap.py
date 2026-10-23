@@ -7,6 +7,8 @@ import importlib.util
 import json
 import subprocess
 import zipfile
+import time
+from types import SimpleNamespace
 from pathlib import Path
 
 import pytest
@@ -17,6 +19,47 @@ FILES = {
     "src/gateway/modules/m2_compressor/budgeted.py": b"VERSION = 2\n",
     "scripts/bench/compressor_pilot.py": b"def gpu(): pass\n",
 }
+
+
+@pytest.mark.parametrize("failed", [False, True])
+def test_workers_use_distinct_gpus_and_merge_before_reporting(bootstrap, monkeypatch, tmp_path, failed):
+    calls = []
+
+    def run(command, **kwargs):
+        calls.append((command, kwargs))
+        if "merge" in command:
+            (tmp_path / "report.json").write_text(json.dumps({"complete": not failed}))
+            return SimpleNamespace(returncode=0)
+        index = int(kwargs["env"]["CUDA_VISIBLE_DEVICES"])
+        assert command[command.index("--shard") + 1] == f"{index + 1}/2"
+        assert command[command.index("--out") + 1].endswith(f"gpu_{index + 1}")
+        return SimpleNamespace(returncode=int(failed and index == 0))
+
+    monkeypatch.setattr(bootstrap.subprocess, "run", run)
+    if failed:
+        with pytest.raises(RuntimeError, match="Incomplete GPU pilot"):
+            bootstrap.run_gpu_workers(tmp_path, tmp_path, tmp_path, 2, time.time() + 60)
+    else:
+        bootstrap.run_gpu_workers(tmp_path, tmp_path, tmp_path, 2, time.time() + 60)
+    workers = [(command, kwargs) for command, kwargs in calls if "gpu" in command]
+    assert {kwargs["env"]["CUDA_VISIBLE_DEVICES"] for _, kwargs in workers} == {"0", "1"}
+    assert "merge" in calls[-1][0]
+    assert calls[-1][1]["check"] is True
+
+
+def test_worker_timeout_still_merges_partial_outputs(bootstrap, monkeypatch, tmp_path):
+    calls = []
+
+    def run(command, **kwargs):
+        calls.append(command)
+        if "merge" in command:
+            return SimpleNamespace(returncode=0)
+        raise subprocess.TimeoutExpired(command, 1)
+
+    monkeypatch.setattr(bootstrap.subprocess, "run", run)
+    with pytest.raises(subprocess.TimeoutExpired):
+        bootstrap.run_gpu_workers(tmp_path, tmp_path, tmp_path, 1, time.time() + 60)
+    assert "merge" in calls[-1]
 
 
 @pytest.fixture

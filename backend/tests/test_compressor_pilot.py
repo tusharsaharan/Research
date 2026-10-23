@@ -152,6 +152,39 @@ def test_grade_reports_complete_only_for_full_expected_coverage(pilot, grading_f
     assert report["groups"]["belebele|english"]["n_complete_paired"] == 2
 
 
+def test_merge_disjoint_gpu_workers_keeps_full_paired_coverage(pilot, grading_files, tmp_path):
+    data, out, variants, answers = grading_files
+    workers = [tmp_path / "gpu_1", tmp_path / "gpu_2"]
+    for index, uid in enumerate(("first", "second")):
+        dump_rows(workers[index] / "variants.jsonl", [v for v in variants if v["uid"] == uid])
+        dump_rows(workers[index] / "answers.jsonl", [v for v in answers if v["uid"] == uid])
+        (workers[index] / "run_metadata.json").write_text(
+            json.dumps(dict(gpu="fake", shard=f"{index + 1}/2", worker_inputs=1)), encoding="utf-8")
+    report = pilot.merge_workers(data, out, workers)
+    assert report["complete"] and report["answered"] == 6
+    metadata = json.loads((out / "run_metadata.json").read_text())
+    assert metadata["gpu_count"] == 2 and metadata["worker_inputs"] == 2
+    assert metadata["worker_shards"] == ["1/2", "2/2"]
+
+
+def test_merge_rejects_overlapping_worker_keys(pilot, grading_files, tmp_path):
+    data, out, variants, answers = grading_files
+    worker = tmp_path / "gpu_1"
+    dump_rows(worker / "variants.jsonl", variants)
+    dump_rows(worker / "answers.jsonl", answers)
+    with pytest.raises(ValueError, match="Overlapping GPU shards"):
+        pilot.merge_workers(data, out, [worker, worker])
+
+
+def test_merge_partial_worker_cannot_report_complete(pilot, grading_files, tmp_path):
+    data, out, variants, answers = grading_files
+    worker = tmp_path / "gpu_1"
+    dump_rows(worker / "variants.jsonl", [v for v in variants if v["uid"] == "first"])
+    dump_rows(worker / "answers.jsonl", [v for v in answers if v["uid"] == "first"])
+    report = pilot.merge_workers(data, out, [worker, tmp_path / "failed_worker"])
+    assert not report["complete"] and report["answered"] == 3
+
+
 def test_qa_grade_uses_cleaned_token_f1_with_matched_original(pilot, grading_files):
     data, out, variants, answers = grading_files
     rows = pilot.read_jsonl(data / "inputs.jsonl")

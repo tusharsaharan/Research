@@ -70,7 +70,8 @@ def main():
         return
     if args.cmd == "download":
         result = args.out / "kernel_output"
-        kaggle("kernels", "output", identity, "-p", str(result))
+        kaggle("kernels", "output", identity, "-p", str(result), "-q", "--file-pattern",
+               r"^(?!pilot_source/).*(?:\.jsonl|\.json|\.log)$")
         grade(args.out, result)
         return
     manifest = json.loads((args.out / "manifest.json").read_text(encoding="utf-8"))
@@ -119,7 +120,7 @@ def main():
     (kernel / "kernel-metadata.json").write_text(json.dumps({
         "id": identity, "title": f"TokenOpt compressor GPU pilot v{args.revision}", "code_file": "compressor_pilot.py",
         "language": "python", "kernel_type": "script", "is_private": True,
-        "enable_gpu": True, "enable_internet": True, "machine_shape": "NvidiaTeslaP100",
+        "enable_gpu": True, "enable_internet": True, "machine_shape": "NvidiaTeslaT4",
         "dataset_sources": [dataset_identity], "competition_sources": [], "kernel_sources": [],
     }), encoding="utf-8")
     # CLI hides the response body on SaveKernel conflicts. The SDK preserves
