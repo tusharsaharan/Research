@@ -78,11 +78,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Code-Mixed LLM Gateway" },
+      { title: "Code-Mixed Gateway" },
       {
         name: "description",
         content:
-          "An open compression, calibrated-routing and reasoning-budget gateway for Hindi–English code-mixed text.",
+          "Prompt compression, per-language model routing and cost tracking for Hindi–English text.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -98,8 +98,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap",
       },
-      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-      { rel: "alternate icon", href: "/favicon.ico", type: "image/x-icon" },
+      // Empty icon: stops the browser requesting /favicon.ico.
+      { rel: "icon", href: "data:," },
     ],
   }),
   shellComponent: RootShell,

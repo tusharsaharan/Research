@@ -10,31 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BenchmarkRouteImport } from './routes/benchmark'
-import { Route as ConnectRouteImport } from './routes/connect'
+import { Route as CostRouteImport } from './routes/cost'
 import { Route as DemoRouteImport } from './routes/demo'
-import { Route as PilotRouteImport } from './routes/pilot'
-import { Route as RedteamRouteImport } from './routes/redteam'
-import { Route as ResearchRouteImport } from './routes/research'
 import { Route as ResultsRouteImport } from './routes/results'
-import { Route as RoadmapRouteImport } from './routes/roadmap'
-import { Route as TeamRouteImport } from './routes/team'
-import { Route as TokenizerRouteImport } from './routes/tokenizer'
-import { Route as ReceiptIdRouteImport } from './routes/receipt.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BenchmarkRoute = BenchmarkRouteImport.update({
-  id: '/benchmark',
-  path: '/benchmark',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConnectRoute = ConnectRouteImport.update({
-  id: '/connect',
-  path: '/connect',
+const CostRoute = CostRouteImport.update({
+  id: '/cost',
+  path: '/cost',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoRoute = DemoRouteImport.update({
@@ -42,148 +29,44 @@ const DemoRoute = DemoRouteImport.update({
   path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PilotRoute = PilotRouteImport.update({
-  id: '/pilot',
-  path: '/pilot',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RedteamRoute = RedteamRouteImport.update({
-  id: '/redteam',
-  path: '/redteam',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResearchRoute = ResearchRouteImport.update({
-  id: '/research',
-  path: '/research',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ResultsRoute = ResultsRouteImport.update({
   id: '/results',
   path: '/results',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RoadmapRoute = RoadmapRouteImport.update({
-  id: '/roadmap',
-  path: '/roadmap',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TeamRoute = TeamRouteImport.update({
-  id: '/team',
-  path: '/team',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TokenizerRoute = TokenizerRouteImport.update({
-  id: '/tokenizer',
-  path: '/tokenizer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReceiptIdRoute = ReceiptIdRouteImport.update({
-  id: '/receipt/$id',
-  path: '/receipt/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/benchmark': typeof BenchmarkRoute
-  '/connect': typeof ConnectRoute
+  '/cost': typeof CostRoute
   '/demo': typeof DemoRoute
-  '/pilot': typeof PilotRoute
-  '/redteam': typeof RedteamRoute
-  '/research': typeof ResearchRoute
   '/results': typeof ResultsRoute
-  '/roadmap': typeof RoadmapRoute
-  '/team': typeof TeamRoute
-  '/tokenizer': typeof TokenizerRoute
-  '/receipt/$id': typeof ReceiptIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/benchmark': typeof BenchmarkRoute
-  '/connect': typeof ConnectRoute
+  '/cost': typeof CostRoute
   '/demo': typeof DemoRoute
-  '/pilot': typeof PilotRoute
-  '/redteam': typeof RedteamRoute
-  '/research': typeof ResearchRoute
   '/results': typeof ResultsRoute
-  '/roadmap': typeof RoadmapRoute
-  '/team': typeof TeamRoute
-  '/tokenizer': typeof TokenizerRoute
-  '/receipt/$id': typeof ReceiptIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/benchmark': typeof BenchmarkRoute
-  '/connect': typeof ConnectRoute
+  '/cost': typeof CostRoute
   '/demo': typeof DemoRoute
-  '/pilot': typeof PilotRoute
-  '/redteam': typeof RedteamRoute
-  '/research': typeof ResearchRoute
   '/results': typeof ResultsRoute
-  '/roadmap': typeof RoadmapRoute
-  '/team': typeof TeamRoute
-  '/tokenizer': typeof TokenizerRoute
-  '/receipt/$id': typeof ReceiptIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/benchmark'
-    | '/connect'
-    | '/demo'
-    | '/pilot'
-    | '/redteam'
-    | '/research'
-    | '/results'
-    | '/roadmap'
-    | '/team'
-    | '/tokenizer'
-    | '/receipt/$id'
+  fullPaths: '/' | '/cost' | '/demo' | '/results'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/benchmark'
-    | '/connect'
-    | '/demo'
-    | '/pilot'
-    | '/redteam'
-    | '/research'
-    | '/results'
-    | '/roadmap'
-    | '/team'
-    | '/tokenizer'
-    | '/receipt/$id'
-  id:
-    | '__root__'
-    | '/'
-    | '/benchmark'
-    | '/connect'
-    | '/demo'
-    | '/pilot'
-    | '/redteam'
-    | '/research'
-    | '/results'
-    | '/roadmap'
-    | '/team'
-    | '/tokenizer'
-    | '/receipt/$id'
+  to: '/' | '/cost' | '/demo' | '/results'
+  id: '__root__' | '/' | '/cost' | '/demo' | '/results'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BenchmarkRoute: typeof BenchmarkRoute
-  ConnectRoute: typeof ConnectRoute
+  CostRoute: typeof CostRoute
   DemoRoute: typeof DemoRoute
-  PilotRoute: typeof PilotRoute
-  RedteamRoute: typeof RedteamRoute
-  ResearchRoute: typeof ResearchRoute
   ResultsRoute: typeof ResultsRoute
-  RoadmapRoute: typeof RoadmapRoute
-  TeamRoute: typeof TeamRoute
-  TokenizerRoute: typeof TokenizerRoute
-  ReceiptIdRoute: typeof ReceiptIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -195,18 +78,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/benchmark': {
-      id: '/benchmark'
-      path: '/benchmark'
-      fullPath: '/benchmark'
-      preLoaderRoute: typeof BenchmarkRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/connect': {
-      id: '/connect'
-      path: '/connect'
-      fullPath: '/connect'
-      preLoaderRoute: typeof ConnectRouteImport
+    '/cost': {
+      id: '/cost'
+      path: '/cost'
+      fullPath: '/cost'
+      preLoaderRoute: typeof CostRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo': {
@@ -216,27 +92,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/pilot': {
-      id: '/pilot'
-      path: '/pilot'
-      fullPath: '/pilot'
-      preLoaderRoute: typeof PilotRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/redteam': {
-      id: '/redteam'
-      path: '/redteam'
-      fullPath: '/redteam'
-      preLoaderRoute: typeof RedteamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/research': {
-      id: '/research'
-      path: '/research'
-      fullPath: '/research'
-      preLoaderRoute: typeof ResearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/results': {
       id: '/results'
       path: '/results'
@@ -244,50 +99,14 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResultsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/roadmap': {
-      id: '/roadmap'
-      path: '/roadmap'
-      fullPath: '/roadmap'
-      preLoaderRoute: typeof RoadmapRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/team': {
-      id: '/team'
-      path: '/team'
-      fullPath: '/team'
-      preLoaderRoute: typeof TeamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tokenizer': {
-      id: '/tokenizer'
-      path: '/tokenizer'
-      fullPath: '/tokenizer'
-      preLoaderRoute: typeof TokenizerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/receipt/$id': {
-      id: '/receipt/$id'
-      path: '/receipt/$id'
-      fullPath: '/receipt/$id'
-      preLoaderRoute: typeof ReceiptIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BenchmarkRoute: BenchmarkRoute,
-  ConnectRoute: ConnectRoute,
+  CostRoute: CostRoute,
   DemoRoute: DemoRoute,
-  PilotRoute: PilotRoute,
-  RedteamRoute: RedteamRoute,
-  ResearchRoute: ResearchRoute,
   ResultsRoute: ResultsRoute,
-  RoadmapRoute: RoadmapRoute,
-  TeamRoute: TeamRoute,
-  TokenizerRoute: TokenizerRoute,
-  ReceiptIdRoute: ReceiptIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
