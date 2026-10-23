@@ -191,6 +191,8 @@ def download_and_import(user: str, here: Path) -> None:
     shutil.copy(got, K / "answers.jsonl")
     n = sum(1 for _ in got.open(encoding="utf-8"))
     print(f"{n} answers downloaded")
+    if TAG == "-cc":  # sampled answers: graded by conformal_cascade.py, not kaggle_import
+        return
     subprocess.run([sys.executable, str(here / "kaggle_import.py")], check=True)
 
 

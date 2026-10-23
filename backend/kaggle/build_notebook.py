@@ -134,7 +134,21 @@ def main() -> None:
     if one:
         setup = setup.replace("BATCH = 24", "BATCH = 8").replace(
             "n_gpu = max(1, torch.cuda.device_count())", 'n_gpu = 1\nos.environ["ONE_WORKER"] = "1"')
+    ns = int(os.environ.get("KAGGLE_SAMPLES", "0"))  # >0: N sampled answers per prompt (conformal cascade)
+    if ns:
+        setup = setup.replace("BATCH = 24", "BATCH = 12")  # 12 prompts x N seqs fits a 16 GB T4 with 3B fp16
     worker = WORKER.replace('device_map="cuda:0"', 'device_map=("auto" if __import__("os").environ.get("ONE_WORKER") else "cuda:0")')
+    if ns:
+        worker = worker.replace("do_sample=False,", f"do_sample=True, temperature=0.7, top_p=1.0, top_k=0, num_return_sequences={ns},")
+        old_row = worker[worker.index("        for j, r in enumerate(batch):"):worker.index("        fh.flush()")]
+        new_row = f"""        for j, r in enumerate(batch):
+            outs = g[j * {ns}:(j + 1) * {ns}, enc["input_ids"].shape[1]:]
+            fh.write(json.dumps({{"key": r["key"], "item_id": r["item_id"], "lang": r["lang"], "methods": r["methods"],
+                                 "model": MODEL, "temperature": 0.7, "samples": tok.batch_decode(outs, skip_special_tokens=True),
+                                 "prompt_tokens": int(enc["attention_mask"][j].sum()),
+                                 "completion_tokens": [int((o != tok.pad_token_id).sum()) for o in outs]}}, ensure_ascii=False) + "\\n")
+"""
+        worker = worker.replace(old_row, new_row)
     cells = [
         {"cell_type": "markdown", "metadata": {}, "source": "# Local-model answers (Kaggle GPU, one worker per GPU)\n"},
         {"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [], "source": setup},
