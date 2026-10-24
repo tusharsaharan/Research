@@ -96,7 +96,7 @@ def test_prepare_preserves_paired_languages_and_dev_split(pilot, monkeypatch, tm
                     ("common", "compressor_pilot", "baselines2", "hybrid", "belebele_extra", "belebele_cm", "hotpot", "grade")}
         expected |= {f"src/gateway/{name}.py" for name in ("__init__", "schemas", "tokenizer", "pricing", "modules/__init__")}
         expected |= {f"src/gateway/modules/m2_compressor/{name}.py" for name in
-                     ("__init__", "budgeted", "document", "guarded", "llmlingua2", "safety_span")}
+                     ("__init__", "budgeted", "document", "hinglish_budget", "guarded", "llmlingua2", "safety_span")}
         assert set(bundle.namelist()) == expected
         extracted = tmp_path / "extracted"
         bundle.extractall(extracted)

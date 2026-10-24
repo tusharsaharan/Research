@@ -28,11 +28,14 @@ MODEL = "Qwen/Qwen2.5-3B-Instruct"
 LARGE = "microsoft/llmlingua-2-xlm-roberta-large-meetingbank"
 RATES = (0.5, 0.33)
 METHODS = ("bhybrid_v2", "bhybrid_doc", "bextract_doc", "bbridge_doc", "bstructured_doc",
-           "bhybrid", "bgraded", "bm25", "llml2L")
+           "bhybrid", "bgraded", "bm25", "llml2L",
+           "bhybrid_strict", "bhybrid_char", "bhybrid_clause", "bhybrid_char_clause", "bm25_strict", "llml2L_strict")
+STRICT_METHODS = {"bhybrid_strict", "bhybrid_char", "bhybrid_clause", "bhybrid_char_clause", "bm25_strict", "llml2L_strict"}
+DEFAULT_METHODS = METHODS[:9]
 
 
 def selected_methods(methods):
-    chosen = tuple(methods) if methods is not None else METHODS
+    chosen = tuple(methods) if methods is not None else DEFAULT_METHODS
     if not chosen or len(set(chosen)) != len(chosen) or set(chosen) - set(METHODS):
         raise ValueError("Choose distinct supported compressor methods")
     return chosen
@@ -45,7 +48,7 @@ def write_rows(path, rows):
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
-def prepare(n: int, out: Path, methods=None, offset: int = 0):
+def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, unique_passages=False):
     methods = selected_methods(methods)
     if n < 1:
         raise ValueError("n must be positive")
@@ -53,14 +56,24 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0):
         raise ValueError("offset must be nonnegative")
     if (out / "manifest.json").exists():
         raise ValueError("Use a new output folder; an existing pilot is immutable")
+    datasets = tuple(datasets or ("belebele", "squad", "meetingbank", "hotpot"))
+    if len(set(datasets)) != len(datasets) or set(datasets) - {"belebele", "squad", "meetingbank", "hotpot"}:
+        raise ValueError("Choose distinct supported datasets")
     rows = []
-    for name in ("belebele", "squad", "meetingbank", "hotpot"):
+    for name in datasets:
         folder = "belebele" if name == "belebele" else "hotpot" if name == "hotpot" else f"longqa_{name}"
         items = read_jsonl(BENCH / folder / "items.jsonl")
-        # The existing Belebele development split stays separate from held-out data.
+        # Historical development IDs only; these are NOT a pristine held-out set.
         if name == "belebele":
             items = [it for it in items if int(hashlib.sha256(f"hybrid-dev|{it['id']}".encode()).hexdigest(), 16) % 3 == 0]
         items.sort(key=lambda it: hashlib.sha256(f"compressor-pilot-v2|{name}|{it['id']}".encode()).hexdigest())
+        if unique_passages:
+            distinct = {}
+            for item in items:
+                passage = item['english']['passage'] if name == 'belebele' else item['context']
+                group = hashlib.sha256(' '.join(passage.split()).encode()).hexdigest()
+                distinct.setdefault(group, item)
+            items = list(distinct.values())
         if len(items) < offset + n:
             raise ValueError(f"Not enough {name} inputs")
         for it in items[offset:offset + n]:
@@ -69,7 +82,8 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0):
                     q = it[lang]
                     rows.append(dict(uid=f"{name}|{it['id']}|{lang}", item_id=it["id"], dataset=name,
                                      lang=lang, task="mcq", context=q["passage"], question=q["question"],
-                                     options=q["options"], gold=it["gold"]))
+                                     options=q["options"], gold=it["gold"],
+                                     passage_group=hashlib.sha256(' '.join(it['english']['passage'].split()).encode()).hexdigest()))
             else:
                 rows.append(dict(uid=f"{name}|{it['id']}|english", item_id=it["id"], dataset=name,
                                  lang="english", task="qa", context=it["context"], question=it["question"], gold=it["answer"]))
@@ -79,7 +93,7 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0):
     sources = [BACKEND / "scripts" / "bench" / f"{name}.py" for name in scripts]
     sources += [BACKEND / "src" / "gateway" / name for name in (
         "__init__.py", "schemas.py", "tokenizer.py", "pricing.py", "modules/__init__.py",
-        *[f"modules/m2_compressor/{name}.py" for name in ("__init__", "budgeted", "document", "guarded", "llmlingua2", "safety_span")],
+        *[f"modules/m2_compressor/{name}.py" for name in ("__init__", "budgeted", "document", "hinglish_budget", "guarded", "llmlingua2", "safety_span")],
     )]
     with zipfile.ZipFile(out / "source.zip", "w", zipfile.ZIP_DEFLATED) as bundle:
         for file in sorted(sources):
@@ -87,12 +101,13 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0):
     manifest = {
         "study": f"exploratory compressor pilot ({out.name})", "n_per_dataset": n, "selection_offset": offset,
         "units": len(rows),
+        "datasets": datasets, "unique_passages": unique_passages,
         "rates": RATES, "methods": methods, "answer_model": MODEL,
         "budget_tokenizer": MODEL, "max_new_tokens": 128, "max_seconds": 3300,
         "source_sha256": hashlib.sha256((out / "source.zip").read_bytes()).hexdigest(),
         "inputs_sha256": hashlib.sha256((out / "inputs.jsonl").read_bytes()).hexdigest(),
         "git_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=BACKEND, text=True).strip(),
-        "notes": "Belebele uses existing development items only. No certification or held-out claims.",
+        "notes": "Previously exposed development data only; unique passages means within this run, not unseen sources. No confirmatory claims. Strict methods use identical explicit word-prefix budget enforcement.",
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(json.dumps(manifest), flush=True)
@@ -136,6 +151,7 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
     from baselines2 import bm25_select
     from hybrid import bgraded, bhybrid
     from gateway.modules.m2_compressor.budgeted import compress_bm25_budgeted
+    from gateway.modules.m2_compressor.hinglish_budget import compress_ablation, strict_prefix
     from gateway.modules.m2_compressor.document import (
         bridge_document, compress_document, extract_document, structured_document,
     )
@@ -178,17 +194,17 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
         raise ValueError("Resume source/input mismatch")
     # Sequential phases avoid holding the two compressors and causal LM together.
     for phase in ("small", "large"):
-        phase_methods = [m for m in methods if (m == "llml2L") == (phase == "large")]
+        phase_methods = [m for m in methods if m.startswith("llml2L") == (phase == "large")]
         if not phase_methods:
             continue
         check_time()
         lingua = (LLMLingua2Compressor(DEFAULT_MODEL if phase == "small" else LARGE, device="cuda:0")
-                  if any(m != "bm25" for m in phase_methods) else None)
+                  if any(m not in ("bm25", "bm25_strict", "bhybrid_clause", "bhybrid_char_clause") for m in phase_methods) else None)
         with variants_file.open("a", encoding="utf-8") as fh:
             for row in rows:
                 check_time()
                 text, q = row["context"], row["question"]
-                work = [("original", None)] if phase == ("large" if methods == ("llml2L",) else "small") else []
+                work = [("original", None)] if phase == ("large" if all(m.startswith("llml2L") for m in methods) else "small") else []
                 work += [(f"{method}@{rate}", rate) for rate in rates for method in phase_methods]
                 for method, rate in work:
                     key = row["uid"] + "|" + method
@@ -199,6 +215,11 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
                     t0 = time.monotonic()
                     if method == "original":
                         compressed = text
+                    elif method.split("@", 1)[0] in STRICT_METHODS - {"bm25_strict", "llml2L_strict"}:
+                        result = compress_ablation(text, q, rate, count, lingua,
+                                                   characters="char" in method, clauses="clause" in method)
+                        detail = asdict(result)
+                        compressed = detail.pop("text")
                     elif method.split("@", 1)[0] in ("bhybrid_doc", "bextract_doc", "bbridge_doc", "bstructured_doc"):
                         compressor = dict(bhybrid_doc=compress_document, bextract_doc=extract_document,
                                           bbridge_doc=bridge_document, bstructured_doc=structured_document)[
@@ -215,12 +236,18 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
                         compressed = bhybrid(text, q, rate, {0.5: 0.7, 0.33: 0.6}[rate], count, lingua)
                     elif method.startswith("bgraded@"):
                         compressed = bgraded(text, q, rate, count, lingua)
-                    elif method.startswith("bm25@"):
+                    elif method.split("@", 1)[0] in ("bm25", "bm25_strict"):
                         compressed = bm25_select(text, q, rate, count)
                     else:
                         compressed = lingua._ensure().compress_prompt(text, rate=rate, force_tokens=["\n", "?", "."])["compressed_prompt"]
-                    n, kept = count(text), count(compressed)
+                    n = count(text)
                     target = n if rate is None else max(1, math.floor(rate * n))
+                    if method.split("@", 1)[0] in STRICT_METHODS:
+                        detail['before_enforcement_tokens'] = count(compressed)
+                        detail['before_enforcement_text'] = compressed
+                        compressed = strict_prefix(compressed, target, count)
+                        detail['budget_enforced'] = compressed != detail['before_enforcement_text']
+                    kept = count(compressed)
                     record = dict(key=key, uid=row["uid"], method=method, text=compressed,
                                   original_tokens=n, actual_tokens=kept, target_tokens=target,
                                   budget_met=kept <= target, kept_ratio=kept / max(1, n),
@@ -473,13 +500,15 @@ if __name__ == "__main__":
     ap.add_argument("--n", type=int, default=12)
     ap.add_argument("--offset", type=int, default=0)
     ap.add_argument("--methods", nargs="+", choices=METHODS)
+    ap.add_argument("--datasets", nargs="+", choices=("belebele", "squad", "meetingbank", "hotpot"))
+    ap.add_argument("--unique-passages", action="store_true")
     ap.add_argument("--out", type=Path, default=OUT)
     ap.add_argument("--data", type=Path, default=OUT)
     ap.add_argument("--shard", default="1/1")
     ap.add_argument("--workers", type=Path, nargs="+", default=[])
     args = ap.parse_args()
     if args.cmd == "prepare":
-        prepare(args.n, args.out, args.methods, args.offset)
+        prepare(args.n, args.out, args.methods, args.offset, args.datasets, args.unique_passages)
     elif args.cmd == "gpu":
         gpu(args.data, args.out, args.shard)
     elif args.cmd == "grade":

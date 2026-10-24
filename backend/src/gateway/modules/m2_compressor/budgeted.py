@@ -105,6 +105,9 @@ def compress_bm25_budgeted(
     *,
     sent_share: float | None = None,
     max_passes: int = 7,
+    ranker=None,
+    unit_splitter=None,
+    preserve_units: bool = False,
 ) -> BudgetedCompression:
     """Retrieve, keep the best evidence intact where feasible, then thin.
 
@@ -124,13 +127,22 @@ def compress_bm25_budgeted(
     budget = max(1, math.floor(target * original_n)) if original_n else 0
     if not passage.strip() or target == 1 or original_n <= budget:
         return BudgetedCompression(passage, budget, original_n, original_n <= budget, len(split_units(passage)))
-    units = split_units(passage)
-    scores = bm25_scores(units, question)
+    units = (unit_splitter or split_units)(passage)
+    scores = (ranker or bm25_scores)(units, question)
     order = sorted(range(len(units)), key=lambda i: (-scores[i], i))
 
     def joined(indices):
         # Explicit boundaries preserve paragraph/title structure after retrieval.
         return "\n".join(units[i] for i in sorted(indices))
+
+    if preserve_units:
+        packed = []
+        for index in order:
+            if count(joined([*packed, index])) <= budget:
+                packed.append(index)
+        output = joined(packed) if packed else units[order[0]]
+        actual = count(output)
+        return BudgetedCompression(output, budget, actual, actual <= budget, len(packed) or 1)
 
     selected: list[int] = []
     for index in order:
