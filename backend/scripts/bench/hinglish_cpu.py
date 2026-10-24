@@ -39,11 +39,11 @@ def revised_letter(text):
     return match[1] if match else None
 
 
-def regrade(shard, out):
+def regrade(shard, out, answers=None):
     out.mkdir(parents=True, exist_ok=True)
     name = shard.replace('/', '_')
     gold = {r['id']: r['gold'] for r in rows(BENCH / 'belebele/items.jsonl') if in_shard(r['id'], shard)}
-    answers = BENCH / 'kaggle/answers.jsonl'
+    answers = answers or BENCH / 'kaggle/answers.jsonl'
     latest = {}
     for answer in rows(answers):
         iid = answer.get('item_id')
@@ -61,7 +61,7 @@ def regrade(shard, out):
             stream.write(json.dumps(latest[key]) + '\n')
     metadata = dict(shard=shard, records=len(latest), script_sha256=sha(Path(__file__)),
                     grader_sha256=sha(Path(__file__).with_name('grade.py')),
-                    input_sha256=sha(answers), items_sha256=sha(BENCH / 'belebele/items.jsonl'))
+                    input_path=str(answers), input_sha256=sha(answers), items_sha256=sha(BENCH / 'belebele/items.jsonl'))
     (out / f'meta_{name}.json').write_text(json.dumps(metadata, indent=2), encoding='utf-8')
     print(json.dumps(metadata), flush=True)
 
@@ -107,8 +107,9 @@ if __name__ == '__main__':
     parser.add_argument('--shard', default='1/1')
     parser.add_argument('--shards', type=int, default=14)
     parser.add_argument('--out', type=Path, default=BENCH / 'hinglish_cpu_v1')
+    parser.add_argument('--answers', type=Path, help='Alternate historical answers; use a distinct output folder')
     args = parser.parse_args()
     if args.cmd == 'regrade':
-        regrade(args.shard, args.out)
+        regrade(args.shard, args.out, args.answers)
     else:
         merge(args.out, args.shards)
