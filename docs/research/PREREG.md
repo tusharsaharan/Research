@@ -80,6 +80,8 @@ Interim runs on partial data are allowed for debugging and are labelled
 
 ## Change log
 
+- 2026-10-24: subsequent exploratory pilots evaluate each exact rendered prompt once and reuse its greedy answer across identical compressor outputs, avoiding batch-dependent inference differences. A deterministic selection offset permits fresh development examples; offsets, methods, source hashes and input hashes are recorded in each manifest. Historical outputs retain their original generation protocol.
+
 - 2026-10-24: exploratory document candidates add measured sentence packing and explicit title-link retrieval, with method subsets frozen in each pilot manifest. Existing frozen hybrid settings, primary hypotheses and held-out splits remain unchanged; these development-pilot iterations make no confirmatory claim.
 
 - 2026-10-15: initial version.

@@ -44,10 +44,12 @@ def write_rows(path, rows):
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
-def prepare(n: int, out: Path, methods=None):
+def prepare(n: int, out: Path, methods=None, offset: int = 0):
     methods = selected_methods(methods)
     if n < 1:
         raise ValueError("n must be positive")
+    if offset < 0:
+        raise ValueError("offset must be nonnegative")
     if (out / "manifest.json").exists():
         raise ValueError("Use a new output folder; an existing pilot is immutable")
     rows = []
@@ -58,9 +60,9 @@ def prepare(n: int, out: Path, methods=None):
         if name == "belebele":
             items = [it for it in items if int(hashlib.sha256(f"hybrid-dev|{it['id']}".encode()).hexdigest(), 16) % 3 == 0]
         items.sort(key=lambda it: hashlib.sha256(f"compressor-pilot-v2|{name}|{it['id']}".encode()).hexdigest())
-        if len(items) < n:
+        if len(items) < offset + n:
             raise ValueError(f"Not enough {name} inputs")
-        for it in items[:n]:
+        for it in items[offset:offset + n]:
             if name == "belebele":
                 for lang in ("english", "hinglish"):
                     q = it[lang]
@@ -82,7 +84,8 @@ def prepare(n: int, out: Path, methods=None):
         for file in sorted(sources):
             bundle.write(file, str(file.relative_to(BACKEND)).replace("\\", "/"))
     manifest = {
-        "study": f"exploratory compressor pilot ({out.name})", "n_per_dataset": n, "units": len(rows),
+        "study": f"exploratory compressor pilot ({out.name})", "n_per_dataset": n, "selection_offset": offset,
+        "units": len(rows),
         "rates": RATES, "methods": methods, "answer_model": MODEL,
         "budget_tokenizer": MODEL, "max_new_tokens": 128, "max_seconds": 3300,
         "source_sha256": hashlib.sha256((out / "source.zip").read_bytes()).hexdigest(),
@@ -101,6 +104,28 @@ def _prompt(row, context):
                 mcq(context, row["question"], row["options"]))
     from hotpot import SYSTEM
     return SYSTEM, f"Context:\n{context}\n\nQuestion: {row['question']}"
+
+
+def group_identical_prompts(todo):
+    """One greedy generation per exact rendered prompt, within this run only.
+
+    Even greedy GPU inference can differ with batch padding/numerical kernels.
+    Reusing exact inputs removes that nuisance difference between compressors.
+    Full prompt strings (including the question/options) are the equality key.
+    """
+    grouped = {}
+    for entry in todo:
+        grouped.setdefault(entry[1], []).append(entry)
+    return list(grouped.values())
+
+
+def answer_records(group, content, prompt_tokens, config):
+    source = group[0][0]["key"]
+    fingerprint = hashlib.sha256(group[0][1].encode("utf-8")).hexdigest()
+    for variant, _, _ in group:
+        yield dict(key=variant["key"], uid=variant["uid"], method=variant["method"], model=MODEL,
+                   content=content, prompt_tokens=prompt_tokens, config=config,
+                   prompt_sha256=fingerprint, reused_from=source if variant["key"] != source else None)
 
 
 def gpu(data: Path, out: Path, shard: str = "1/1"):
@@ -221,25 +246,27 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
         todo.append((variant, chat, count(chat)))
     # Item-first order yields complete paired examples if the time cap is reached.
     todo.sort(key=lambda entry: (entry[0]["uid"], entry[0]["method"]))
+    grouped = group_identical_prompts(todo)
     model = AutoModelForCausalLM.from_pretrained(MODEL, torch_dtype=torch.float16, device_map="cuda:0").eval()
     max_context = min(int(getattr(model.config, "max_position_embeddings", 32768)), 16384)
     with answers_file.open("a", encoding="utf-8") as fh:
-        for start in range(0, len(todo), 4):
+        for start in range(0, len(grouped), 4):
             check_time()
-            batch = todo[start:start + 4]
+            groups = grouped[start:start + 4]
+            batch = [group[0] for group in groups]
             if max(entry[2] for entry in batch) + 128 > max_context:
                 raise ValueError("Context too long; refusing silent truncation of question/options")
             encoded = tok([entry[1] for entry in batch], padding=True, truncation=False,
                           add_special_tokens=False, return_tensors="pt").to(model.device)
             with torch.inference_mode():
                 generated = model.generate(**encoded, max_new_tokens=128, do_sample=False, pad_token_id=tok.pad_token_id)
-            for index, (variant, _, _) in enumerate(batch):
+            for index, group in enumerate(groups):
                 content = tok.decode(generated[index, encoded["input_ids"].shape[1]:], skip_special_tokens=True)
-                record = dict(key=variant["key"], uid=variant["uid"], method=variant["method"], model=MODEL,
-                              content=content, prompt_tokens=int(encoded["attention_mask"][index].sum()), config=config)
-                fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+                for record in answer_records(group, content, int(encoded["attention_mask"][index].sum()), config):
+                    fh.write(json.dumps(record, ensure_ascii=False) + "\n")
             fh.flush()
-            print(f"answers {min(start + 4, len(todo))}/{len(todo)}, elapsed {time.monotonic() - started:.0f}s", flush=True)
+            print(f"unique prompts {min(start + 4, len(grouped))}/{len(grouped)} for {len(todo)} answers, "
+                  f"elapsed {time.monotonic() - started:.0f}s", flush=True)
     grade(data, out)
 
 
@@ -269,6 +296,18 @@ def grade(data: Path, out: Path):
     report = {"study": manifest["study"], "config": config, "expected_answers": len(rows) * len(methods),
               "answered": len(answers), "complete": set(answers) == expected_keys, "groups": {},
               "analysis_code_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+    same_prompts = defaultdict(list)
+    for row in rows:
+        for method in methods:
+            key = row["uid"] + "|" + method
+            if key in answers:
+                same_prompts[_prompt(row, variants[key]["text"])].append(key)
+    duplicate_groups = [keys for keys in same_prompts.values() if len(keys) > 1]
+    disagreements = [keys for keys in duplicate_groups if len({answers[key]["content"] for key in keys}) > 1]
+    report["identical_prompt_diagnostics"] = dict(groups=len(duplicate_groups),
+                                                 inconsistent_answer_groups=len(disagreements),
+                                                 examples=disagreements[:3],
+                                                 reused_answers=sum(bool(a.get("reused_from")) for a in answers.values()))
     groups = defaultdict(list)
     for row in rows:
         groups[f"{row['dataset']}|{row['lang']}"].append(row)
@@ -413,6 +452,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("cmd", choices=("prepare", "gpu", "grade", "audit", "merge", "audit-documents"))
     ap.add_argument("--n", type=int, default=12)
+    ap.add_argument("--offset", type=int, default=0)
     ap.add_argument("--methods", nargs="+", choices=METHODS)
     ap.add_argument("--out", type=Path, default=OUT)
     ap.add_argument("--data", type=Path, default=OUT)
@@ -420,7 +460,7 @@ if __name__ == "__main__":
     ap.add_argument("--workers", type=Path, nargs="+", default=[])
     args = ap.parse_args()
     if args.cmd == "prepare":
-        prepare(args.n, args.out, args.methods)
+        prepare(args.n, args.out, args.methods, args.offset)
     elif args.cmd == "gpu":
         gpu(args.data, args.out, args.shard)
     elif args.cmd == "grade":

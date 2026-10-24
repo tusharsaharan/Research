@@ -73,6 +73,11 @@ def test_prepare_preserves_paired_languages_and_dev_split(pilot, monkeypatch, tm
     pilot.prepare(2, first)
     pilot.prepare(2, second, methods=("bbridge_doc", "bm25"))
     assert json.loads((second / "manifest.json").read_text())["methods"] == ["bbridge_doc", "bm25"]
+    fresh = tmp_path / "fresh"
+    pilot.prepare(2, fresh, methods=("bbridge_doc", "bm25"), offset=2)
+    assert not ({row["uid"] for row in pilot.read_jsonl(first / "inputs.jsonl")}
+                & {row["uid"] for row in pilot.read_jsonl(fresh / "inputs.jsonl")})
+    assert json.loads((fresh / "manifest.json").read_text())["selection_offset"] == 2
     assert (first / "inputs.jsonl").read_bytes() == (second / "inputs.jsonl").read_bytes()
     rows = pilot.read_jsonl(first / "inputs.jsonl")
     assert len(rows) == 10
@@ -124,6 +129,21 @@ def test_method_subset_is_validated(pilot):
     for invalid in ([], ['bm25', 'bm25'], ['unknown']):
         with pytest.raises(ValueError):
             pilot.selected_methods(invalid)
+
+
+def test_exact_prompts_share_generation_but_distinct_questions_do_not(pilot):
+    def entry(key, prompt):
+        return (dict(key=key, uid="item", method=key), prompt, len(prompt))
+    groups = pilot.group_identical_prompts([entry("first", "Context X. Question Y?"),
+                                          entry("second", "Context X. Question Y?"),
+                                          entry("third", "Context X. Question Z?")])
+    assert len(groups) == 2
+    records = list(pilot.answer_records(groups[0], "shared answer", 17, "frozen config"))
+    assert {r['key'] for r in records} == {"first", "second"}
+    assert all(r['content'] == 'shared answer' and r['prompt_tokens'] == 17 for r in records)
+    assert records[0]['prompt_sha256'] == records[1]['prompt_sha256']
+    assert records[0]['reused_from'] is None and records[1]['reused_from'] == 'first'
+    assert records[1]['config'] == 'frozen config'
 
 
 def test_qa_prompt_preserves_entire_context_and_question(pilot):
