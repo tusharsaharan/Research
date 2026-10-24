@@ -155,3 +155,16 @@ def bridge_document(passage, question, target, count, lingua):
     output = joined(selected)
     actual = count(output)
     return BudgetedCompression(output, budget, actual, actual <= budget, len(selected))
+
+
+def structured_document(passage, question, target, count, lingua):
+    """Opt-in structural policy; no dataset labels or reference answers.
+
+    Titled multi-record context uses explicit links and original record leads.
+    Other prose uses measured hybrid compression to fill the budget more fully
+    than whole-sentence packing. This policy is exploratory, not a quality gate.
+    """
+    text = unwrap_document(passage)
+    titles = re.findall(r"(?m)^([^\n:]{1,80}):[ \t]+(?=\S)", text)
+    compressor = bridge_document if len(titles) >= 2 else compress_document
+    return compressor(passage, question, target, count, lingua)

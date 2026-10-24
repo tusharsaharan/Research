@@ -1,7 +1,9 @@
 import pytest
 
 from gateway.modules.m2_compressor.budgeted import compress_bm25_budgeted
-from gateway.modules.m2_compressor.document import bridge_document, compress_document, extract_document, unwrap_document
+from gateway.modules.m2_compressor.document import (
+    bridge_document, compress_document, extract_document, structured_document, unwrap_document,
+)
 
 
 def count(text):
@@ -48,7 +50,7 @@ def test_extractive_reports_unmet_protected_unit_budget():
     assert '`important literal value that cannot be split`' in result.text
 
 
-@pytest.mark.parametrize("compressor", [compress_document, extract_document, bridge_document])
+@pytest.mark.parametrize("compressor", [compress_document, extract_document, bridge_document, structured_document])
 def test_rate_one_is_identity_and_invalid_rates_are_rejected(compressor):
     text = '"Mars is red. Jupiter is large."'
     assert compressor(text, "Mars?", 1, count, Identity()).text == text
@@ -56,23 +58,25 @@ def test_rate_one_is_identity_and_invalid_rates_are_rejected(compressor):
         compressor(text, "Mars?", 0, count, Identity())
 
 
-def test_bridge_keeps_linked_record_before_unrelated_lexical_matches():
+@pytest.mark.parametrize("compressor", [bridge_document, structured_document])
+def test_bridge_keeps_linked_record_before_unrelated_lexical_matches(compressor):
     text = ('Aurora: Aurora was composed by Mina Vale. More details are unknown.\n'
             'Composer contest: The composer contest was held every winter.\n'
             'Mina Vale: Mina Vale was born in June 1940. She lived abroad.\n'
             'Other composer: The other composer was born in July 1930.')
-    result = bridge_document(text, 'When was the composer of Aurora born?', 0.55, count, Identity())
+    result = compressor(text, 'When was the composer of Aurora born?', 0.55, count, Identity())
     assert result.budget_met
     assert 'Aurora was composed by Mina Vale.' in result.text
     assert 'Mina Vale was born in June 1940.' in result.text
     assert 'composer contest' not in result.text
 
 
-def test_bridge_retains_original_subject_lead_for_orphaned_fact():
+@pytest.mark.parametrize("compressor", [bridge_document, structured_document])
+def test_bridge_retains_original_subject_lead_for_orphaned_fact(compressor):
     text = ('Town club: Town club was named after Eva. It plays at the fourth level.\n'
             'Eva: Eva was the national manager. She played for many years.\n'
             'Football: Football is a game played throughout the country with a round ball.')
-    result = bridge_document(text, 'At what level does the club named after the manager play?',
+    result = compressor(text, 'At what level does the club named after the manager play?',
                              0.7, count, Identity())
     assert result.budget_met
     assert 'Town club was named after Eva.' in result.text

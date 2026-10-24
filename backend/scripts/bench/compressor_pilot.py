@@ -27,7 +27,8 @@ OUT = BENCH / "compressor_pilot_v2"
 MODEL = "Qwen/Qwen2.5-3B-Instruct"
 LARGE = "microsoft/llmlingua-2-xlm-roberta-large-meetingbank"
 RATES = (0.5, 0.33)
-METHODS = ("bhybrid_v2", "bhybrid_doc", "bextract_doc", "bbridge_doc", "bhybrid", "bgraded", "bm25", "llml2L")
+METHODS = ("bhybrid_v2", "bhybrid_doc", "bextract_doc", "bbridge_doc", "bstructured_doc",
+           "bhybrid", "bgraded", "bm25", "llml2L")
 
 
 def selected_methods(methods):
@@ -135,7 +136,9 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
     from baselines2 import bm25_select
     from hybrid import bgraded, bhybrid
     from gateway.modules.m2_compressor.budgeted import compress_bm25_budgeted
-    from gateway.modules.m2_compressor.document import bridge_document, compress_document, extract_document
+    from gateway.modules.m2_compressor.document import (
+        bridge_document, compress_document, extract_document, structured_document,
+    )
     from gateway.modules.m2_compressor.llmlingua2 import DEFAULT_MODEL, LLMLingua2Compressor
 
     if not torch.cuda.is_available():
@@ -196,9 +199,10 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
                     t0 = time.monotonic()
                     if method == "original":
                         compressed = text
-                    elif method.startswith(("bhybrid_doc@", "bextract_doc@", "bbridge_doc@")):
-                        compressor = (bridge_document if method.startswith("bbridge_doc@") else
-                                      extract_document if method.startswith("bextract_doc@") else compress_document)
+                    elif method.split("@", 1)[0] in ("bhybrid_doc", "bextract_doc", "bbridge_doc", "bstructured_doc"):
+                        compressor = dict(bhybrid_doc=compress_document, bextract_doc=extract_document,
+                                          bbridge_doc=bridge_document, bstructured_doc=structured_document)[
+                                              method.split("@", 1)[0]]
                         result = compressor(text, q, rate, count, lingua)
                         detail = asdict(result)
                         compressed = detail.pop("text")
