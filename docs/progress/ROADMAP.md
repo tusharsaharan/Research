@@ -39,8 +39,8 @@ or 4–5 days if all three of you run `run_daily.py --shard i/3` with your own k
 
 - [x] [Tushar] Audit current Hinglish/English results, actual budgets, parser failures and passage overlap; save source fingerprints and exposure registry (`hinglish_research_audit.py`).
 - [ ] [All] Recover/link bilingual verification records and create a source-family split with a genuinely new sealed test; existing evaluated Belebele is development/retrospective evidence.
-- [ ] [Tushar] Uniformly regrade historical methods under a frozen parser if citing them; keep current letter-only pilots separate.
-- [ ] [Tushar] Validate strict-budget BM25 and query-aware baselines, then run paired retrieval-only normalization × clause-preservation ablations starting from measured hybrid.
+- [x] [Tushar] Uniform parser sensitivity completed for historical 3B/7B methods on 14 CPU shards per run (`hinglish_cpu_v1/report.json`, `hinglish_cpu_7b_v1/report.json`); both grading policies retained, current letter-only pilots separate.
+- [ ] [Tushar] Validate strict-budget BM25 and query-aware baselines, then run paired retrieval × clause-preservation ablations starting from measured hybrid. v9 submitted/running on Kaggle; results pending, not a completed validation.
 - [ ] [All] Freeze the selected method, primary budget, analysis and sample-size plan before new test answers; evaluate another answer-model family and human-validated Hinglish task.
 - [ ] [Tushar] Build the paper around paired answer quality, actual full-input savings, latency and code-mixed error mechanisms; publication claim remains pending.
 
