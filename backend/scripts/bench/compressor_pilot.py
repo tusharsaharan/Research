@@ -27,7 +27,14 @@ OUT = BENCH / "compressor_pilot_v2"
 MODEL = "Qwen/Qwen2.5-3B-Instruct"
 LARGE = "microsoft/llmlingua-2-xlm-roberta-large-meetingbank"
 RATES = (0.5, 0.33)
-METHODS = ("bhybrid_v2", "bhybrid_doc", "bextract_doc", "bhybrid", "bgraded", "bm25", "llml2L")
+METHODS = ("bhybrid_v2", "bhybrid_doc", "bextract_doc", "bbridge_doc", "bhybrid", "bgraded", "bm25", "llml2L")
+
+
+def selected_methods(methods):
+    chosen = tuple(methods) if methods is not None else METHODS
+    if not chosen or len(set(chosen)) != len(chosen) or set(chosen) - set(METHODS):
+        raise ValueError("Choose distinct supported compressor methods")
+    return chosen
 
 
 def write_rows(path, rows):
@@ -37,7 +44,8 @@ def write_rows(path, rows):
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
-def prepare(n: int, out: Path):
+def prepare(n: int, out: Path, methods=None):
+    methods = selected_methods(methods)
     if n < 1:
         raise ValueError("n must be positive")
     if (out / "manifest.json").exists():
@@ -75,7 +83,7 @@ def prepare(n: int, out: Path):
             bundle.write(file, str(file.relative_to(BACKEND)).replace("\\", "/"))
     manifest = {
         "study": f"exploratory compressor pilot ({out.name})", "n_per_dataset": n, "units": len(rows),
-        "rates": RATES, "methods": METHODS, "answer_model": MODEL,
+        "rates": RATES, "methods": methods, "answer_model": MODEL,
         "budget_tokenizer": MODEL, "max_new_tokens": 128, "max_seconds": 3300,
         "source_sha256": hashlib.sha256((out / "source.zip").read_bytes()).hexdigest(),
         "inputs_sha256": hashlib.sha256((out / "inputs.jsonl").read_bytes()).hexdigest(),
@@ -102,7 +110,7 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
     from baselines2 import bm25_select
     from hybrid import bgraded, bhybrid
     from gateway.modules.m2_compressor.budgeted import compress_bm25_budgeted
-    from gateway.modules.m2_compressor.document import compress_document, extract_document
+    from gateway.modules.m2_compressor.document import bridge_document, compress_document, extract_document
     from gateway.modules.m2_compressor.llmlingua2 import DEFAULT_MODEL, LLMLingua2Compressor
 
     if not torch.cuda.is_available():
@@ -117,6 +125,8 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
     out.mkdir(parents=True, exist_ok=True)
     rows = [row for row in read_jsonl(data / "inputs.jsonl") if in_shard(row["item_id"], shard)]
     manifest = json.loads((data / "manifest.json").read_text(encoding="utf-8"))
+    methods = selected_methods(manifest["methods"])
+    rates = manifest["rates"]
     if hashlib.sha256((data / "inputs.jsonl").read_bytes()).hexdigest() != manifest["inputs_sha256"]:
         raise ValueError("Input fingerprint mismatch")
     config = manifest["source_sha256"] + ":" + manifest["inputs_sha256"]
@@ -140,15 +150,18 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
         raise ValueError("Resume source/input mismatch")
     # Sequential phases avoid holding the two compressors and causal LM together.
     for phase in ("small", "large"):
+        phase_methods = [m for m in methods if (m == "llml2L") == (phase == "large")]
+        if not phase_methods:
+            continue
         check_time()
-        lingua = LLMLingua2Compressor(DEFAULT_MODEL if phase == "small" else LARGE, device="cuda:0")
+        lingua = (LLMLingua2Compressor(DEFAULT_MODEL if phase == "small" else LARGE, device="cuda:0")
+                  if any(m != "bm25" for m in phase_methods) else None)
         with variants_file.open("a", encoding="utf-8") as fh:
             for row in rows:
                 check_time()
                 text, q = row["context"], row["question"]
-                work = [("original", None)] if phase == "small" else []
-                work += [(f"{method}@{rate}", rate) for rate in RATES
-                         for method in (METHODS[:-1] if phase == "small" else ("llml2L",))]
+                work = [("original", None)] if phase == ("large" if methods == ("llml2L",) else "small") else []
+                work += [(f"{method}@{rate}", rate) for rate in rates for method in phase_methods]
                 for method, rate in work:
                     key = row["uid"] + "|" + method
                     if key in existing:
@@ -158,8 +171,9 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
                     t0 = time.monotonic()
                     if method == "original":
                         compressed = text
-                    elif method.startswith(("bhybrid_doc@", "bextract_doc@")):
-                        compressor = extract_document if method.startswith("bextract_doc@") else compress_document
+                    elif method.startswith(("bhybrid_doc@", "bextract_doc@", "bbridge_doc@")):
+                        compressor = (bridge_document if method.startswith("bbridge_doc@") else
+                                      extract_document if method.startswith("bextract_doc@") else compress_document)
                         result = compressor(text, q, rate, count, lingua)
                         detail = asdict(result)
                         compressed = detail.pop("text")
@@ -399,13 +413,14 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("cmd", choices=("prepare", "gpu", "grade", "audit", "merge", "audit-documents"))
     ap.add_argument("--n", type=int, default=12)
+    ap.add_argument("--methods", nargs="+", choices=METHODS)
     ap.add_argument("--out", type=Path, default=OUT)
     ap.add_argument("--data", type=Path, default=OUT)
     ap.add_argument("--shard", default="1/1")
     ap.add_argument("--workers", type=Path, nargs="+", default=[])
     args = ap.parse_args()
     if args.cmd == "prepare":
-        prepare(args.n, args.out)
+        prepare(args.n, args.out, args.methods)
     elif args.cmd == "gpu":
         gpu(args.data, args.out, args.shard)
     elif args.cmd == "grade":

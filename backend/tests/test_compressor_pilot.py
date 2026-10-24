@@ -71,7 +71,8 @@ def test_prepare_preserves_paired_languages_and_dev_split(pilot, monkeypatch, tm
     monkeypatch.setattr(pilot.subprocess, "check_output", lambda *args, **kwargs: "a" * 40)
     first, second = tmp_path / "first", tmp_path / "second"
     pilot.prepare(2, first)
-    pilot.prepare(2, second)
+    pilot.prepare(2, second, methods=("bbridge_doc", "bm25"))
+    assert json.loads((second / "manifest.json").read_text())["methods"] == ["bbridge_doc", "bm25"]
     assert (first / "inputs.jsonl").read_bytes() == (second / "inputs.jsonl").read_bytes()
     rows = pilot.read_jsonl(first / "inputs.jsonl")
     assert len(rows) == 10
@@ -116,6 +117,13 @@ def test_mcq_prompt_preserves_question_and_every_option(pilot):
     assert "Question: " + row["question"] in prompt
     for label, option in zip("ABCD", row["options"]):
         assert f"{label}) {option}" in prompt
+
+
+def test_method_subset_is_validated(pilot):
+    assert pilot.selected_methods(['bbridge_doc', 'bm25']) == ('bbridge_doc', 'bm25')
+    for invalid in ([], ['bm25', 'bm25'], ['unknown']):
+        with pytest.raises(ValueError):
+            pilot.selected_methods(invalid)
 
 
 def test_qa_prompt_preserves_entire_context_and_question(pilot):

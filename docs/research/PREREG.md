@@ -80,6 +80,8 @@ Interim runs on partial data are allowed for debugging and are labelled
 
 ## Change log
 
+- 2026-10-24: exploratory document candidates add measured sentence packing and explicit title-link retrieval, with method subsets frozen in each pilot manifest. Existing frozen hybrid settings, primary hypotheses and held-out splits remain unchanged; these development-pilot iterations make no confirmatory claim.
+
 - 2026-10-15: initial version.
 - 2026-10-15 (before any result on `cert`): scorer uses `class_weight="balanced"`
   (u = 1 is rare; thresholds depend only on score ranking). Added gold-answer

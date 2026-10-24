@@ -7,6 +7,7 @@ The question and answer choices must be supplied outside the passage.
 from __future__ import annotations
 
 import math
+import re
 
 from gateway.modules.m2_compressor.budgeted import (
     BudgetedCompression,
@@ -82,6 +83,75 @@ def extract_document(passage, question, target, count, lingua):
             selected[index] = fitted.text
             if count(joined(selected)) > budget:
                 break  # preserve the best evidence and report an unmet budget
+    output = joined(selected)
+    actual = count(output)
+    return BudgetedCompression(output, budget, actual, actual <= budget, len(selected))
+
+
+def bridge_document(passage, question, target, count, lingua):
+    """Retrieve titled records and their explicit cross-references as sentences.
+
+    Record leads identify the subject of otherwise orphaned facts. A reference
+    from the best matching record to another source title receives priority over
+    unrelated lexical matches. This is a label-free retrieval heuristic, not a
+    guarantee that every reasoning step is present. Untitled prose uses the
+    existing extractive candidate.
+    """
+    budget = _budget(passage, target, count)
+    text = unwrap_document(passage)
+    titles = re.findall(r"(?m)^([^\n:]{1,80}):[ \t]+(?=\S)", text)
+    if target == 1 or len(titles) < 2:
+        return extract_document(passage, question, target, count, lingua)
+    units = split_units(text)
+    records, owner = {}, {}
+    active = None
+    for index, unit in enumerate(units):
+        title = next((t for t in titles if unit.startswith(t + ":")), None)
+        if title is not None:
+            active = index
+            records[active] = dict(title=title, indices=[])
+        if active is not None:
+            records[active]["indices"].append(index)
+            owner[index] = active
+    if len(records) < 2:
+        return extract_document(passage, question, target, count, lingua)
+    scores = bm25_scores(units, question)
+    ranked = sorted(range(len(units)), key=lambda i: (-scores[i], i))
+    anchor = ranked[0]
+    named = [start for start, record in records.items()
+             if re.search(r"(?<!\w)" + re.escape(record["title"]) + r"(?!\w)", question, re.I)]
+    if named:
+        start = max(named, key=lambda start: (len(records[start]["title"].split()),
+                                              max(scores[i] for i in records[start]["indices"]), -start))
+        anchor = max(records[start]["indices"], key=lambda i: (scores[i], -i))
+    anchor_record = owner.get(anchor)
+    priority = [anchor]
+    if anchor_record is not None:
+        body = "\n".join(units[i] for i in records[anchor_record]["indices"])
+        links = [start for start, record in records.items() if start != anchor_record
+                 and re.search(r"(?<!\w)" + re.escape(record["title"]) + r"(?!\w)", body, re.I)]
+        best = {start: max(records[start]["indices"], key=lambda i: (scores[i], -i)) for start in links}
+        priority += [best[start] for start in sorted(links, key=lambda start: (-scores[best[start]], start))]
+    priority += [index for index in ranked if index not in priority]
+    selected = set()
+
+    def joined(indices):
+        return "\n".join(units[i] for i in sorted(indices))
+
+    for index in priority:
+        # Include the original lead rather than inventing an entity annotation.
+        bundle = {index, owner.get(index, index)}
+        candidate = selected | bundle
+        if count(joined(candidate)) <= budget:
+            selected = candidate
+        elif not selected:
+            core = joined(bundle)
+            fitted = compress_bm25_budgeted(core, question, min(1, budget / max(1, count(core))),
+                                           count, lingua, sent_share=1.0)
+            # A fitted lead is not a whole sentence; avoid attaching more facts
+            # to that potentially shortened antecedent.
+            return BudgetedCompression(fitted.text, budget, fitted.actual_tokens,
+                                       fitted.actual_tokens <= budget, fitted.selected_units)
     output = joined(selected)
     actual = count(output)
     return BudgetedCompression(output, budget, actual, actual <= budget, len(selected))
