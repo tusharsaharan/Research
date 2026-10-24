@@ -146,6 +146,30 @@ def test_exact_prompts_share_generation_but_distinct_questions_do_not(pilot):
     assert records[1]['config'] == 'frozen config'
 
 
+@pytest.mark.parametrize("tamper", [None, "content", "reference", "hash", "context"])
+def test_grading_checks_reused_answer_provenance(pilot, grading_files, tamper):
+    data, out, variants, answers = grading_files
+    source, reused = answers[0], answers[1]
+    source.update(prompt_sha256="f" * 64, prompt_tokens=17)
+    reused.update(reused_from=source['key'], prompt_sha256="f" * 64,
+                  prompt_tokens=17, content=source['content'])
+    if tamper == "content":
+        reused['content'] = 'different answer'
+    elif tamper == "reference":
+        reused['reused_from'] = 'missing source'
+    elif tamper == "hash":
+        reused['prompt_sha256'] = 'e' * 64
+    elif tamper == "context":
+        variants[1]['text'] = 'A different compressed context.'
+    dump_rows(out / 'variants.jsonl', variants)
+    dump_rows(out / 'answers.jsonl', answers)
+    if tamper:
+        with pytest.raises(ValueError, match="[Rr]eused answer"):
+            pilot.grade(data, out)
+    else:
+        assert pilot.grade(data, out)['complete']
+
+
 def test_qa_prompt_preserves_entire_context_and_question(pilot):
     row = dict(task="qa", question="What is the full original question?")
     context = "Title:\nFirst context paragraph.\nSecond context paragraph."

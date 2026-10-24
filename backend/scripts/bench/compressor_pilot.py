@@ -295,6 +295,21 @@ def grade(data: Path, out: Path):
         raise ValueError("Unexpected answer/variant keys in pilot output")
     if set(answers) - set(variants):
         raise ValueError("Answer is missing its compression variant")
+    inputs_by_uid = {row["uid"]: row for row in rows}
+    for key, answer in answers.items():
+        reference_key = answer.get("reused_from")
+        if reference_key is None:
+            continue
+        reference = answers.get(reference_key)
+        if (reference is None or reference_key == key
+                or not answer.get("prompt_sha256")
+                or any(answer.get(field) != reference.get(field)
+                       for field in ("content", "prompt_tokens", "prompt_sha256"))):
+            raise ValueError("Invalid reused answer provenance")
+        left, right = variants[key], variants[reference_key]
+        if _prompt(inputs_by_uid[left["uid"]], left["text"]) != _prompt(
+                inputs_by_uid[right["uid"]], right["text"]):
+            raise ValueError("Reused answer belongs to a different prompt")
     if any(v["budget_met"] != (v["actual_tokens"] <= v["target_tokens"]) for v in variants.values()):
         raise ValueError("Inconsistent actual token-budget metadata")
     report = {"study": manifest["study"], "config": config, "expected_answers": len(rows) * len(methods),
