@@ -21,7 +21,11 @@ def main():
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--revision", type=int, default=2)
     ap.add_argument("--retry-failed", action="store_true")
+    ap.add_argument("--command-timeout", type=int, default=180,
+                    help="Bound for each Kaggle CLI call, including resumable dataset uploads")
     args = ap.parse_args()
+    if not 30 <= args.command_timeout <= 900:
+        raise ValueError("command-timeout must be between 30 and 900 seconds")
     if args.out is None:
         args.out = OUT.parent / f"compressor_pilot_v{args.revision}"
     env = dict(os.environ, KAGGLE_CONFIG_DIR=str(args.account_dir), PYTHONIOENCODING="utf-8", PYTHONUTF8="1")
@@ -35,7 +39,7 @@ def main():
 
     def kaggle(*parts, check=True):
         result = subprocess.run(["kaggle", *parts], env=env, capture_output=True, text=True,
-                                encoding="utf-8", errors="replace", timeout=180)
+                                encoding="utf-8", errors="replace", timeout=args.command_timeout)
         output = result.stdout + result.stderr
         print(output[-1800:], flush=True)
         if check and result.returncode:
