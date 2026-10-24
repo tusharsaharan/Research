@@ -95,3 +95,24 @@ def test_explicit_kaggle_token_overrides_default_account(tmp_path, monkeypatch):
     monkeypatch.setenv("KAGGLE_API_TOKEN", "old-account-token")
     router_kaggle.bind_token()
     assert os.environ["KAGGLE_API_TOKEN"] == str(tmp_path / "access_token")
+
+
+@pytest.mark.parametrize("extracted", [False, True])
+def test_kaggle_mount_accepts_archives_and_expanded_source(tmp_path, extracted):
+    import zipfile
+    import router_kaggle
+
+    source = tmp_path / "input" / "dataset"
+    source.mkdir(parents=True)
+    (source / "router_input.json").write_text("{}")
+    member = "backend/scripts/bench/router_train.py"
+    if extracted:
+        script = source / "router_source" / member
+        script.parent.mkdir(parents=True)
+        script.write_text("# test source")
+    else:
+        with zipfile.ZipFile(source / "router_source.zip", "w") as z:
+            z.writestr(member, "# test source")
+    target = tmp_path / "work"
+    assert router_kaggle.stage_inputs(tmp_path / "input", target) == source
+    assert (target / member).read_text() == "# test source"

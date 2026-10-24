@@ -7,6 +7,7 @@ Run prepare, then push; download is a separate one-shot action after completion.
 from __future__ import annotations
 
 import argparse
+import inspect
 import json
 import os
 import shutil
@@ -45,18 +46,37 @@ def username():
         raise SystemExit(f"Token belongs to {user}, expected {expected}; no upload or run performed")
     return user
 
+def stage_inputs(input_root, root):
+    """Kaggle may mount uploaded ZIPs as already extracted directories."""
+    inputs = list(Path(input_root).rglob("router_input.json"))
+    if len(inputs) != 1:
+        raise ValueError(f"Expected one router input, found {len(inputs)}")
+    source = inputs[0].parent
+    root = Path(root)
+    root.mkdir(parents=True, exist_ok=True)
+    archives = list(source.rglob("router_source.zip"))
+    if archives:
+        with zipfile.ZipFile(archives[0]) as archive:
+            archive.extractall(root)
+    else:
+        scripts = list(source.rglob("backend/scripts/bench/router_train.py"))
+        if len(scripts) != 1:
+            raise ValueError(f"Expected router source archive or extracted tree; found {len(scripts)} trees")
+        shutil.copytree(scripts[0].parents[2], root / "backend", dirs_exist_ok=True)
+    return source
+
+
 GPU_CODE = r'''
 import json, os, pathlib, shutil, subprocess, sys, time, zipfile
+from pathlib import Path
+# STAGE_INPUTS
 subprocess.run([sys.executable, '-m', 'pip', 'install', '-q', 'sentence-transformers', 'scikit-learn', 'pydantic-settings'], check=True)
 import numpy as np
 import torch
 from sentence_transformers import SentenceTransformer
 assert torch.cuda.is_available(), 'GPU required for this validation'
-source = next(pathlib.Path('/kaggle/input').rglob('router_source.zip')).parent
 root = pathlib.Path('/kaggle/working/router_validation')
-root.mkdir(exist_ok=True)
-with zipfile.ZipFile(source / 'router_source.zip') as z:
-    z.extractall(root)
+source = stage_inputs('/kaggle/input', root)
 bench = root / 'backend/data/bench'
 bench.mkdir(parents=True, exist_ok=True)
 data = json.loads((source / 'router_input.json').read_text())
@@ -118,7 +138,8 @@ def prepare():
             z.write(p, p.relative_to(BACKEND.parent).as_posix())
     notebook = {"nbformat": 4, "nbformat_minor": 5, "metadata": {"kernelspec": {
         "display_name": "Python 3", "language": "python", "name": "python3"}}, "cells": [{
-        "cell_type": "code", "execution_count": None, "metadata": {}, "outputs": [], "source": GPU_CODE.splitlines(True)}]}
+        "cell_type": "code", "execution_count": None, "metadata": {}, "outputs": [],
+        "source": GPU_CODE.replace("# STAGE_INPUTS", inspect.getsource(stage_inputs)).splitlines(True)}]}
     (kernel / "router_validation.ipynb").write_text(json.dumps(notebook), encoding="utf-8")
     print("prepared private GPU validation:", len(data["rows"]), "training rows")
 
@@ -158,12 +179,18 @@ def push():
 def main():
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser()
-    ap.add_argument("action", choices=("prepare", "push", "status", "download", "account"))
+    ap.add_argument("action", choices=("prepare", "push", "status", "download", "account", "retry"))
     args = ap.parse_args()
     if args.action == "prepare":
         prepare()
     elif args.action == "push":
         push()
+    elif args.action == "retry":
+        user = username()
+        status = sh("kernels", "status", f"{user}/{SLUG}")
+        if not any(word in status for word in ("KernelWorkerStatus.ERROR", "KernelWorkerStatus.CANCEL")):
+            raise SystemExit("Only a failed/cancelled validation may be retried")
+        print(sh("kernels", "push", "-p", str(ROOT / "kernel")))
     elif args.action == "account":
         print("Authenticated Kaggle account:", username())
         print(sh("quota"))
