@@ -76,11 +76,12 @@ Hinglish-Instruct 0.958 → 0.945; GSM8K-English 0.980 → 0.980; ARC 0.959; MML
    including reasoning; with output priced 4× input, input is 30.2% (cheap) and
    22.9% (premium) of cost. So 6% input compression saves ~1.5–2% of cost, and
    even perfect input compression could save at most ~30%.
-3. **The optimal spelling depends on the tokenizer.** XLM-R: "mujhe" 1 token,
+3. **Historical spelling experiment; lossless claim withdrawn.** XLM-R: "mujhe" 1 token,
    "muje" 2; Qwen2.5: 3 vs 2. `tokopt` tuned for Qwen saves 1.5% under Qwen but
    only 0.4% under XLM-R, and vice versa — there is no universal "canonical"
-   romanization; it must be chosen per serving model. It is lossless by
-   construction and stacks with CRF (adds 1.3–1.8 points on Hinglish).
+   romanization. These token-count savings do not establish semantic safety;
+   the 2026-10-19 correction withdraws this finding as a lossless-compression
+   result. Do not use the token savings as evidence of preserved answer quality.
 4. **The CRF compressor altered tasks** (bug, now fixed). Before the fix it
    de-duplicated numeric lists — `arr = [1, 2, 2, 3, 4, 4, 5]` became
    `[1, 2, 3, 4, 5]` in a "remove duplicates" task, `[2, 2] ∪ [3, 3]` became
@@ -235,13 +236,11 @@ task-altering edits is ≤ α with confidence 1−δ, using the same fixed-seque
 machinery as the router. Novelty: no compression paper certifies edit safety,
 and none audits code-mixed input. Risk: low (data and code exist).
 
-**R2. Tokenizer-targeted orthographic compression (`tokopt`).** A lossless
-compressor specific to romanized, non-standardised scripts: choose the spelling
-the serving model's tokenizer encodes most cheaply. Claims to test: (a) savings
-are model-specific (shown above), (b) accuracy is unchanged — or improves,
-because normalising spelling reduces entropy for the model. Pending the
-answer-level check. Risk: savings are modest (1.5–2%); strongest as a
-component, not a standalone paper.
+**R2. Tokenizer-targeted orthographic compression (`tokopt`) — withdrawn.**
+Meaning-changing merges invalidate the proposed lossless mechanism (see the
+2026-10-19 correction). Retrieval-only normalization that emits the original
+words is a different, unvalidated proposal in the current
+[Hinglish paper plan](COMPRESSOR_PAPER_ALIGNMENT.md).
 
 **R3. Compress the output, not the input (recommended to pursue next).**
 Finding 2 says 70–77% of cost is completion tokens, mostly reasoning. The
@@ -260,6 +259,12 @@ guarantees. Given finding 2, the gain from the compression axis will be small
 unless contexts are long (e.g. PRESTO dialogues with history).
 
 ## Next steps
+
+**2026-10-24 update:** the following list and research directions above are
+historical. Current compressor priorities, completed GPU evidence, limitations
+and the next experiments are in [COMPRESSOR_PAPER_ALIGNMENT.md](COMPRESSOR_PAPER_ALIGNMENT.md).
+Earlier broad novelty statements above are hypotheses requiring a current
+literature review, not established absence-of-prior-work claims.
 
 - Answer-level check accumulates daily (≈100 compressed-prompt answers/day on
   the free tier); report accuracy original vs compressed with exact McNemar

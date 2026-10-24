@@ -80,6 +80,8 @@ Interim runs on partial data are allowed for debugging and are labelled
 
 ## Change log
 
+- 2026-10-24: user prioritized the Hinglish compressor paper. `COMPRESSOR_PAPER_ALIGNMENT.md` records a retrospective audit and prospective development plan, not a retroactive preregistration. Existing router hypotheses and historical compressor settings remain unchanged. The old Belebele item split has passage overlap and all items have historical evaluation exposure; existing results are exploratory/retrospective. Future confirmatory compression work requires new source-disjoint test data and a separately frozen protocol. Proposed primary retained budget 0.50 and secondary 0.33 are development-plan choices, not claims of preregistered success.
+
 - 2026-10-24: final overnight exploratory pilot freezes a structural policy: explicit titled multi-record text uses bbridge_doc; other prose uses bhybrid_doc. Compare with both components and BM25 on the remaining 47 Belebele development items and 47 fresh items per QA dataset (selection_offset=240). No serving-default change or confirmatory claim; earlier development feedback informed this policy.
 
 - 2026-10-24: subsequent exploratory pilots evaluate each exact rendered prompt once and reuse its greedy answer across identical compressor outputs, avoiding batch-dependent inference differences. A deterministic selection offset permits fresh development examples; offsets, methods, source hashes and input hashes are recorded in each manifest. Historical outputs retain their original generation protocol.

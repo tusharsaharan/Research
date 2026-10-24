@@ -1,18 +1,26 @@
 # Prototype roadmap — Token Optimisation (Group 1)
 
-Goal for the demo: a **full working prototype** where a live Hinglish or English
+**Primary research goal (updated 2026-10-24):** demonstrate better Hinglish
+answer quality at measured token budgets than strong compression baselines,
+with source-disjoint evaluation suitable for a research paper. Current results
+do not yet support that claim. Follow [the evidence audit and ordered paper
+plan](../research/COMPRESSOR_PAPER_ALIGNMENT.md) before another broad run.
+
+The router/demo track below is separate supporting work. Its existing frozen
+study settings remain intact; router certification is not evidence of compressor
+quality. Goal for that demo: a **full working prototype** where a live Hinglish or English
 query is assigned a language group, compressed with protected spans, scored,
 routed cheap/premium with a **per-language certified threshold** fitted on real
 data, answered, and logged with **real cost**, plus a dashboard and an
 evaluation report built only from real, held-out data.
 
-After the demo the same data and code become the ACL 2027 paper (January ARR
-deadline): see the research plan in the conversation / `docs/research/`.
+Paper readiness depends on the compressor evidence gates below, not completion
+of the demo. Venue and submission date remain to be selected and verified.
 
 **Demo date:** assumed Fri 13 Nov 2026 (end of week 4). Change the week-4 dates
 below if yours differs; `weekly_report.py` reads them from this file.
 
-**Status of the data (the only thing that can't be rushed):** all code for weeks 1–3 is in.
+**Router-track data status (historical planning estimate):** all code for weeks 1–3 is in.
 What remains is model calls on the free tier: about 7,000 calls per model for GSM8K + ARC + MMLU
 in two languages. One Groq key does roughly 550 premium calls a day, so about 12 days on one key
 or 4–5 days if all three of you run `run_daily.py --shard i/3` with your own key.
@@ -26,6 +34,17 @@ or 4–5 days if all three of you run `run_daily.py --shard i/3` with your own k
 - "Demo" lines are what you show the guide that week.
 
 ## Week 1 — Foundations fixed, real data flowing (2026-10-15 → 2026-10-25)
+
+**Compressor paper priority; supersedes the order of the demo tasks below**
+
+- [x] [Tushar] Audit current Hinglish/English results, actual budgets, parser failures and passage overlap; save source fingerprints and exposure registry (`hinglish_research_audit.py`).
+- [ ] [All] Recover/link bilingual verification records and create a source-family split with a genuinely new sealed test; existing evaluated Belebele is development/retrospective evidence.
+- [ ] [Tushar] Uniformly regrade historical methods under a frozen parser if citing them; keep current letter-only pilots separate.
+- [ ] [Tushar] Validate strict-budget BM25 and query-aware baselines, then run paired retrieval-only normalization × clause-preservation ablations starting from measured hybrid.
+- [ ] [All] Freeze the selected method, primary budget, analysis and sample-size plan before new test answers; evaluate another answer-model family and human-validated Hinglish task.
+- [ ] [Tushar] Build the paper around paired answer quality, actual full-input savings, latency and code-mixed error mechanisms; publication claim remains pending.
+
+**Existing router/demo work**
 
 - [x] [Tushar] Tests always run offline (forced dry-run); no more quota burn or env-dependent failures
 - [x] [Tushar] Remove hardcoded Telegram token from `run_telegram_bot.py` (token lives only in `backend/.env`)
@@ -43,7 +62,7 @@ or 4–5 days if all three of you run `run_daily.py --shard i/3` with your own k
 - [ ] [Sahil] First real (preliminary) `certify.py` run once ≥ 300 cert items have both answers
 
 - [x] [Tushar] Compression benchmark on 8,000 prompts (GSM8K, ARC, MMLU, Hinglish-Instruct; 3 tokenizers; numbers/negation/question-word/option checks) → `docs/research/COMPRESSION_STUDY.md`
-- [x] [Tushar] New lossless compressor `tokopt` (tokenizer-aware spelling normalisation for romanized Hindi)
+- [x] [Tushar] Implemented `tokopt`; the lossless claim was withdrawn after meaning-changing spelling merges (2026-10-19). Not a validated paper candidate.
 - [x] [Tushar] Fixed CRF task-altering edits found by the benchmark (de-duplicated lists, broken intervals, edited quotes) + regression tests
 - [ ] [Shivam] Answer-level compression check (`compress_answers.py`, runs daily): first report with McNemar tests once ≥ 300 changed prompts are answered
 - [x] [Tushar] One-command daily runner `run_daily.py` (translate → answer → grade → certify → report)
