@@ -3,6 +3,8 @@ import importlib
 import json
 from pathlib import Path
 
+import pytest
+
 from gateway.modules.m2_compressor.hinglish_budget import (
     character_scores, compress_ablation, split_clauses, strict_prefix,
 )
@@ -89,3 +91,31 @@ def test_pilot_unique_passages_keeps_language_pairs_without_repeated_sources(mon
     for group in {r['passage_group'] for r in inputs}:
         pair = [r for r in inputs if r['passage_group'] == group]
         assert len(pair) == 2 and {r['lang'] for r in pair} == {'english', 'hinglish'}
+    exclusion = tmp_path / 'earlier.jsonl'
+    pilot.write_rows(exclusion, [inputs[0]])
+    with pytest.raises(ValueError, match='Not enough'):
+        pilot.prepare(4, tmp_path / 'too_many', methods=['bm25_strict'], datasets=['belebele'],
+                      unique_passages=True, exclude_inputs=[exclusion])
+    later = tmp_path / 'later'
+    pilot.prepare(4, later, methods=['bm25_strict'], datasets=['belebele'], unique_passages=True,
+                  exclude_inputs=[exclusion], allow_smaller=True)
+    remaining = pilot.read_jsonl(later / 'inputs.jsonl')
+    assert len(remaining) == 6
+    assert all(r['passage_group'] != inputs[0]['passage_group'] for r in remaining)
+    manifest = json.loads((later / 'manifest.json').read_text())
+    assert manifest['selected_per_dataset'] == {'belebele': 3}
+    assert str(exclusion) in manifest['excluded_input_sha256']
+
+
+def test_pilot_supports_both_multihop_transfer_datasets(monkeypatch, tmp_path):
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / 'scripts/bench'))
+    pilot = importlib.import_module('compressor_pilot')
+    monkeypatch.setattr(pilot, 'BENCH', tmp_path)
+    for name in ('musique', '2wiki'):
+        pilot.write_rows(tmp_path / f'longqa_{name}/items.jsonl',
+                         [dict(id=name + '-1', context='Title: Evidence.', question='Question?', answer='Evidence')])
+    out = tmp_path / 'transfer'
+    pilot.prepare(1, out, methods=['bm25_strict'], datasets=['musique', '2wiki'])
+    rows = pilot.read_jsonl(out / 'inputs.jsonl')
+    assert {r['dataset'] for r in rows} == {'musique', '2wiki'}
+    assert all(r['task'] == 'qa' and r['gold'] == 'Evidence' for r in rows)

@@ -32,6 +32,7 @@ METHODS = ("bhybrid_v2", "bhybrid_doc", "bextract_doc", "bbridge_doc", "bstructu
            "bhybrid_strict", "bhybrid_char", "bhybrid_clause", "bhybrid_char_clause", "bm25_strict", "llml2L_strict")
 STRICT_METHODS = {"bhybrid_strict", "bhybrid_char", "bhybrid_clause", "bhybrid_char_clause", "bm25_strict", "llml2L_strict"}
 DEFAULT_METHODS = METHODS[:9]
+DATASETS = ("belebele", "squad", "meetingbank", "hotpot", "musique", "2wiki")
 
 
 def selected_methods(methods):
@@ -48,7 +49,8 @@ def write_rows(path, rows):
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
-def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, unique_passages=False):
+def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, unique_passages=False,
+            exclude_inputs=(), allow_smaller=False):
     methods = selected_methods(methods)
     if n < 1:
         raise ValueError("n must be positive")
@@ -57,8 +59,19 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
     if (out / "manifest.json").exists():
         raise ValueError("Use a new output folder; an existing pilot is immutable")
     datasets = tuple(datasets or ("belebele", "squad", "meetingbank", "hotpot"))
-    if len(set(datasets)) != len(datasets) or set(datasets) - {"belebele", "squad", "meetingbank", "hotpot"}:
+    if len(set(datasets)) != len(datasets) or set(datasets) - set(DATASETS):
         raise ValueError("Choose distinct supported datasets")
+    def passage_group(text):
+        return hashlib.sha256(' '.join(text.split()).encode()).hexdigest()
+
+    excluded = set()
+    exclusion_sources = {}
+    for path in exclude_inputs:
+        path = Path(path)
+        exclusion_sources[str(path)] = hashlib.sha256(path.read_bytes()).hexdigest()
+        for row in read_jsonl(path):
+            excluded.add(passage_group(row['context']))
+    selected_counts = {}
     rows = []
     for name in datasets:
         folder = "belebele" if name == "belebele" else "hotpot" if name == "hotpot" else f"longqa_{name}"
@@ -67,6 +80,7 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
         if name == "belebele":
             items = [it for it in items if int(hashlib.sha256(f"hybrid-dev|{it['id']}".encode()).hexdigest(), 16) % 3 == 0]
         items.sort(key=lambda it: hashlib.sha256(f"compressor-pilot-v2|{name}|{it['id']}".encode()).hexdigest())
+        items = [it for it in items if passage_group(it['english']['passage'] if name == 'belebele' else it['context']) not in excluded]
         if unique_passages:
             distinct = {}
             for item in items:
@@ -74,9 +88,13 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
                 group = hashlib.sha256(' '.join(passage.split()).encode()).hexdigest()
                 distinct.setdefault(group, item)
             items = list(distinct.values())
-        if len(items) < offset + n:
+        if len(items) < offset + n and not allow_smaller:
             raise ValueError(f"Not enough {name} inputs")
-        for it in items[offset:offset + n]:
+        chosen = items[offset:offset + n]
+        if not chosen:
+            raise ValueError(f"No unexposed {name} passages available")
+        selected_counts[name] = len(chosen)
+        for it in chosen:
             if name == "belebele":
                 for lang in ("english", "hinglish"):
                     q = it[lang]
@@ -102,6 +120,8 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
         "study": f"exploratory compressor pilot ({out.name})", "n_per_dataset": n, "selection_offset": offset,
         "units": len(rows),
         "datasets": datasets, "unique_passages": unique_passages,
+        "selected_per_dataset": selected_counts, "excluded_input_sha256": exclusion_sources,
+        "allow_smaller": allow_smaller,
         "rates": RATES, "methods": methods, "answer_model": MODEL,
         "budget_tokenizer": MODEL, "max_new_tokens": 128, "max_seconds": 3300,
         "source_sha256": hashlib.sha256((out / "source.zip").read_bytes()).hexdigest(),
@@ -500,15 +520,18 @@ if __name__ == "__main__":
     ap.add_argument("--n", type=int, default=12)
     ap.add_argument("--offset", type=int, default=0)
     ap.add_argument("--methods", nargs="+", choices=METHODS)
-    ap.add_argument("--datasets", nargs="+", choices=("belebele", "squad", "meetingbank", "hotpot"))
+    ap.add_argument("--datasets", nargs="+", choices=DATASETS)
     ap.add_argument("--unique-passages", action="store_true")
+    ap.add_argument("--exclude-inputs", nargs="+", type=Path, default=[])
+    ap.add_argument("--allow-smaller", action="store_true")
     ap.add_argument("--out", type=Path, default=OUT)
     ap.add_argument("--data", type=Path, default=OUT)
     ap.add_argument("--shard", default="1/1")
     ap.add_argument("--workers", type=Path, nargs="+", default=[])
     args = ap.parse_args()
     if args.cmd == "prepare":
-        prepare(args.n, args.out, args.methods, args.offset, args.datasets, args.unique_passages)
+        prepare(args.n, args.out, args.methods, args.offset, args.datasets, args.unique_passages,
+                args.exclude_inputs, args.allow_smaller)
     elif args.cmd == "gpu":
         gpu(args.data, args.out, args.shard)
     elif args.cmd == "grade":
