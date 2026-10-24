@@ -190,6 +190,10 @@ def main():
         status = sh("kernels", "status", f"{user}/{SLUG}")
         if not any(word in status for word in ("KernelWorkerStatus.ERROR", "KernelWorkerStatus.CANCEL")):
             raise SystemExit("Only a failed/cancelled validation may be retried")
+        meta_path = ROOT / "kernel" / "kernel-metadata.json"
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        meta.update(id=f"{user}/{SLUG}", title="TokenOpt router GPU validation")
+        meta_path.write_text(json.dumps(meta), encoding="utf-8")
         print(sh("kernels", "push", "-p", str(ROOT / "kernel")))
     elif args.action == "account":
         print("Authenticated Kaggle account:", username())
