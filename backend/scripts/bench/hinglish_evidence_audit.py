@@ -61,10 +61,10 @@ def audit(data, out, tokenizer_file, shard, item_ids=()):
         if not in_shard(row['item_id'], shard):
             continue
         original_n = count(row['context'])
-        for method, coverage in EVIDENCE_METHODS.items():
+        for method, settings in EVIDENCE_METHODS.items():
             for rate in RATES:
                 start = time.perf_counter()
-                result = compress_evidence(row['context'], row['question'], rate, count, coverage=coverage)
+                result = compress_evidence(row['context'], row['question'], rate, count, **settings)
                 detail = asdict(result)
                 spans_ok = result.text == '\n'.join(row['context'][a:b] for a, b in result.source_spans)
                 if result.selection_reason == 'original_fits':
@@ -116,6 +116,8 @@ def merge(out, shards):
             source_mismatches=sum(not r['source_exact'] for r in rows),
             empty_outputs=sum(not r['text'] for r in rows),
             infeasible_evidence=sum(not r['evidence_feasible'] for r in rows),
+            dependencies_unresolved=sum(r.get('dependencies_unresolved', 0) for r in rows),
+            refill_units=sum(r.get('refill_units', 0) for r in rows),
             mean_kept_ratio=sum(r['actual_tokens'] / max(1, r['original_tokens']) for r in rows) / len(rows),
             saved_original_count_mismatches=sum(r['saved_original_count_matches'] is False for r in rows),
             saved_original_count_unavailable=sum(r['saved_original_count_matches'] is None for r in rows),

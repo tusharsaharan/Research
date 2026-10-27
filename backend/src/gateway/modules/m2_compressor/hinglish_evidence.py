@@ -36,6 +36,8 @@ _CAUSE_EVIDENCE = re.compile(
     r"\b(?:because|due to|owing to|as a result|therefore|hence|"
     r"wajah|karan|kaaran|kyunki|kyonki|isliye)\b", re.I,
 )
+_SENTENCE_END = re.compile(r"""(?<=[.!?।])["”'’)\]\uFFFD]*(?P<gap>\s+)|(?P<paragraph>\n[ \t]*\n+)""")
+_QUOTE_RUN = re.compile(r'"+|[“”]')
 
 
 @dataclass(frozen=True)
@@ -43,6 +45,65 @@ class EvidenceCompression(BudgetedCompression):
     source_spans: tuple[tuple[int, int], ...]
     evidence_feasible: bool
     selection_reason: str
+    dependencies_unresolved: int = 0
+    refill_units: int = 0
+
+
+def repaired_protected_spans(text: str) -> list[tuple[int, int]]:
+    """Parse quote runs without treating text between doubled quotes as quoted.
+
+    A shadow string preserves offsets while detecting other protected literals.
+    ASCII runs are one delimiter; doubled quotes inside a single-quoted-width
+    ASCII quotation remain escapes. Unclosed quotations protect the remainder.
+    The actual source text is never decoded or normalized.
+    """
+    shadow = re.sub(r'["“”]', ' ', text)
+    protected = [(sp.start, sp.end) for sp in detect_spans(shadow) if sp.kind != 'quoted']
+    opened = None
+    for match in _QUOTE_RUN.finditer(text):
+        if any(a <= match.start() < b for a, b in protected):
+            continue
+        mark = match.group()
+        if opened is None:
+            if mark != '”':
+                opened = (match.start(), mark)
+        else:
+            start, opening = opened
+            if opening == '“':
+                closes = mark == '”'
+            else:
+                closes = mark.startswith('"') and not (opening == '"' and len(mark) == 2)
+            if closes:
+                protected.append((start, match.end()))
+                opened = None
+    if opened is not None:
+        protected.append((opened[0], len(text)))
+    return sorted(protected)
+
+
+def repaired_evidence_spans(text: str) -> list[tuple[int, int]]:
+    """Sentence boundaries after closing quotes; no permanent pronoun chains.
+
+    Literal spans and honorifics remain indivisible. Dependencies are handled
+    during packing and counted when unresolved, rather than merging an entire
+    pronoun chain before the budget is known.
+    """
+    protected = repaired_protected_spans(text)
+    spans, start = [], 0
+    for match in _SENTENCE_END.finditer(text):
+        cut = match.start('gap') if match.group('gap') is not None else match.start()
+        if any(a < cut < b for a, b in protected):
+            continue
+        prefix = text[start:cut].rstrip('"”’)]\uFFFD')
+        if _TITLE.search(prefix):
+            continue
+        if text[start:cut].strip():
+            spans.append((start, cut))
+        start = match.end()
+    if text[start:].strip():
+        spans.append((start, len(text)))
+    return [(a + len(text[a:b]) - len(text[a:b].lstrip()), b - len(text[a:b]) + len(text[a:b].rstrip()))
+            for a, b in spans]
 
 
 def evidence_spans(text: str) -> list[tuple[int, int]]:
@@ -118,6 +179,7 @@ def _coverage(units: list[str], question: str) -> tuple[list[list[float]], list[
 
 def compress_evidence(
     passage: str, question: str, target: float, count: Callable[[str], int], *, coverage: bool = True,
+    repair: bool = False, refill: bool = False,
 ) -> EvidenceCompression:
     """Pack intact evidence using diminishing-return question coverage.
 
@@ -131,17 +193,24 @@ def compress_evidence(
     """
     if not math.isfinite(target) or not 0 < target <= 1:
         raise ValueError("target must be in (0, 1]")
+    if refill and not repair:
+        raise ValueError("refill requires repaired segmentation")
     original_n = count(passage)
     budget = max(1, math.floor(target * original_n)) if original_n else 0
-    spans = evidence_spans(passage)
+    spans = repaired_evidence_spans(passage) if repair else evidence_spans(passage)
     units = [passage[start:end] for start, end in spans]
+    dependent = {i for i, unit in enumerate(units) if i and _DEPENDENT.match(unit)} if repair else set()
 
-    def result(indices, reason):
+    def unresolved(indices):
+        return sum(i in indices and i - 1 not in indices for i in dependent)
+
+    def result(indices, reason, added=0):
         ordered = sorted(indices)
         output = "\n".join(units[i] for i in ordered)
         actual = count(output)
         return EvidenceCompression(output, budget, actual, actual <= budget, len(ordered),
-                                   tuple(spans[i] for i in ordered), bool(ordered) or not passage.strip(), reason)
+                                   tuple(spans[i] for i in ordered), bool(ordered) or not passage.strip(), reason,
+                                   unresolved(ordered), added)
 
     if target == 1 or original_n <= budget:
         return EvidenceCompression(passage, budget, original_n, original_n <= budget, len(spans),
@@ -200,4 +269,36 @@ def compress_evidence(
             selected.add(max(choices)[-1])
         candidates.append(selected)
     selected = max(candidates, key=lambda ids: (value(ids), -length(ids), tuple(-i for i in sorted(ids))))
-    return result(selected, "query_coverage" if coverage else "bm25_units")
+    if not refill:
+        return result(selected, "query_coverage" if coverage else "bm25_units")
+
+    # Coverage saturates even when another sentence supplies an antecedent or
+    # corroborating fact. Spend remaining space on intact supporting sentences.
+    # No raw-prefix clipping: a genuinely oversized single literal stays infeasible.
+    lexical = bm25_scores(units, question)
+    completed = []
+    for seed in candidates:
+        packed, added = set(seed), 0
+        while True:
+            choices = []
+            for i in range(len(units)):
+                if i in packed:
+                    continue
+                trial = packed | {i}
+                trial_length = length(trial)
+                adjacent = i - 1 in packed or i + 1 in packed
+                supporting = value((i,)) > 0 or lexical[i] > 0 or adjacent
+                if trial_length > budget or not supporting:
+                    continue
+                restores = unresolved(packed) - unresolved(trial)
+                gain = value(trial) - value(packed)
+                choices.append((restores, gain, lexical[i], adjacent, trial_length, -i, i))
+            if not choices:
+                break
+            packed.add(max(choices)[-1])
+            added += 1
+        completed.append((packed, added))
+    selected, added = max(completed, key=lambda pair: (
+        value(pair[0]), -unresolved(pair[0]), length(pair[0]), tuple(-i for i in sorted(pair[0])),
+    ))
+    return result(selected, "query_coverage_refill", added)

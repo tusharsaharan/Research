@@ -47,14 +47,20 @@ def review(data):
                 clipped=sum(v.get('detail', {}).get('budget_enforced', False) for v in selected),
                 empty_outputs=sum(not v['text'].strip() for v in selected),
                 infeasible_evidence=sum(v.get('detail', {}).get('evidence_feasible') is False for v in selected),
+                dependencies_unresolved=sum(v.get('detail', {}).get('dependencies_unresolved', 0) for v in selected),
+                refill_units=sum(v.get('detail', {}).get('refill_units', 0) for v in selected),
                 invalid_answers=sum(extract_letter(answers[key(r, method)]['content']) is None for r in inputs) if inputs[0]['task'] == 'mcq' else None)
             if not method.startswith(('bhybrid_strict@', 'bhybrid_char@', 'bhybrid_clause@', 'bhybrid_char_clause@',
-                                      'bhinglish_units@', 'bhinglish_coverage@')):
+                                      'bhinglish_units@', 'bhinglish_coverage@', 'bhinglish_segment@', 'bhinglish_refill@')):
                 continue
             rate = method.rsplit('@', 1)[1]
             references = [f'bm25_strict@{rate}', f'llml2L_strict@{rate}', 'original']
             if method.startswith('bhinglish_coverage@'):
                 references.append(f'bhinglish_units@{rate}')
+            if method.startswith(('bhinglish_segment@', 'bhinglish_refill@')):
+                references.append(f'bhinglish_coverage@{rate}')
+            if method.startswith('bhinglish_refill@'):
+                references.append(f'bhinglish_segment@{rate}')
             for reference in references:
                 if reference not in methods:
                     continue

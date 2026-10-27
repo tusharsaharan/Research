@@ -30,9 +30,12 @@ RATES = (0.5, 0.33)
 METHODS = ("bhybrid_v2", "bhybrid_doc", "bextract_doc", "bbridge_doc", "bstructured_doc",
            "bhybrid", "bgraded", "bm25", "llml2L",
            "bhybrid_strict", "bhybrid_char", "bhybrid_clause", "bhybrid_char_clause", "bm25_strict", "llml2L_strict",
-           "bhinglish_units", "bhinglish_coverage")
+           "bhinglish_units", "bhinglish_coverage", "bhinglish_segment", "bhinglish_refill")
 STRICT_METHODS = {"bhybrid_strict", "bhybrid_char", "bhybrid_clause", "bhybrid_char_clause", "bm25_strict", "llml2L_strict"}
-EVIDENCE_METHODS = {"bhinglish_units": False, "bhinglish_coverage": True}
+EVIDENCE_METHODS = {
+    "bhinglish_units": {"coverage": False}, "bhinglish_coverage": {"coverage": True},
+    "bhinglish_segment": {"repair": True}, "bhinglish_refill": {"repair": True, "refill": True},
+}
 MODEL_FREE_METHODS = {"bm25", "bm25_strict", "bhybrid_clause", "bhybrid_char_clause", *EVIDENCE_METHODS}
 DEFAULT_METHODS = METHODS[:9]
 DATASETS = ("belebele", "squad", "meetingbank", "hotpot", "musique", "2wiki")
@@ -139,6 +142,14 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
             "packing": "measured whole source units; leading surface dependencies attached",
             "no_fit": "empty evidence retained in denominator and flagged infeasible; no prefix clipping",
             "ablation": "same units and packing, additive BM25 vs diminishing-return question coverage",
+        }
+    if set(methods) & {"bhinglish_segment", "bhinglish_refill"}:
+        manifest["repaired_evidence_policy"] = {
+            "version": 2, "ranking": "unchanged v12 question-coverage features",
+            "segmentation": "quote-run-aware literal protection and sentence boundaries; no permanent pronoun chains",
+            "refill": "complete supporting or adjacent sentences, antecedent restoration first; measured joined costs",
+            "no_fit": "empty output if no complete sentence fits; unresolved leading dependencies reported",
+            "ablation": "v12 coverage vs repaired segmentation vs repaired segmentation with refill",
         }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(json.dumps(manifest), flush=True)
@@ -249,7 +260,7 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
                         compressed = text
                     elif method.split("@", 1)[0] in EVIDENCE_METHODS:
                         result = compress_evidence(text, q, rate, count,
-                                                   coverage=EVIDENCE_METHODS[method.split("@", 1)[0]])
+                                                   **EVIDENCE_METHODS[method.split("@", 1)[0]])
                         detail = asdict(result)
                         compressed = detail.pop("text")
                     elif method.split("@", 1)[0] in STRICT_METHODS - {"bm25_strict", "llml2L_strict"}:
