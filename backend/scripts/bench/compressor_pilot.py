@@ -29,8 +29,11 @@ LARGE = "microsoft/llmlingua-2-xlm-roberta-large-meetingbank"
 RATES = (0.5, 0.33)
 METHODS = ("bhybrid_v2", "bhybrid_doc", "bextract_doc", "bbridge_doc", "bstructured_doc",
            "bhybrid", "bgraded", "bm25", "llml2L",
-           "bhybrid_strict", "bhybrid_char", "bhybrid_clause", "bhybrid_char_clause", "bm25_strict", "llml2L_strict")
+           "bhybrid_strict", "bhybrid_char", "bhybrid_clause", "bhybrid_char_clause", "bm25_strict", "llml2L_strict",
+           "bhinglish_units", "bhinglish_coverage")
 STRICT_METHODS = {"bhybrid_strict", "bhybrid_char", "bhybrid_clause", "bhybrid_char_clause", "bm25_strict", "llml2L_strict"}
+EVIDENCE_METHODS = {"bhinglish_units": False, "bhinglish_coverage": True}
+MODEL_FREE_METHODS = {"bm25", "bm25_strict", "bhybrid_clause", "bhybrid_char_clause", *EVIDENCE_METHODS}
 DEFAULT_METHODS = METHODS[:9]
 DATASETS = ("belebele", "squad", "meetingbank", "hotpot", "musique", "2wiki")
 
@@ -111,7 +114,7 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
     sources = [BACKEND / "scripts" / "bench" / f"{name}.py" for name in scripts]
     sources += [BACKEND / "src" / "gateway" / name for name in (
         "__init__.py", "schemas.py", "tokenizer.py", "pricing.py", "modules/__init__.py",
-        *[f"modules/m2_compressor/{name}.py" for name in ("__init__", "budgeted", "document", "hinglish_budget", "guarded", "llmlingua2", "safety_span")],
+        *[f"modules/m2_compressor/{name}.py" for name in ("__init__", "budgeted", "document", "hinglish_budget", "hinglish_evidence", "guarded", "llmlingua2", "safety_span")],
     )]
     with zipfile.ZipFile(out / "source.zip", "w", zipfile.ZIP_DEFLATED) as bundle:
         for file in sorted(sources):
@@ -129,6 +132,14 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
         "git_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=BACKEND, text=True).strip(),
         "notes": "Previously exposed development data only; unique passages means within this run, not unseen sources. No confirmatory claims. Strict methods use identical explicit word-prefix budget enforcement.",
     }
+    if set(methods) & EVIDENCE_METHODS.keys():
+        manifest["evidence_policy"] = {
+            "version": 1, "character_weight": 0.35, "retrieval_inputs": "context and question only",
+            "coverage_features": "content terms, exact negation variants, character matches, causal question intent",
+            "packing": "measured whole source units; leading surface dependencies attached",
+            "no_fit": "empty evidence retained in denominator and flagged infeasible; no prefix clipping",
+            "ablation": "same units and packing, additive BM25 vs diminishing-return question coverage",
+        }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(json.dumps(manifest), flush=True)
 
@@ -172,6 +183,7 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
     from hybrid import bgraded, bhybrid
     from gateway.modules.m2_compressor.budgeted import compress_bm25_budgeted
     from gateway.modules.m2_compressor.hinglish_budget import compress_ablation, strict_prefix
+    from gateway.modules.m2_compressor.hinglish_evidence import compress_evidence
     from gateway.modules.m2_compressor.document import (
         bridge_document, compress_document, extract_document, structured_document,
     )
@@ -219,7 +231,7 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
             continue
         check_time()
         lingua = (LLMLingua2Compressor(DEFAULT_MODEL if phase == "small" else LARGE, device="cuda:0")
-                  if any(m not in ("bm25", "bm25_strict", "bhybrid_clause", "bhybrid_char_clause") for m in phase_methods) else None)
+                  if any(m not in MODEL_FREE_METHODS for m in phase_methods) else None)
         with variants_file.open("a", encoding="utf-8") as fh:
             for row in rows:
                 check_time()
@@ -235,6 +247,11 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
                     t0 = time.monotonic()
                     if method == "original":
                         compressed = text
+                    elif method.split("@", 1)[0] in EVIDENCE_METHODS:
+                        result = compress_evidence(text, q, rate, count,
+                                                   coverage=EVIDENCE_METHODS[method.split("@", 1)[0]])
+                        detail = asdict(result)
+                        compressed = detail.pop("text")
                     elif method.split("@", 1)[0] in STRICT_METHODS - {"bm25_strict", "llml2L_strict"}:
                         result = compress_ablation(text, q, rate, count, lingua,
                                                    characters="char" in method, clauses="clause" in method)

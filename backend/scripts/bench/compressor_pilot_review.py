@@ -46,11 +46,16 @@ def review(data):
                 mean_full_prompt_ratio=sum(answers[key(r, method)]['prompt_tokens'] / answers[key(r, 'original')]['prompt_tokens'] for r in inputs) / len(inputs),
                 clipped=sum(v.get('detail', {}).get('budget_enforced', False) for v in selected),
                 empty_outputs=sum(not v['text'].strip() for v in selected),
+                infeasible_evidence=sum(v.get('detail', {}).get('evidence_feasible') is False for v in selected),
                 invalid_answers=sum(extract_letter(answers[key(r, method)]['content']) is None for r in inputs) if inputs[0]['task'] == 'mcq' else None)
-            if not method.startswith(('bhybrid_strict@', 'bhybrid_char@', 'bhybrid_clause@', 'bhybrid_char_clause@')):
+            if not method.startswith(('bhybrid_strict@', 'bhybrid_char@', 'bhybrid_clause@', 'bhybrid_char_clause@',
+                                      'bhinglish_units@', 'bhinglish_coverage@')):
                 continue
             rate = method.rsplit('@', 1)[1]
-            for reference in (f'bm25_strict@{rate}', f'llml2L_strict@{rate}', 'original'):
+            references = [f'bm25_strict@{rate}', f'llml2L_strict@{rate}', 'original']
+            if method.startswith('bhinglish_coverage@'):
+                references.append(f'bhinglish_units@{rate}')
+            for reference in references:
                 if reference not in methods:
                     continue
                 deltas = [score(r, method) - score(r, reference) for r in inputs]
