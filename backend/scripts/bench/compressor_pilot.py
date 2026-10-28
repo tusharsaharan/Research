@@ -25,6 +25,7 @@ from common import BACKEND, BENCH, in_shard, read_jsonl
 
 OUT = BENCH / "compressor_pilot_v2"
 MODEL = "Qwen/Qwen2.5-3B-Instruct"
+ANSWER_MODELS = (MODEL, "microsoft/Phi-3.5-mini-instruct")
 LARGE = "microsoft/llmlingua-2-xlm-roberta-large-meetingbank"
 RATES = (0.5, 0.33)
 METHODS = ("bhybrid_v2", "bhybrid_doc", "bextract_doc", "bbridge_doc", "bstructured_doc",
@@ -56,8 +57,12 @@ def write_rows(path, rows):
 
 
 def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, unique_passages=False,
-            exclude_inputs=(), allow_smaller=False):
+            exclude_inputs=(), allow_smaller=False, answer_model=MODEL, model_revision=None):
     methods = selected_methods(methods)
+    if answer_model not in ANSWER_MODELS:
+        raise ValueError("Unsupported answer model")
+    if model_revision is not None and (len(model_revision) != 40 or any(c not in '0123456789abcdef' for c in model_revision)):
+        raise ValueError("Model revision must be a full lowercase commit SHA")
     if n < 1:
         raise ValueError("n must be positive")
     if offset < 0:
@@ -128,13 +133,15 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
         "datasets": datasets, "unique_passages": unique_passages,
         "selected_per_dataset": selected_counts, "excluded_input_sha256": exclusion_sources,
         "allow_smaller": allow_smaller,
-        "rates": RATES, "methods": methods, "answer_model": MODEL,
-        "budget_tokenizer": MODEL, "max_new_tokens": 128, "max_seconds": 3300,
+        "rates": RATES, "methods": methods, "answer_model": answer_model,
+        "budget_tokenizer": answer_model, "max_new_tokens": 128, "max_seconds": 3300,
         "source_sha256": hashlib.sha256((out / "source.zip").read_bytes()).hexdigest(),
         "inputs_sha256": hashlib.sha256((out / "inputs.jsonl").read_bytes()).hexdigest(),
         "git_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=BACKEND, text=True).strip(),
         "notes": "Previously exposed development data only; unique passages means within this run, not unseen sources. No confirmatory claims. Strict methods use identical explicit word-prefix budget enforcement.",
     }
+    if model_revision is not None:
+        manifest["model_revision"] = model_revision
     if set(methods) & EVIDENCE_METHODS.keys():
         manifest["evidence_policy"] = {
             "version": 1, "character_weight": 0.35, "retrieval_inputs": "context and question only",
@@ -177,11 +184,20 @@ def group_identical_prompts(todo):
     return list(grouped.values())
 
 
-def answer_records(group, content, prompt_tokens, config):
+def run_config(manifest):
+    config = manifest["source_sha256"] + ":" + manifest["inputs_sha256"]
+    model = manifest.get("answer_model", MODEL)
+    if model != MODEL or manifest.get("model_revision"):
+        settings = {key: manifest.get(key) for key in ("answer_model", "model_revision", "budget_tokenizer")}
+        config += ":" + hashlib.sha256(json.dumps(settings, sort_keys=True).encode()).hexdigest()
+    return config
+
+
+def answer_records(group, content, prompt_tokens, config, model=MODEL):
     source = group[0][0]["key"]
     fingerprint = hashlib.sha256(group[0][1].encode("utf-8")).hexdigest()
     for variant, _, _ in group:
-        yield dict(key=variant["key"], uid=variant["uid"], method=variant["method"], model=MODEL,
+        yield dict(key=variant["key"], uid=variant["uid"], method=variant["method"], model=model,
                    content=content, prompt_tokens=prompt_tokens, config=config,
                    prompt_sha256=fingerprint, reused_from=source if variant["key"] != source else None)
 
@@ -216,7 +232,11 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
     rates = manifest["rates"]
     if hashlib.sha256((data / "inputs.jsonl").read_bytes()).hexdigest() != manifest["inputs_sha256"]:
         raise ValueError("Input fingerprint mismatch")
-    config = manifest["source_sha256"] + ":" + manifest["inputs_sha256"]
+    config = run_config(manifest)
+    answer_model = manifest.get("answer_model", MODEL)
+    if answer_model not in ANSWER_MODELS or manifest.get("budget_tokenizer", answer_model) != answer_model:
+        raise ValueError("Unsupported or mismatched answer model/tokenizer")
+    model_options = {"revision": manifest["model_revision"]} if manifest.get("model_revision") else {}
     metadata = dict(manifest, config=config, gpu=torch.cuda.get_device_name(), gpu_count=torch.cuda.device_count(),
                     shard=shard, worker_inputs=len(rows),
                     versions={name: importlib.metadata.version(name) for name in ("torch", "transformers", "llmlingua")})
@@ -225,7 +245,7 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
         write_rows(out / "variants.jsonl", [])
         write_rows(out / "answers.jsonl", [])
         return
-    tok = AutoTokenizer.from_pretrained(MODEL, padding_side="left")
+    tok = AutoTokenizer.from_pretrained(answer_model, padding_side="left", trust_remote_code=False, **model_options)
     tok.pad_token = tok.eos_token
 
     def count(text):
@@ -326,7 +346,9 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
     # Item-first order yields complete paired examples if the time cap is reached.
     todo.sort(key=lambda entry: (entry[0]["uid"], entry[0]["method"]))
     grouped = group_identical_prompts(todo)
-    model = AutoModelForCausalLM.from_pretrained(MODEL, torch_dtype=torch.float16, device_map="cuda:0").eval()
+    model = AutoModelForCausalLM.from_pretrained(
+        answer_model, torch_dtype=torch.float16, device_map="cuda:0", trust_remote_code=False, **model_options,
+    ).eval()
     max_context = min(int(getattr(model.config, "max_position_embeddings", 32768)), 16384)
     with answers_file.open("a", encoding="utf-8") as fh:
         for start in range(0, len(grouped), 4):
@@ -341,7 +363,7 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
                 generated = model.generate(**encoded, max_new_tokens=128, do_sample=False, pad_token_id=tok.pad_token_id)
             for index, group in enumerate(groups):
                 content = tok.decode(generated[index, encoded["input_ids"].shape[1]:], skip_special_tokens=True)
-                for record in answer_records(group, content, int(encoded["attention_mask"][index].sum()), config):
+                for record in answer_records(group, content, int(encoded["attention_mask"][index].sum()), config, answer_model):
                     fh.write(json.dumps(record, ensure_ascii=False) + "\n")
             fh.flush()
             print(f"unique prompts {min(start + 4, len(grouped))}/{len(grouped)} for {len(todo)} answers, "
@@ -357,10 +379,10 @@ def grade(data: Path, out: Path):
     variants = {r["key"]: r for r in read_jsonl(out / "variants.jsonl")}
     answers = {r["key"]: r for r in read_jsonl(out / "answers.jsonl")}
     manifest = json.loads((data / "manifest.json").read_text(encoding="utf-8"))
-    config = manifest["source_sha256"] + ":" + manifest["inputs_sha256"]
+    config = run_config(manifest)
     if any(r.get("config") != config for r in [*variants.values(), *answers.values()]):
         raise ValueError("Cannot grade mixed configurations")
-    if any(r.get("model") != MODEL for r in answers.values()):
+    if any(r.get("model") != manifest.get("answer_model", MODEL) for r in answers.values()):
         raise ValueError("Cannot grade mixed answer models")
     configured_methods = manifest.get("methods", METHODS)
     configured_rates = manifest.get("rates", RATES)
@@ -552,6 +574,8 @@ if __name__ == "__main__":
     ap.add_argument("--unique-passages", action="store_true")
     ap.add_argument("--exclude-inputs", nargs="+", type=Path, default=[])
     ap.add_argument("--allow-smaller", action="store_true")
+    ap.add_argument("--answer-model", choices=ANSWER_MODELS, default=MODEL)
+    ap.add_argument("--model-revision")
     ap.add_argument("--out", type=Path, default=OUT)
     ap.add_argument("--data", type=Path, default=OUT)
     ap.add_argument("--shard", default="1/1")
@@ -559,7 +583,7 @@ if __name__ == "__main__":
     args = ap.parse_args()
     if args.cmd == "prepare":
         prepare(args.n, args.out, args.methods, args.offset, args.datasets, args.unique_passages,
-                args.exclude_inputs, args.allow_smaller)
+                args.exclude_inputs, args.allow_smaller, args.answer_model, args.model_revision)
     elif args.cmd == "gpu":
         gpu(args.data, args.out, args.shard)
     elif args.cmd == "grade":

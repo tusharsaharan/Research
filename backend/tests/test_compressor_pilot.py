@@ -253,6 +253,41 @@ def test_merge_rejects_overlapping_worker_keys(pilot, grading_files, tmp_path):
         pilot.merge_workers(data, out, [worker, worker])
 
 
+def test_model_revision_separates_resume_configuration(pilot):
+    manifest = dict(source_sha256="s", inputs_sha256="i", answer_model=pilot.MODEL)
+    assert pilot.run_config(manifest) == "s:i"
+    manifest.update(answer_model="microsoft/Phi-3.5-mini-instruct",
+                    budget_tokenizer="microsoft/Phi-3.5-mini-instruct", model_revision="a" * 40)
+    first = pilot.run_config(manifest)
+    manifest["model_revision"] = "b" * 40
+    assert first != pilot.run_config(manifest) != "s:i"
+
+
+def test_second_family_grades_only_matching_model_metadata(pilot, grading_files):
+    data, out, variants, answers = grading_files
+    manifest = json.loads((data / "manifest.json").read_text())
+    manifest.update(answer_model="microsoft/Phi-3.5-mini-instruct",
+                    budget_tokenizer="microsoft/Phi-3.5-mini-instruct", model_revision="a" * 40)
+    (data / "manifest.json").write_text(json.dumps(manifest))
+    for record in [*variants, *answers]:
+        record["config"] = pilot.run_config(manifest)
+    for answer in answers:
+        answer["model"] = manifest["answer_model"]
+    dump_rows(out / "variants.jsonl", variants)
+    dump_rows(out / "answers.jsonl", answers)
+    assert pilot.grade(data, out)["complete"]
+    answers[0]["model"] = pilot.MODEL
+    dump_rows(out / "answers.jsonl", answers)
+    with pytest.raises(ValueError, match="mixed answer models"):
+        pilot.grade(data, out)
+
+
+def test_answer_records_store_actual_answer_model(pilot):
+    entry = (dict(key="a", uid="x", method="candidate"), "prompt", 3)
+    record = next(pilot.answer_records([entry], "A", 3, "config", "microsoft/Phi-3.5-mini-instruct"))
+    assert record["model"] == "microsoft/Phi-3.5-mini-instruct"
+
+
 def test_merge_partial_worker_cannot_report_complete(pilot, grading_files, tmp_path):
     data, out, variants, answers = grading_files
     worker = tmp_path / "gpu_1"

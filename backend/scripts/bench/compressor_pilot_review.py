@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from collections import defaultdict
 from pathlib import Path
 
@@ -42,7 +43,10 @@ def review(data):
         result['groups'][group] = {}
         for method, stats in methods.items():
             selected = [variants[key(row, method)] for row in inputs]
+            durations = sorted(v['compression_seconds'] for v in selected if 'compression_seconds' in v)
             result['groups'][group][method] = dict(stats,
+                mean_compression_seconds=sum(durations) / len(durations) if durations else None,
+                p95_compression_seconds=durations[math.ceil(0.95 * len(durations)) - 1] if durations else None,
                 mean_full_prompt_ratio=sum(answers[key(r, method)]['prompt_tokens'] / answers[key(r, 'original')]['prompt_tokens'] for r in inputs) / len(inputs),
                 clipped=sum(v.get('detail', {}).get('budget_enforced', False) for v in selected),
                 empty_outputs=sum(not v['text'].strip() for v in selected),
