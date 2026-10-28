@@ -55,10 +55,15 @@ def review(data):
                 refill_units=sum(v.get('detail', {}).get('refill_units', 0) for v in selected),
                 invalid_answers=sum(extract_letter(answers[key(r, method)]['content']) is None for r in inputs) if inputs[0]['task'] == 'mcq' else None)
             if not method.startswith(('bhybrid_strict@', 'bhybrid_char@', 'bhybrid_clause@', 'bhybrid_char_clause@',
-                                      'bhinglish_units@', 'bhinglish_coverage@', 'bhinglish_segment@', 'bhinglish_refill@')):
+                                      'bhinglish_units@', 'bhinglish_coverage@', 'bhinglish_segment@', 'bhinglish_refill@',
+                                      'bhinglish_semantic@', 'bhinglish_semantic_fused@')):
                 continue
             rate = method.rsplit('@', 1)[1]
             references = [f'bm25_strict@{rate}', f'llml2L_strict@{rate}', 'original']
+            if method.startswith(('bhinglish_semantic@', 'bhinglish_semantic_fused@')):
+                references.append(f'bhybrid_char_clause@{rate}')
+            if method.startswith('bhinglish_semantic_fused@'):
+                references.append(f'bhinglish_semantic@{rate}')
             if method.startswith('bhinglish_coverage@'):
                 references.append(f'bhinglish_units@{rate}')
             if method.startswith(('bhinglish_segment@', 'bhinglish_refill@')):

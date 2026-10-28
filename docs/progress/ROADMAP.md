@@ -71,6 +71,7 @@ Demo: tests green · live pipeline · first per-language accuracy table (`backen
 
 ## Week 2 — First real results (2026-10-26 → 2026-11-01)
 
+- [ ] [Tushar] Compressor focus (2026-10-28): Hinglish only; evaluate frozen semantic-ranking ablations against BM25, LLMLingua-2 and earlier character/clause baseline. Mixed-language/English v14-v16 submissions superseded; downstream gains pending.
 - [ ] [Sahil] Pair-1 (gpt-oss-20b → 120b) answers complete for all verified items, English + Hinglish
 - [ ] [Shivam] All Hinglish items human-verified; failures repaired or dropped (logged)
 - [x] [Tushar] Second gold-answer sources through the same pipeline: ARC-Challenge (1,172) + MMLU sample (1,000), option-label checks and letter grading

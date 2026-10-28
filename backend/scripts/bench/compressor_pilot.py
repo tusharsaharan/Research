@@ -31,8 +31,10 @@ RATES = (0.5, 0.33)
 METHODS = ("bhybrid_v2", "bhybrid_doc", "bextract_doc", "bbridge_doc", "bstructured_doc",
            "bhybrid", "bgraded", "bm25", "llml2L",
            "bhybrid_strict", "bhybrid_char", "bhybrid_clause", "bhybrid_char_clause", "bm25_strict", "llml2L_strict",
-           "bhinglish_units", "bhinglish_coverage", "bhinglish_segment", "bhinglish_refill")
-STRICT_METHODS = {"bhybrid_strict", "bhybrid_char", "bhybrid_clause", "bhybrid_char_clause", "bm25_strict", "llml2L_strict"}
+           "bhinglish_units", "bhinglish_coverage", "bhinglish_segment", "bhinglish_refill",
+           "bhinglish_semantic", "bhinglish_semantic_fused")
+SEMANTIC_METHODS = {"bhinglish_semantic", "bhinglish_semantic_fused"}
+STRICT_METHODS = {"bhybrid_strict", "bhybrid_char", "bhybrid_clause", "bhybrid_char_clause", "bm25_strict", "llml2L_strict", *SEMANTIC_METHODS}
 EVIDENCE_METHODS = {
     "bhinglish_units": {"coverage": False}, "bhinglish_coverage": {"coverage": True},
     "bhinglish_segment": {"repair": True}, "bhinglish_refill": {"repair": True, "refill": True},
@@ -57,7 +59,7 @@ def write_rows(path, rows):
 
 
 def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, unique_passages=False,
-            exclude_inputs=(), allow_smaller=False, answer_model=MODEL, model_revision=None):
+            exclude_inputs=(), allow_smaller=False, answer_model=MODEL, model_revision=None, languages=None):
     methods = selected_methods(methods)
     if answer_model not in ANSWER_MODELS:
         raise ValueError("Unsupported answer model")
@@ -72,6 +74,11 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
     datasets = tuple(datasets or ("belebele", "squad", "meetingbank", "hotpot"))
     if len(set(datasets)) != len(datasets) or set(datasets) - set(DATASETS):
         raise ValueError("Choose distinct supported datasets")
+    languages = tuple(languages) if languages is not None else ("english", "hinglish")
+    if not languages or len(set(languages)) != len(languages) or set(languages) - {"english", "hinglish"}:
+        raise ValueError("Choose distinct supported languages")
+    if "english" not in languages and any(name != "belebele" for name in datasets):
+        raise ValueError("Hinglish-only evaluation requires the belebele dataset")
     def passage_group(text):
         return hashlib.sha256(' '.join(text.split()).encode()).hexdigest()
 
@@ -107,7 +114,7 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
         selected_counts[name] = len(chosen)
         for it in chosen:
             if name == "belebele":
-                for lang in ("english", "hinglish"):
+                for lang in languages:
                     q = it[lang]
                     rows.append(dict(uid=f"{name}|{it['id']}|{lang}", item_id=it["id"], dataset=name,
                                      lang=lang, task="mcq", context=q["passage"], question=q["question"],
@@ -122,7 +129,7 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
     sources = [BACKEND / "scripts" / "bench" / f"{name}.py" for name in scripts]
     sources += [BACKEND / "src" / "gateway" / name for name in (
         "__init__.py", "schemas.py", "tokenizer.py", "pricing.py", "modules/__init__.py",
-        *[f"modules/m2_compressor/{name}.py" for name in ("__init__", "budgeted", "document", "hinglish_budget", "hinglish_evidence", "guarded", "llmlingua2", "safety_span")],
+        *[f"modules/m2_compressor/{name}.py" for name in ("__init__", "budgeted", "document", "hinglish_budget", "hinglish_evidence", "semantic_ranker", "guarded", "llmlingua2", "safety_span")],
     )]
     with zipfile.ZipFile(out / "source.zip", "w", zipfile.ZIP_DEFLATED) as bundle:
         for file in sorted(sources):
@@ -130,7 +137,7 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
     manifest = {
         "study": f"exploratory compressor pilot ({out.name})", "n_per_dataset": n, "selection_offset": offset,
         "units": len(rows),
-        "datasets": datasets, "unique_passages": unique_passages,
+        "datasets": datasets, "languages": languages, "unique_passages": unique_passages,
         "selected_per_dataset": selected_counts, "excluded_input_sha256": exclusion_sources,
         "allow_smaller": allow_smaller,
         "rates": RATES, "methods": methods, "answer_model": answer_model,
@@ -142,6 +149,17 @@ def prepare(n: int, out: Path, methods=None, offset: int = 0, datasets=None, uni
     }
     if model_revision is not None:
         manifest["model_revision"] = model_revision
+    if set(methods) & SEMANTIC_METHODS:
+        from gateway.modules.m2_compressor.semantic_ranker import ENCODER_MODEL, ENCODER_REVISION, WINDOW_TOKENS, WINDOW_OVERLAP, FUSION_K
+        manifest["semantic_policy"] = {
+            "encoder": ENCODER_MODEL, "revision": ENCODER_REVISION,
+            "window_tokens": WINDOW_TOKENS, "window_overlap": WINDOW_OVERLAP,
+            "pooling": "masked mean, L2 normalization; max query-window to clause-window cosine",
+            "fusion": "equal reciprocal ranks; tied scores tied; constant component contributes zero",
+            "fusion_k": FUSION_K, "retrieval_inputs": "context and question only; no options or gold",
+            "packing": "unchanged bhybrid_char_clause units and packing, shared strict prefix cap",
+            "primary_rate": 0.5, "stress_rate": 0.33,
+        }
     if set(methods) & EVIDENCE_METHODS.keys():
         manifest["evidence_policy"] = {
             "version": 1, "character_weight": 0.35, "retrieval_inputs": "context and question only",
@@ -262,7 +280,13 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
             continue
         check_time()
         lingua = (LLMLingua2Compressor(DEFAULT_MODEL if phase == "small" else LARGE, device="cuda:0")
-                  if any(m not in MODEL_FREE_METHODS for m in phase_methods) else None)
+                  if any(m not in MODEL_FREE_METHODS | SEMANTIC_METHODS for m in phase_methods) else None)
+        encoder, semantic_rankers = None, {}
+        if SEMANTIC_METHODS.intersection(phase_methods):
+            from gateway.modules.m2_compressor.semantic_ranker import MultilingualWindowEncoder, SemanticRanker
+            encoder = MultilingualWindowEncoder(device="cuda:0")
+            semantic_rankers = {m: SemanticRanker(encoder, fused=m.endswith("_fused"))
+                                for m in SEMANTIC_METHODS.intersection(phase_methods)}
         with variants_file.open("a", encoding="utf-8") as fh:
             for row in rows:
                 check_time()
@@ -281,6 +305,11 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
                     elif method.split("@", 1)[0] in EVIDENCE_METHODS:
                         result = compress_evidence(text, q, rate, count,
                                                    **EVIDENCE_METHODS[method.split("@", 1)[0]])
+                        detail = asdict(result)
+                        compressed = detail.pop("text")
+                    elif method.split("@", 1)[0] in SEMANTIC_METHODS:
+                        result = compress_ablation(text, q, rate, count, None, clauses=True,
+                                                   ranker=semantic_rankers[method.split("@", 1)[0]])
                         detail = asdict(result)
                         compressed = detail.pop("text")
                     elif method.split("@", 1)[0] in STRICT_METHODS - {"bm25_strict", "llml2L_strict"}:
@@ -323,7 +352,7 @@ def gpu(data: Path, out: Path, shard: str = "1/1"):
                     fh.write(json.dumps(record, ensure_ascii=False) + "\n")
                     fh.flush()
                     existing[key] = record
-        del lingua
+        del lingua, semantic_rankers, encoder
         gc.collect()
         torch.cuda.empty_cache()
         print(f"{phase} compression finished: {len(existing)} variants", flush=True)
@@ -571,6 +600,7 @@ if __name__ == "__main__":
     ap.add_argument("--offset", type=int, default=0)
     ap.add_argument("--methods", nargs="+", choices=METHODS)
     ap.add_argument("--datasets", nargs="+", choices=DATASETS)
+    ap.add_argument("--languages", nargs="+", choices=("english", "hinglish"))
     ap.add_argument("--unique-passages", action="store_true")
     ap.add_argument("--exclude-inputs", nargs="+", type=Path, default=[])
     ap.add_argument("--allow-smaller", action="store_true")
@@ -583,7 +613,7 @@ if __name__ == "__main__":
     args = ap.parse_args()
     if args.cmd == "prepare":
         prepare(args.n, args.out, args.methods, args.offset, args.datasets, args.unique_passages,
-                args.exclude_inputs, args.allow_smaller, args.answer_model, args.model_revision)
+                args.exclude_inputs, args.allow_smaller, args.answer_model, args.model_revision, args.languages)
     elif args.cmd == "gpu":
         gpu(args.data, args.out, args.shard)
     elif args.cmd == "grade":

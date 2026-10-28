@@ -70,11 +70,11 @@ def strict_prefix(text, budget, count):
     return ""
 
 
-def compress_ablation(passage, question, target, count, lingua, *, characters=False, clauses=False):
+def compress_ablation(passage, question, target, count, lingua, *, characters=False, clauses=False, ranker=None):
     return compress_bm25_budgeted(
         passage, question, target, count, lingua,
         sent_share=min(1.0, {0.5: 0.7, 0.33: 0.6}.get(target, target + 0.2)),
-        ranker=character_scores if characters else None,
+        ranker=ranker if ranker is not None else character_scores if characters else None,
         unit_splitter=split_clauses if clauses else None,
         preserve_units=clauses,
     )

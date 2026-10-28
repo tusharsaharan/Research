@@ -96,19 +96,33 @@ def test_prepare_preserves_paired_languages_and_dev_split(pilot, monkeypatch, tm
                     ("common", "compressor_pilot", "baselines2", "hybrid", "belebele_extra", "belebele_cm", "hotpot", "grade")}
         expected |= {f"src/gateway/{name}.py" for name in ("__init__", "schemas", "tokenizer", "pricing", "modules/__init__")}
         expected |= {f"src/gateway/modules/m2_compressor/{name}.py" for name in
-                     ("__init__", "budgeted", "document", "hinglish_budget", "hinglish_evidence", "guarded", "llmlingua2", "safety_span")}
+                     ("__init__", "budgeted", "document", "hinglish_budget", "hinglish_evidence", "semantic_ranker", "guarded", "llmlingua2", "safety_span")}
         assert set(bundle.namelist()) == expected
         extracted = tmp_path / "extracted"
         bundle.extractall(extracted)
     code = (
         "import sys; sys.path[:0] = sys.argv[1:]; "
         "import compressor_pilot, baselines2, hybrid, grade, hotpot; "
-        "from gateway.modules.m2_compressor import budgeted; "
+        "from gateway.modules.m2_compressor import budgeted, semantic_ranker; "
         "assert 'torch' not in sys.modules; assert 'transformers' not in sys.modules"
     )
     smoke = subprocess.run([sys.executable, "-I", "-c", code, str(extracted / "scripts" / "bench"),
                             str(extracted / "src")], capture_output=True, text=True, timeout=30)
     assert smoke.returncode == 0, smoke.stderr
+    only_hinglish = tmp_path / "hinglish"
+    pilot.prepare(2, only_hinglish, methods=sorted(pilot.SEMANTIC_METHODS),
+                  datasets=["belebele"], languages=["hinglish"], unique_passages=True)
+    hinglish_rows = pilot.read_jsonl(only_hinglish / "inputs.jsonl")
+    assert len(hinglish_rows) == 2
+    assert hinglish_rows == [r for r in rows if r["lang"] == "hinglish"]
+    policy = json.loads((only_hinglish / "manifest.json").read_text())["semantic_policy"]
+    assert len(policy["revision"]) == 40
+    for languages in ([], ["other"], ["hinglish", "hinglish"]):
+        with pytest.raises(ValueError, match="languages"):
+            pilot.prepare(2, tmp_path / "bad", datasets=["belebele"], languages=languages)
+    with pytest.raises(ValueError, match="Hinglish-only"):
+        pilot.prepare(2, tmp_path / "bad", datasets=["squad"], languages=["hinglish"])
+    assert not (tmp_path / "bad").exists()
     with pytest.raises(ValueError, match="immutable"):
         pilot.prepare(2, first)
 
