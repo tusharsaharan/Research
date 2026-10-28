@@ -14,6 +14,13 @@ from pathlib import Path
 from common import BACKEND
 from compressor_pilot import OUT, grade
 
+
+def dataset_creation_succeeded(code, output, identity):
+    """Recovered upload errors can precede the CLI's successful creation receipt."""
+    receipt = f"Dataset is being created. Please check progress at https://www.kaggle.com/datasets/{identity}"
+    return code == 0 and receipt in output
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("cmd", choices=("push", "status", "download", "quota", "logs", "files", "watch"))
@@ -106,9 +113,9 @@ def main():
             raise ValueError("Existing uploaded dataset belongs to another pilot configuration/account")
     else:
         code, output = kaggle("datasets", "create", "-p", str(dataset), "--dir-mode", "zip", check=False)
-        if "already" in output.lower() or "exists" in output.lower():
-            raise RuntimeError("Dataset already exists; refusing to overwrite another pilot")
-        if code or any(word in output.lower() for word in ("error", "forbidden", "denied")):
+        if not dataset_creation_succeeded(code, output, dataset_identity):
+            if "already" in output.lower() or "exists" in output.lower():
+                raise RuntimeError("Dataset already exists; refusing to overwrite another pilot")
             raise RuntimeError("Private pilot dataset creation failed")
         uploaded.write_text(json.dumps({"id": dataset_identity, "source": manifest["source_sha256"],
                                          "inputs": manifest["inputs_sha256"]}), encoding="utf-8")
