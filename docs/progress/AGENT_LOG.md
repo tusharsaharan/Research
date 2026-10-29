@@ -217,3 +217,9 @@
 
 - 2026-10-29 11:08 IST · Hourly Qwen check: SSH research-gpu timed out on port 22 during one bounded attempt; no live download, inference or Python setup status confirmed. Evidence: backend/data/bench/qwen_models_20261029/hourly/20261029T053807Z.json.
 - Last confirmed baseline remains qwen3.5:4b ready and qwen3.6:35b downloading; current remote jobs unknown, not assumed stopped or completed. Hourly heartbeat stays ACTIVE; no retries/new jobs. Next scheduled check should verify connectivity and compare with the latest successful snapshot. Handoff committed locally only; no push.
+
+- 2026-10-29 13:04 IST · SSH recovered; college Qwen job COMPLETE. All four models ready: qwen3.5:4b, qwen3.6:35b, qwen3.8:27b, qwen3.5:9b; each reports three completed smoke prompts and confirmed GPU use, Q4_K_M quantization. No new inference or download launched during this check.
+- Evidence: backend/data/bench/qwen_models_20261029/final-state.json and hourly/20261029T073431Z.json. Inspected raw arithmetic and evidence replies for every model (42 and Laal); these are engineering checks, not compressor accuracy or a publication result.
+- Python environment READY with CUDA matrix/import check passed. Retrieved backend/data/bench/gpu_setup_20261029/{setup.json,requirements.lock.txt}; torch 2.7.1+cu118, transformers 4.57.1, llmlingua 0.2.2. Active remote sessions now ai and hinglish-ollama; install/download workers finished.
+- Deleted hourly-qwen-gpu-progress using automation_update after successful completion; tool confirmed deleted. No further hourly checks scheduled. Persistent local-only Ollama remains available at 127.0.0.1:11435; model files remain on disk.
+- Next: use ssh research-gpu and source /home/user/hinglish-research/ollama/env.sh to run installed Qwen models; source /home/user/hinglish-research/activate.sh for Python experiments. Research benchmark results remain separate; no experiments auto-started. Handoff committed locally only; no push.
