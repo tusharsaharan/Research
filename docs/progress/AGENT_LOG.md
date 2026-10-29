@@ -243,3 +243,9 @@
 - Candidate vs BM25: +4.78–7.33 points at 0.50; +6.78–8.11 at 0.33 across four models. Exposed data, unadjusted intervals, one model family; LLML2 advantage less uniform.
 - No benchmark running; completed hourly heartbeat deleted. Ranker adds latency; stress loses negation/number evidence and can emit punctuation. No serving promotion or paper-superiority claim.
 - Next: repair lossy selection/fallback, assess a cheaper distilled ranker, then freeze for fresh human-validated source-disjoint QA and another model family; novelty review before paper claims. No push.
+- 2026-10-29 · Literature/model review completed; docs commit: Record recent Hinglish literature and independent model choices.
+- Evidence: docs/research/HINGLISH_LITERATURE_2026-10-29.md; primary papers and official model cards linked, review depth stated.
+- Recommend Gemma 4 26B-A4B answer model and XProvence multilingual baseline; local performance/VRAM fit remain untested.
+- Novelty overlap: multilingual pruning, distillation and cross-lingual compression audits already exist; investigate Hinglish evidence preservation.
+- No new download/job, preregistration change or serving promotion; completed GPU campaign remains terminal.
+- Next: pinned GPU smoke test, frozen cross-family transfer and strict native-token budgets, then fresh human-validated source-disjoint QA. No push.
