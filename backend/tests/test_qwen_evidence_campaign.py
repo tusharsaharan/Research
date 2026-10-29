@@ -9,6 +9,7 @@ import pytest
 from gateway.modules.m2_compressor.qwen_evidence import (
     pack_ranked,
     ranking_request,
+    source_units,
     validate_ranking,
 )
 
@@ -52,6 +53,17 @@ def test_oversized_span_has_explicit_clipping_flag():
     assert result['detail']['budget_enforced']
     assert not result['detail']['evidence_feasible']
     assert result['text'] == 'One'
+
+
+def test_person_initials_are_not_detached_from_their_actions():
+    text = 'John F. Kennedy ko unhone advice di. Lyndon B. Johnson ke liye kaam kiya.'
+    assert source_units(text) == ['John F. Kennedy ko unhone advice di.',
+                                  'Lyndon B. Johnson ke liye kaam kiya.']
+
+
+def test_quoted_clauses_remain_intact():
+    text = '"Travel ke dauran window ko hamesha band rakho, lekin emergency mein darwaza khol sakte hain."'
+    assert source_units(text) == [text]
 
 
 def test_gold_is_never_rendered(campaign):
