@@ -97,6 +97,16 @@ def test_time_cap_and_overlong_prompt_do_not_call_model(campaign):
         campaign.checked_generate(API(), 'm', '', 'x' * 8192, time.monotonic() + 500)
 
 
+def test_scaleup_keeps_invalid_raw_output_for_failure_in_denominator(campaign):
+    class API:
+        def json(self, *args):
+            return dict(done=True, response='unfinished explanation', done_reason='length', prompt_eval_count=100)
+    result = campaign.checked_generate(API(), 'm', 'system', 'prompt', time.monotonic() + 500,
+                                       record_invalid=True)
+    assert result['generation_error'] == 'Generation exhausted the output cap'
+    assert result['response'] == 'unfinished explanation'
+
+
 def test_gpu_receipt_rejects_cpu_only(campaign):
     class API:
         def json(self, *args):

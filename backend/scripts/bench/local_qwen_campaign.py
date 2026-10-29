@@ -62,7 +62,7 @@ def answer_prompt(row, text):
             + '\n'.join(f'{letter}) {option}' for letter, option in zip('ABCD', row['options'], strict=True)))
 
 
-def checked_generate(api, model, system, prompt, deadline, schema=None):
+def checked_generate(api, model, system, prompt, deadline, schema=None, record_invalid=False):
     # UTF-8 byte length is a conservative token upper bound for these BPE
     # models; reserve 512 tokens for chat-template overhead, without truncation.
     if len((system + prompt).encode('utf-8')) + OPTIONS['num_predict'] + 512 >= OPTIONS['num_ctx']:
@@ -74,14 +74,19 @@ def checked_generate(api, model, system, prompt, deadline, schema=None):
     if schema is not None:
         body['format'] = schema
     response = api.json('generate', body)
+    error = None
     if not response.get('done') or not response.get('response', '').strip():
-        raise RuntimeError('Incomplete or empty generation')
+        error = 'Incomplete or empty generation'
     if response.get('thinking'):
-        raise RuntimeError('Thinking was requested off but reasoning was returned')
+        error = 'Thinking was requested off but reasoning was returned'
     if response.get('done_reason') == 'length':
-        raise RuntimeError('Generation exhausted the output cap')
+        error = 'Generation exhausted the output cap'
     if response.get('prompt_eval_count', 0) >= OPTIONS['num_ctx'] - OPTIONS['num_predict']:
-        raise RuntimeError('Possible context truncation')
+        error = 'Possible context truncation'
+    if error:
+        if not record_invalid:
+            raise RuntimeError(error)
+        response['generation_error'] = error
     return response
 
 
@@ -252,12 +257,14 @@ def run(data):
             model_deadline = min(deadline, time.monotonic() + manifest['model_max_seconds'])
             try:
                 for prompt, group in grouped.items():
-                    response = checked_generate(api, model, ANSWER_SYSTEM, prompt, model_deadline)
+                    response = checked_generate(api, model, ANSWER_SYSTEM, prompt, model_deadline,
+                        record_invalid=manifest.get('record_invalid_answers', False))
                     if not part.get('gpu'):
                         part['gpu'] = gpu_receipt(api, model)
                     for v in group:
                         append(data / 'answers.jsonl', dict(key=v['key'], uid=v['uid'], method=v['method'],
-                            model=model, content=response['response'], prompt_tokens=response.get('prompt_eval_count'),
+                            model=model, content='' if response.get('generation_error') else response['response'],
+                            prompt_tokens=response.get('prompt_eval_count'),
                             prompt_sha256=fingerprint([ANSWER_SYSTEM, prompt]), reused_from=group[0]['key'],
                             response=response, config=config))
                     part['answers'] += len(group)
@@ -320,8 +327,16 @@ def report(data):
                     for _, a in pairs) / len(pairs)) if pairs else None)
             originals = [(r, a, answers[(model, r['uid'] + '|original')]) for r, a in pairs
                          if (model, r['uid'] + '|original') in answers]
+            originals = [(r, a, o) for r, a, o in originals if a.get('prompt_tokens') and o.get('prompt_tokens')]
             methods[method]['mean_full_prompt_ratio'] = (sum(a['prompt_tokens'] / o['prompt_tokens']
                 for _, a, o in originals) / len(originals)) if originals else None
+            if rows and 'selection_source_overlap' in rows[0]:
+                methods[method]['source_overlap_strata'] = {}
+                for overlap in (True, False):
+                    subset = [(r, a) for r, a in pairs if r['selection_source_overlap'] == overlap]
+                    methods[method]['source_overlap_strata'][str(overlap)] = dict(n=len(subset),
+                        accuracy=(sum(extract_letter(a['content']) == r['gold'] for r, a in subset)
+                                  / len(subset)) if subset else None)
             if method == 'original':
                 continue
             rate = method.rsplit('@', 1)[1]
@@ -338,6 +353,13 @@ def report(data):
                 result['comparisons'].append(dict(model=model, method=method, reference=reference,
                     **paired_interval(deltas, [r.get('passage_group', passage_key(r['context']))
                                               for r, _, _ in paired])))
+                if rows and 'selection_source_overlap' in rows[0] and method.startswith('bqwen'):
+                    for overlap in (True, False):
+                        subset = [(r, d) for (r, _, _), d in zip(paired, deltas, strict=True)
+                                  if r['selection_source_overlap'] == overlap]
+                        result['comparisons'].append(dict(model=model, method=method, reference=reference,
+                            selection_source_overlap=overlap,
+                            **paired_interval([d for _, d in subset], [r['passage_group'] for r, _ in subset])))
                 if method.startswith('bqwen') and reference.startswith('bm25'):
                     for direction in (-1, 1):
                         chosen = [(r, a, b) for (r, a, b), d in zip(paired, deltas, strict=True) if d == direction][:3]
