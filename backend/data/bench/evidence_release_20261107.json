@@ -1,0 +1,118 @@
+{
+  "status": "complete",
+  "assets": [
+    {
+      "name": "research-evidence-20261107.parts.json",
+      "size": 2747,
+      "digest": "sha256:5a0886509a6fd198c2ec5467e489d4fe2e95187edf5a303f613bbf4f5c61eb51",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.parts.json"
+    },
+    {
+      "name": "research-evidence-20261107.manifest.json",
+      "size": 623584,
+      "digest": "sha256:161bd8c2d807eb459400583c69900e563fb9ba1477e4b6f7c3fa8cd15a797e77",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.manifest.json"
+    },
+    {
+      "name": "restore-research-evidence.py",
+      "size": 1370,
+      "digest": "sha256:d96d3a0fdd24605ec20c8ab17d4e725db7b6017d85e559dd76e7af7a9a185e87",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/restore-research-evidence.py"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part001",
+      "size": 26214400,
+      "digest": "sha256:15cc1c124ed32802fa65744ababcfb1d13c1a7b3d67311951389645188b9d2b5",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part001"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part002",
+      "size": 26214400,
+      "digest": "sha256:42c0da447aeeb2f6be6983b38334b9d2cf90fa4e383d266ef3036e04978a4825",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part002"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part003",
+      "size": 26214400,
+      "digest": "sha256:4849fd50d5d3a79f2c9df87caf43c787284c9f7e86fbae4cf1530454ce27411d",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part003"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part004",
+      "size": 26214400,
+      "digest": "sha256:e1fb64f198a25ee2ebe4a2f613aabf0cf6401d42ce5a8d6891334212dfe9e783",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part004"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part005",
+      "size": 26214400,
+      "digest": "sha256:78e9498bec332aa0533a90bbbe45654e23a444edd3b69857923efe6058237713",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part005"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part006",
+      "size": 26214400,
+      "digest": "sha256:4da7adb75fa49842ccf78a08d541bb110e2db5132477bf2e017aa4778637da5e",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part006"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part007",
+      "size": 26214400,
+      "digest": "sha256:14512bec8127123b8f2c831ca8a5da292ec25e1292400d7011a0121d1a9991bf",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part007"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part008",
+      "size": 26214400,
+      "digest": "sha256:9b597ba66eeef2c49f16246fe413e216b222d8ac77b4bbc146a6e96189aa0454",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part008"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part009",
+      "size": 26214400,
+      "digest": "sha256:cd7ffb31e2fecb2368c84760d9d977aba9d4a3a7356714fea087dc0e9e464c66",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part009"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part010",
+      "size": 26214400,
+      "digest": "sha256:ede3e093bdb4d01decf693cc392e41622f3d24d06f8cd4b2eea99f82c028b956",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part010"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part011",
+      "size": 26214400,
+      "digest": "sha256:10dfc0ad7759757ffd75cac68ee8946a52700854f2491cbaa80bc54d06280198",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part011"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part012",
+      "size": 26214400,
+      "digest": "sha256:ce61e419e104c86389fdcb6bc5aa6578de3047c61730c978a4bcd877fe3fc97e",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part012"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part013",
+      "size": 26214400,
+      "digest": "sha256:29b3a52cdb3c1044914ba297f3d454d39443def28d29f9415c68a6082d0ad591",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part013"
+    },
+    {
+      "name": "research-evidence-20261107.zip.part014",
+      "size": 9119872,
+      "digest": "sha256:379fefd14285db3fb00f33e91c732580c748152c0203b11695463e8800a6146f",
+      "browser_download_url": "https://github.com/tusharsaharan/Research/releases/download/evidence-2026-11-07/research-evidence-20261107.zip.part014"
+    }
+  ],
+  "release_id": 437684611,
+  "target_commit": "a4061f9fc0ed9db73362f225eba749f29e5760d4",
+  "phase": "published",
+  "previous_attempt": "360-second timeout; no completed assets",
+  "expected_assets": 17,
+  "url": "https://github.com/tusharsaharan/Research/releases/tag/evidence-2026-11-07",
+  "archive": {
+    "name": "research-evidence-20261107.zip",
+    "bytes": 349907072,
+    "sha256": "7ebce5a3ae1dfc8abb3f9643475731a87168b8adc9506e12435465885ac42d91"
+  }
+}

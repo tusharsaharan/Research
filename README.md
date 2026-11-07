@@ -86,7 +86,9 @@ serving claim. See [paired router results](backend/data/bench/router_baselines_t
 - [Raw evidence snapshot and checksum manifest](https://github.com/tusharsaharan/Research/releases/tag/evidence-2026-11-07)
   preserve benchmark and legacy router-track data; credentials, runtime/test
   caches and runtime logs are excluded. Dataset licenses remain applicable.
-- Extract the snapshot into the repository root, then run
+- Download the release's 14 ZIP parts, parts manifest and restore helper; run
+  `python restore-research-evidence.py` to verify and join them. Extract the
+  resulting ZIP into the repository root, then run
   `python backend/scripts/bench/review_hinglish_scaleup.py --data backend/data/bench/hinglish_scaleup_full_20261029`.
   This verifies saved evidence without model inference.
 - [Backend setup](backend/README.md), [benchmark scripts](backend/scripts/bench/README.md),

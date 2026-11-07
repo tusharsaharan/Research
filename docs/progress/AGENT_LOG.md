@@ -253,3 +253,5 @@
 - VERIFIED: 75,600 QA / 80,000 stress records; raw hashes/scores/reference budgets pass; 16 Hinglish + 4 upload tests pass; archive lint and 836-file checksum verification pass.
 - RUNNING: raw-evidence release upload; receipt backend/data/bench/evidence_release_20261107.json. SSH timed out; daily router task interrupted and still scheduled.
 - PLANNED: fresh human annotation/source splits, independent-family native budgets + XProvence, cheap evidence-preserving ranker, sealed evaluation; router certification remains separate.
+- COMPLETE: initial whole-upload timeout recovered using 14 parts; evidence-2026-11-07 release published with all 17 asset sizes/server SHA-256s verified (836 research files).
+- Evidence: backend/data/bench/evidence_release_20261107.json; restore instructions in README/release. Backup finished; next research priorities above, SSH availability still unconfirmed.
