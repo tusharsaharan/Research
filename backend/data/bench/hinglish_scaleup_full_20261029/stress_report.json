@@ -1,0 +1,194 @@
+{
+  "complete": true,
+  "totals": {
+    "original_roman_hindi_heuristic|bqwen35b_span@0.5": {
+      "items": 2178,
+      "budget_misses": 0,
+      "empty": 0,
+      "clipped": 1000,
+      "guard_occurrences": 1321,
+      "lost_guard_occurrences": 831,
+      "original_tokens": 82186,
+      "output_tokens": 32983
+    },
+    "original_roman_hindi_heuristic|bqwen35b_span@0.33": {
+      "items": 2178,
+      "budget_misses": 0,
+      "empty": 27,
+      "clipped": 1406,
+      "guard_occurrences": 1321,
+      "lost_guard_occurrences": 1059,
+      "original_tokens": 82186,
+      "output_tokens": 21777
+    },
+    "original_roman_hindi_heuristic|bqwen35b_span@0.75": {
+      "items": 2178,
+      "budget_misses": 0,
+      "empty": 0,
+      "clipped": 995,
+      "guard_occurrences": 1321,
+      "lost_guard_occurrences": 540,
+      "original_tokens": 82186,
+      "output_tokens": 48341
+    },
+    "original_roman_hindi_heuristic|bqwen35b_span@0.25": {
+      "items": 2178,
+      "budget_misses": 0,
+      "empty": 81,
+      "clipped": 1588,
+      "guard_occurrences": 1321,
+      "lost_guard_occurrences": 1137,
+      "original_tokens": 82186,
+      "output_tokens": 16563
+    },
+    "original_roman_hindi_heuristic|bspan_bm25@0.5": {
+      "items": 2178,
+      "budget_misses": 0,
+      "empty": 0,
+      "clipped": 1000,
+      "guard_occurrences": 1321,
+      "lost_guard_occurrences": 850,
+      "original_tokens": 82186,
+      "output_tokens": 32768
+    },
+    "original_roman_hindi_heuristic|bspan_bm25@0.33": {
+      "items": 2178,
+      "budget_misses": 0,
+      "empty": 28,
+      "clipped": 1406,
+      "guard_occurrences": 1321,
+      "lost_guard_occurrences": 1065,
+      "original_tokens": 82186,
+      "output_tokens": 21631
+    },
+    "original_roman_hindi_heuristic|bspan_bm25@0.75": {
+      "items": 2178,
+      "budget_misses": 0,
+      "empty": 0,
+      "clipped": 995,
+      "guard_occurrences": 1321,
+      "lost_guard_occurrences": 601,
+      "original_tokens": 82186,
+      "output_tokens": 47051
+    },
+    "original_roman_hindi_heuristic|bspan_bm25@0.25": {
+      "items": 2178,
+      "budget_misses": 0,
+      "empty": 97,
+      "clipped": 1588,
+      "guard_occurrences": 1321,
+      "lost_guard_occurrences": 1146,
+      "original_tokens": 82186,
+      "output_tokens": 16412
+    },
+    "derived_romanization_annotator1|bqwen35b_span@0.5": {
+      "items": 7822,
+      "budget_misses": 0,
+      "empty": 0,
+      "clipped": 5682,
+      "guard_occurrences": 3660,
+      "lost_guard_occurrences": 2102,
+      "original_tokens": 321822,
+      "output_tokens": 142794
+    },
+    "derived_romanization_annotator1|bqwen35b_span@0.33": {
+      "items": 7822,
+      "budget_misses": 0,
+      "empty": 0,
+      "clipped": 7049,
+      "guard_occurrences": 3660,
+      "lost_guard_occurrences": 2636,
+      "original_tokens": 321822,
+      "output_tokens": 94007
+    },
+    "derived_romanization_annotator1|bqwen35b_span@0.75": {
+      "items": 7822,
+      "budget_misses": 0,
+      "empty": 0,
+      "clipped": 5674,
+      "guard_occurrences": 3660,
+      "lost_guard_occurrences": 1143,
+      "original_tokens": 321822,
+      "output_tokens": 213224
+    },
+    "derived_romanization_annotator1|bqwen35b_span@0.25": {
+      "items": 7822,
+      "budget_misses": 0,
+      "empty": 0,
+      "clipped": 7470,
+      "guard_occurrences": 3660,
+      "lost_guard_occurrences": 2911,
+      "original_tokens": 321822,
+      "output_tokens": 70881
+    },
+    "derived_romanization_annotator1|bspan_bm25@0.5": {
+      "items": 7822,
+      "budget_misses": 0,
+      "empty": 0,
+      "clipped": 5682,
+      "guard_occurrences": 3660,
+      "lost_guard_occurrences": 2116,
+      "original_tokens": 321822,
+      "output_tokens": 142489
+    },
+    "derived_romanization_annotator1|bspan_bm25@0.33": {
+      "items": 7822,
+      "budget_misses": 0,
+      "empty": 0,
+      "clipped": 7049,
+      "guard_occurrences": 3660,
+      "lost_guard_occurrences": 2667,
+      "original_tokens": 321822,
+      "output_tokens": 93850
+    },
+    "derived_romanization_annotator1|bspan_bm25@0.75": {
+      "items": 7822,
+      "budget_misses": 0,
+      "empty": 0,
+      "clipped": 5674,
+      "guard_occurrences": 3660,
+      "lost_guard_occurrences": 1246,
+      "original_tokens": 321822,
+      "output_tokens": 207480
+    },
+    "derived_romanization_annotator1|bspan_bm25@0.25": {
+      "items": 7822,
+      "budget_misses": 0,
+      "empty": 0,
+      "clipped": 7470,
+      "guard_occurrences": 3660,
+      "lost_guard_occurrences": 2934,
+      "original_tokens": 321822,
+      "output_tokens": 70817
+    }
+  },
+  "gpu": [
+    {
+      "name": "qwen3.6:35b",
+      "model": "qwen3.6:35b",
+      "size": 22129881906,
+      "digest": "a7eb95c53bcf96b4bdd008d0fab4a5dac88047d9c1a7a9ab88ed453423fbd87c",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen35moe",
+        "families": [
+          "qwen35moe"
+        ],
+        "parameter_size": "35.5B",
+        "quantization_level": "Q4_K_M"
+      },
+      "expires_at": "2026-10-29T22:47:39.412530598+05:30",
+      "size_vram": 22129881906,
+      "context_length": 8192,
+      "runner": "llamacpp"
+    }
+  ],
+  "note": "Surface guard-loss diagnostics, not semantic accuracy; original and derived texts separate.",
+  "sources": {
+    "stress_inputs.jsonl": "3dcb60f01d744e0f653d1ec997f24c86bf91c709f128bf1bdb1017e546874392",
+    "stress_variants.jsonl": "10888d73571a79978abb627a786377da362ef608f130f700074d497b73e27e36",
+    "stress_rankings.jsonl": "eab87e953ee95113e0a43d551e205faf364e6f192957a1f16d38f72c2597d4c7"
+  },
+  "script_sha256": "e85652f793c1737ae1472b6c7f1c95dff530bf31ecb42c05144175447be57782"
+}

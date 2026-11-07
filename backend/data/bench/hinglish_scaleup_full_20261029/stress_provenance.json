@@ -1,0 +1,17 @@
+{
+  "items": 10000,
+  "strata": {
+    "original_roman_hindi_heuristic": 2178,
+    "derived_romanization_annotator1": 7822
+  },
+  "dataset": "COMI-LINGUA",
+  "repository": "https://github.com/lingo-iitgn/COMI-LINGUA",
+  "revision": "f02e16a1a513cdf29cfaf20b19c007dd89d8083a",
+  "source_file": "MT_train.csv",
+  "source_sha256": "9a9bf88ced2cd94925549cce0b3f361eb4ae1f70b1d4abf9fbeec22deae1a2cc",
+  "natural_source_sha256": "542c3723a940a8154bf6bc30d90f7df309eb5ac887c3e5b2de96bf0775e47104",
+  "sample_sha256": "3dcb60f01d744e0f653d1ec997f24c86bf91c709f128bf1bdb1017e546874392",
+  "script_sha256": "f63b3497447f10e94533d8deab0dadec00997d1167d52f0692733bbaf462b573",
+  "license": "CC-BY-SA-4.0 per LICENSE.txt; README says CC-BY-4.0; retain stricter license and attribution.",
+  "interpretation": "Heuristic Roman-Hindi selection; code-mix not independently verified. Derived romanizations separate from originals. No QA labels or semantic accuracy claim."
+}

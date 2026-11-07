@@ -1,0 +1,79 @@
+{
+  "created": "2026-10-29T13:19:02.049523+00:00",
+  "study": "Full existing Hinglish QA pool; exposed development expansion",
+  "models": {
+    "qwen3.5:4b": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+    "qwen3.6:35b": "a7eb95c53bcf96b4bdd008d0fab4a5dac88047d9c1a7a9ab88ed453423fbd87c",
+    "qwen3.8:27b": "aaee06c39dcf2437cde036998d960e1fc1494b8191be7cc9657d01e509097813",
+    "qwen3.5:9b": "56671c2ab9385f9cfcb404638e32cd62d88e3501d44822208363c010179a3c90"
+  },
+  "rankers": {
+    "bqwen35b_span": "qwen3.6:35b"
+  },
+  "methods": [
+    "original",
+    "bm25_strict@0.5",
+    "bm25_strict@0.33",
+    "bm25_strict@0.75",
+    "bm25_strict@0.25",
+    "llml2L_strict@0.5",
+    "llml2L_strict@0.33",
+    "llml2L_strict@0.75",
+    "llml2L_strict@0.25",
+    "bhybrid_char_clause@0.5",
+    "bhybrid_char_clause@0.33",
+    "bhybrid_char_clause@0.75",
+    "bhybrid_char_clause@0.25",
+    "bqwen35b_span@0.5",
+    "bqwen35b_span@0.33",
+    "bqwen35b_span@0.75",
+    "bqwen35b_span@0.25",
+    "bspan_bm25@0.5",
+    "bspan_bm25@0.33",
+    "bspan_bm25@0.75",
+    "bspan_bm25@0.25"
+  ],
+  "rates": [
+    0.5,
+    0.33,
+    0.75,
+    0.25
+  ],
+  "input_count": 900,
+  "expected_answers_per_model": 18900,
+  "options": {
+    "num_ctx": 8192,
+    "num_predict": 128,
+    "temperature": 0,
+    "seed": 42
+  },
+  "think": false,
+  "max_seconds": 57600,
+  "model_max_seconds": 12600,
+  "ranker_max_seconds": 3600,
+  "host": "http://127.0.0.1:11435",
+  "budget_tokenizer": "Qwen/Qwen2.5-3B-Instruct",
+  "tokenizer_revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
+  "budget_scope": "Qwen2.5 reference caps; other answer models are fixed-text transfer only",
+  "ranking_inputs": "question and source spans only; no options or gold",
+  "inference": "Previously exposed development data; no confirmatory claim. All Qwen models are one family.",
+  "git_head": "18b1c591395768c137359e0707bc1b3785138383",
+  "files": {
+    "inputs.jsonl": "20947ce42f5ae39ef5011fa9ef737bcfba9310c6fb148d23982ad66699742e7b",
+    "stress_inputs.jsonl": "3dcb60f01d744e0f653d1ec997f24c86bf91c709f128bf1bdb1017e546874392",
+    "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+    "source.zip": "5d7621c860c5c9a7f1d79e6fa7b97426a9ca53570d02c142575d8e2f2ff1c87e",
+    "selection_report.json": "7b9ce9fc52894c619d404bc67efe73a487ad11a902aeec53b841a2d44c52e7fc",
+    "stress_provenance.json": "b223790167552bccb24cfc2c003a6515141a8ac219bd640853004385844c45a1",
+    "COMI_LICENSE.txt": "2003829cf643d61b00a76088dd31bb11b8029546f24c56b39fd492adb9281483",
+    "baseline_variants.jsonl": "5389c315ae0f69973a4642ccd93557bd660fe812b43a2a1512004ad42d7dd56a"
+  },
+  "record_invalid_answers": true,
+  "llml2_model": "microsoft/llmlingua-2-xlm-roberta-large-meetingbank",
+  "llml2_revision": "ebaba9b0e874dadd3003ffcff828e4397e568089",
+  "failure_policy": "Persist raw capped/invalid generations; score as failure without retry; do not abort model.",
+  "selection": "35B span ranker selected on three complete pilot answer models only; 35B partial excluded.",
+  "overall_wall_cap_seconds": 86400,
+  "stress_contexts": 10000,
+  "source_provenance": "COMI-LINGUA f02e16a1a513cdf29cfaf20b19c007dd89d8083a; LICENSE.txt CC-BY-SA-4.0; Roman originals and derived romanizations are reported separately; stress is not gold QA."
+}

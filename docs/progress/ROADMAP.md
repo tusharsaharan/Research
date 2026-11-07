@@ -37,10 +37,22 @@ or 4–5 days if all three of you run `run_daily.py --shard i/3` with your own k
 
 **Compressor paper priority; supersedes the order of the demo tasks below**
 
+**7 November status:** the full Hinglish development campaign is complete:
+75,600 QA records on 900 questions / 488 passages, plus 80,000 separate
+unlabelled stress outputs. The 35B span ranker improves on BM25, including an
+identical-packing control, but fresh human validation, independent-family/native
+token-budget evaluation and a demonstrated efficiency advantage remain missing.
+See the [current project summary](../../README.md) and
+[verified full results](../../backend/data/bench/hinglish_scaleup_full_20261029/RESULTS.md).
+The saved annotation sheets are blank; live GPU access timed out on 7 November.
+Next: annotation/source split and independent baseline validation, then cheaper
+evidence-preserving selection, freeze and one sealed evaluation. These priorities
+supersede the historical weekly estimates below; they do not change PREREG.
+
 - [x] [Tushar] Audit current Hinglish/English results, actual budgets, parser failures and passage overlap; save source fingerprints and exposure registry (`hinglish_research_audit.py`).
 - [ ] [All] Recover/link bilingual verification records and create a source-family split with a genuinely new sealed test; existing evaluated Belebele is development/retrospective evidence.
 - [x] [Tushar] Uniform parser sensitivity completed for historical 3B/7B methods on 14 CPU shards per run (`hinglish_cpu_v1/report.json`, `hinglish_cpu_7b_v1/report.json`); both grading policies retained, current letter-only pilots separate.
-- [ ] [Tushar] Validate strict-budget BM25 and query-aware baselines, then run paired retrieval × clause-preservation ablations starting from measured hybrid. v9 submitted/running on Kaggle; results pending, not a completed validation.
+- [x] [Tushar] Complete v9 strict-budget development comparisons and later same-packing Qwen span-ranking controls; full-pool results verified. XProvence/native-token independent-family comparisons remain next work.
 - [ ] [All] Freeze the selected method, primary budget, analysis and sample-size plan before new test answers; evaluate another answer-model family and human-validated Hinglish task.
 - [ ] [Tushar] Build the paper around paired answer quality, actual full-input savings, latency and code-mixed error mechanisms; publication claim remains pending.
 
@@ -71,7 +83,7 @@ Demo: tests green · live pipeline · first per-language accuracy table (`backen
 
 ## Week 2 — First real results (2026-10-26 → 2026-11-01)
 
-- [ ] [Tushar] Compressor focus (2026-10-28): Hinglish only; evaluate frozen semantic-ranking ablations against BM25, LLMLingua-2 and earlier character/clause baseline. Mixed-language/English v14-v16 submissions superseded; downstream gains pending.
+- [x] [Tushar] Hinglish-only v17 semantic-ranking ablations completed; embeddings did not establish a BM25 gain. The subsequent 35B span ranker improved development accuracy in the completed full-pool campaign. Mixed-language/English v14-v16 remain superseded.
 - [ ] [Sahil] Pair-1 (gpt-oss-20b → 120b) answers complete for all verified items, English + Hinglish
 - [ ] [Shivam] All Hinglish items human-verified; failures repaired or dropped (logged)
 - [x] [Tushar] Second gold-answer sources through the same pipeline: ARC-Challenge (1,172) + MMLU sample (1,000), option-label checks and letter grading

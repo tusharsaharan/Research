@@ -1,0 +1,7 @@
+{
+  "xprovence": "naver/xprovence-reranker-bgem3-v2",
+  "xprovence_revision": "f2798d357213c40164bdd79557d6d2e43ca7d8d2",
+  "gemma": "gemma4:26b",
+  "gemma_digest": "sha256:001e5dafc3c77684c2307ebc6ab8e336e10c9b18eca52acf547d72fc83c3ca8c",
+  "gemma_bytes": 18731025387
+}

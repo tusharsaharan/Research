@@ -1,0 +1,32 @@
+{
+  "platform": "Linux",
+  "python": "3.13.5",
+  "gpus": [
+    {
+      "index": 0,
+      "name": "NVIDIA RTX 5000 Ada Generation",
+      "total_mib": 32760,
+      "free_mib": 31919,
+      "driver": "575.64.03"
+    }
+  ],
+  "tmux": true,
+  "ollama": true,
+  "cuda_check": {
+    "status": "passed",
+    "gpu": "NVIDIA RTX 5000 Ada Generation",
+    "cuda_runtime": "11.8",
+    "total_memory_bytes": 33785446400,
+    "versions": {
+      "torch": "2.7.1+cu118",
+      "transformers": "4.57.1",
+      "llmlingua": "0.2.2",
+      "accelerate": "1.15.0"
+    }
+  },
+  "status": "ready",
+  "prefix": "/home/user/hinglish-research",
+  "log": "/home/user/hinglish-research/logs/setup.log",
+  "model_weights": "not downloaded",
+  "experiments": "not started"
+}
