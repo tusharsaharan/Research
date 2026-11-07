@@ -249,3 +249,7 @@
 - Novelty overlap: multilingual pruning, distillation and cross-lingual compression audits already exist; investigate Hinglish evidence preservation.
 - No new download/job, preregistration change or serving promotion; completed GPU campaign remains terminal.
 - Next: pinned GPU smoke test, frozen cross-family transfer and strict native-token budgets, then fresh human-validated source-disjoint QA. No push.
+- 2026-11-07: pushed pending work (0ac451d) and current README/roadmap/evidence (a4061f9) to Research/main without rewriting history.
+- VERIFIED: 75,600 QA / 80,000 stress records; raw hashes/scores/reference budgets pass; 16 Hinglish + 4 upload tests pass; archive lint and 836-file checksum verification pass.
+- RUNNING: raw-evidence release upload; receipt backend/data/bench/evidence_release_20261107.json. SSH timed out; daily router task interrupted and still scheduled.
+- PLANNED: fresh human annotation/source splits, independent-family native budgets + XProvence, cheap evidence-preserving ranker, sealed evaluation; router certification remains separate.
