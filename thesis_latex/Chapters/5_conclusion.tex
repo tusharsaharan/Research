@@ -1,0 +1,39 @@
+% Chapter 5: Conclusion and Future Directions
+
+\chapter{Conclusion and Future Directions}
+\label{chap:conclusion}
+
+\section{Summary of Research Findings}
+This thesis addressed the compounding challenges of the \textbf{Tokenizer Tax} and \textbf{Over-Provisioning} in Large Language Model inference for Hindi-English (Hinglish) code-mixed discourse. Through the design, implementation, and empirical validation of an OpenAI-compatible 12-module serving gateway, we established the following core findings:
+
+\begin{enumerate}
+    \item \textbf{Transferability of Prompt Compression (RQ1):} At achieved kept token ratios between $0.50$ and $0.70$, extractive prompt compression preserves conversational task success (intent recognition and slot-filling accuracy) within a pre-registered $-0.05$ non-inferiority margin, demonstrating that nearly half of input prompt tokens can be safely pruned on CPU.
+    \item \textbf{Economic Viability (RQ2):} The combination of prompt compression and cascade routing yields a 63.1\% net financial reduction on production inference workloads, mitigating the 2.14$\times$ tokenizer penalty suffered by multilingual users under standard Western subword vocabularies.
+    \item \textbf{Identification of Failure Modes (RQ3):} We proved that accuracy failures in unguided neural prompt compression are heavily concentrated in structured entities, timestamps, phone numbers, and monetary figures, where raw classifiers exhibit a 20--31\% error rate.
+    \item \textbf{Provable Entity Preservation (RQ4):} By introducing regular-expression safety gates and fail-closed reinjection (\texttt{[[PSi]]} masking), we proved that entity recall can be restored to exactly \textbf{1.000} (100\%) byte-for-byte without compromising compression rates.
+    \item \textbf{Statistical Cascade Routing:} Deploying a fine-tuned ModernBERT difficulty scorer under Hoeffding Learn-Then-Test conformal prediction allows operators to bound cheap model routing failures below explicit risk budgets ($\alpha = 0.05$).
+\end{enumerate}
+
+\section{Practical Deployment Insights}
+From an engineering perspective, several actionable principles emerged from building this gateway:
+\begin{itemize}
+    \item \textbf{CPU-Only Pre-Processing is Essential:} For a gateway to remain economically viable, prompt compression must execute in $<10$\,ms on commodity CPU hardware without consuming GPU clusters. Our Linear-Chain CRF and heuristic filters fulfill this criterion.
+    \item \textbf{Fail-Closed Design Prevents Catastrophic Errors:} In production customer service and transactional systems, an uncompressed prompt is infinitely preferable to a corrupted prompt with broken phone numbers or amounts.
+    \item \textbf{Auditability Drives User Trust:} Generating cryptographic usage receipts for every query provides users and enterprise operators with auditable visibility into token savings, model selection, and risk bounds.
+\end{itemize}
+
+\section{Limitations}
+We explicitly acknowledge the following constraints in our current experimental evaluation:
+\begin{itemize}
+    \item \textbf{Corpus Script Representation:} While the PRESTO benchmark contains mixed Devanagari and Latin-script task interactions, Latin-script Romanized Hinglish is characterized by extreme orthographic variance that demands continuous expansion of the phonetic lexicon.
+    \item \textbf{Evaluator API Rate Limits:} Large-scale automated evaluation over thousands of dev-split dialogues encountered upstream API rate limits (HTTP 429), necessitating batching, retries, and offline caching.
+    \item \textbf{Model Proxies:} In the free-tier experimental tracks, high-capacity models such as Llama-3.3-70B served as empirical proxies for closed frontier models.
+\end{itemize}
+
+\section{Directions for Future Work}
+Several promising avenues for continued exploration remain:
+\begin{enumerate}
+    \item \textbf{Edge and Mobile Deployment:} Porting the lightweight Linear-Chain CRF and phonetic normalization engine to Android and iOS mobile keyboard runtimes (e.g., via ONNX or WebAssembly), compressing prompts directly on the user's device prior to network transmission.
+    \item \textbf{Online Conformal Risk Adaptation:} Transitioning from static offline calibration splits to online, streaming conformal prediction algorithms that adjust the routing threshold $\tau^*$ dynamically in response to non-stationary concept drift in incoming user queries.
+    \item \textbf{Expansion to Dravidian and Indo-Aryan Languages:} Extending the phonetic consonant-skeleton algorithm and code-mixing lexicons to other major Indian language combinations, including Tanglish (Tamil-English), Tenglish (Telugu-English), and Banglish (Bengali-English).
+\end{enumerate}

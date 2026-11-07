@@ -1,0 +1,69 @@
+{
+  "model_sha256": "aec02597e9ff0571328e7062710d3a4363a5dff3944eaf2244da182d58730881",
+  "grades": "grades.jsonl",
+  "created": "2026-10-28T01:34:08+00:00",
+  "delta": 0.1,
+  "alphas": [
+    0.05,
+    0.1,
+    0.2
+  ],
+  "serve_alpha": "0.10",
+  "guarantee": "per language: P(quality lost vs always-premium > alpha) <= delta, fixed-sequence Clopper-Pearson at delta/(K*|A|) on the cert split",
+  "n_cert_rows": 624,
+  "preliminary": false,
+  "scorer": "paraphrase-multilingual-MiniLM-L12-v2 + lang/CMI/length | logistic regression (balanced)",
+  "thresholds": {
+    "0.05": {
+      "per_language": {
+        "english": {
+          "cheap_if_score_at_most": 0.39359803434894786,
+          "n": 327,
+          "cheap_share_on_cert": 0.7982
+        },
+        "hinglish": {
+          "cheap_if_score_at_most": 0.19124669915243678,
+          "n": 297,
+          "cheap_share_on_cert": 0.6229
+        }
+      },
+      "marginal": {
+        "cheap_if_score_at_most": 0.9074476251434801
+      }
+    },
+    "0.10": {
+      "per_language": {
+        "english": {
+          "cheap_if_score_at_most": 0.9074476251434801,
+          "n": 327,
+          "cheap_share_on_cert": 1.0
+        },
+        "hinglish": {
+          "cheap_if_score_at_most": 0.9074476251434801,
+          "n": 297,
+          "cheap_share_on_cert": 1.0
+        }
+      },
+      "marginal": {
+        "cheap_if_score_at_most": 0.9074476251434801
+      }
+    },
+    "0.20": {
+      "per_language": {
+        "english": {
+          "cheap_if_score_at_most": 0.9074476251434801,
+          "n": 327,
+          "cheap_share_on_cert": 1.0
+        },
+        "hinglish": {
+          "cheap_if_score_at_most": 0.9074476251434801,
+          "n": 297,
+          "cheap_share_on_cert": 1.0
+        }
+      },
+      "marginal": {
+        "cheap_if_score_at_most": 0.9074476251434801
+      }
+    }
+  }
+}

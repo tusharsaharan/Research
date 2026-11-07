@@ -1,0 +1,131 @@
+{"id": "hing-00000", "tokens": ["toh", "basically", "mujhe", "kal", "3", "baje", "tak", "form", "chahiye"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00001", "tokens": ["toh", "basically", "mujhe", "kal", "3", "baje", "tak", "form", "chahiye"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00002", "tokens": ["toh", "basically", "mujhe", "kal", "3", "baje", "tak", "form", "chahiye"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00003", "tokens": ["aur", "suno,", "assignment", "ka", "bill", "[[PS0]]", "par", "bhej", "do"], "labels": ["D", "D", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00004", "tokens": ["aur", "suno,", "assignment", "ka", "bill", "[[PS0]]", "par", "bhej", "do"], "labels": ["D", "D", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00005", "tokens": ["aur", "suno,", "assignment", "ka", "bill", "[[PS0]]", "par", "bhej", "do"], "labels": ["D", "D", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00006", "tokens": ["I", "like", "this", "hostel", "room"], "labels": ["D", "D", "K", "K", "K"]}
+{"id": "hing-00007", "tokens": ["I", "like", "this", "hostel", "room"], "labels": ["D", "D", "K", "K", "K"]}
+{"id": "hing-00008", "tokens": ["I", "like", "this", "hostel", "room"], "labels": ["D", "D", "K", "K", "K"]}
+{"id": "hing-00009", "tokens": ["suno,", "mera", "phone", "charge", "nahi", "ho", "raha,", "charger", "kharab", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00010", "tokens": ["suno,", "mera", "fon", "charge", "nahi", "ho", "raha,", "charger", "kharab", "hai"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00011", "tokens": ["suno,", "mra", "phone", "charge", "nahi", "ho", "raha,", "charger", "kharab", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00012", "tokens": ["phone", "toh", "charge", "ho", "raha", "hai", "par", "bahut", "slow", "hai", "bhai"], "labels": ["K", "K", "K", "K", "K", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00013", "tokens": ["fone", "toh", "charge", "ho", "raha", "hai", "par", "bahut", "slow", "hai", "bhai"], "labels": ["K", "D", "K", "K", "K", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00014", "tokens": ["fon", "toh", "charge", "ho", "rha", "h", "par", "bahutt", "slow", "hai", "bhaii"], "labels": ["K", "K", "K", "K", "K", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00018", "tokens": ["matlab", "ek", "numerical", "tool", "hai"], "labels": ["D", "K", "K", "K", "K"]}
+{"id": "hing-00019", "tokens": ["matlab", "ek", "numerical", "tool", "hai"], "labels": ["D", "K", "K", "K", "K"]}
+{"id": "hing-00020", "tokens": ["matlabb", "ek", "numerical", "tool", "h"], "labels": ["D", "K", "K", "K", "K"]}
+{"id": "hing-00021", "tokens": ["download", "matlab", "free", "version", "for", "students"], "labels": ["K", "D", "K", "K", "K", "K"]}
+{"id": "hing-00022", "tokens": ["download", "matlab", "free", "version", "for", "students"], "labels": ["K", "D", "K", "K", "K", "K"]}
+{"id": "hing-00023", "tokens": ["download", "matlab", "free", "version", "for", "students"], "labels": ["K", "D", "K", "K", "K", "K"]}
+{"id": "hing-00024", "tokens": ["bhai", "suno", "mera", "laptop", "slow", "ho", "gaya", "hai,", "please", "help", "karo"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00025", "tokens": ["bhai", "suno", "mera", "laptop", "slow", "ho", "gaya", "hai,", "please", "help", "karo"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00026", "tokens": ["bhai", "suno", "mera", "laptop", "slow", "ho", "gaya", "hai,", "please", "help", "karo"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00027", "tokens": ["arre", "bhai", "mera", "assignment", "kharab", "ho", "raha", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K"]}
+{"id": "hing-00028", "tokens": ["arre", "bhai", "mera", "assignment", "kharab", "ho", "raha", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K"]}
+{"id": "hing-00029", "tokens": ["arre", "bhai", "mera", "assignment", "kharab", "ho", "raha", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K"]}
+{"id": "hing-00033", "tokens": ["bhai", "mera", "app", "baar", "baar", "crash", "ho", "raha", "hai,", "please", "fix", "karo"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00034", "tokens": ["bhai", "mera", "app", "baar", "baar", "crash", "ho", "raha", "hai,", "please", "fix", "karo"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00035", "tokens": ["bhai", "mera", "app", "baar", "baar", "crash", "ho", "raha", "hai,", "plz", "fix", "karo"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00036", "tokens": ["arre", "bhai", "suno", "mera", "assignment", "submit", "karna", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K"]}
+{"id": "hing-00037", "tokens": ["arre", "bhai", "suno", "mera", "assignment", "submit", "karnaa", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K"]}
+{"id": "hing-00038", "tokens": ["arre", "bhai", "suno", "mera", "assignment", "submit", "karna", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K"]}
+{"id": "hing-00039", "tokens": ["the", "sun", "rises", "in", "the", "east"], "labels": ["D", "K", "K", "D", "D", "K"]}
+{"id": "hing-00040", "tokens": ["the", "sun", "rises", "in", "the", "east"], "labels": ["D", "K", "K", "D", "D", "K"]}
+{"id": "hing-00041", "tokens": ["the", "sun", "rises", "in", "the", "east"], "labels": ["D", "K", "K", "D", "D", "K"]}
+{"id": "hing-00042", "tokens": ["mera", "wifi", "toh", "bahut", "slow", "chal", "raha", "hai", "yaar"], "labels": ["K", "K", "D", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00043", "tokens": ["mera", "wifi", "toh", "bahut", "slow", "chal", "raha", "hai", "yr"], "labels": ["K", "K", "D", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00044", "tokens": ["mera", "wifi", "toh", "bahut", "slow", "chal", "raha", "hai", "yr"], "labels": ["K", "K", "D", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00045", "tokens": ["mera", "bhai", "kal", "aayega"], "labels": ["D", "K", "K", "K"]}
+{"id": "hing-00046", "tokens": ["mera", "bhai", "kal", "aayega"], "labels": ["D", "K", "K", "K"]}
+{"id": "hing-00047", "tokens": ["mra", "bhai", "kal", "aayega"], "labels": ["D", "K", "K", "K"]}
+{"id": "hing-00048", "tokens": ["hello", "sir,", "mera", "room", "bharna", "hai,", "deadline", "kab", "hai"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00049", "tokens": ["hello", "sir,", "mera", "room", "bharna", "hai,", "deadline", "kab", "h"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00050", "tokens": ["hello", "sir,", "mera", "room", "bharna", "hai,", "deadline", "kab", "hai"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00051", "tokens": ["yaar", "tumne", "mera", "wifi", "dekha", "kya,", "room", "me", "nahi", "mil", "raha"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00054", "tokens": ["aur", "suno,", "phone", "ka", "bill", "[[PS0]]", "par", "bhej", "do"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00055", "tokens": ["aur", "suno,", "phone", "ka", "bill", "[[PS0]]", "par", "bhej", "do"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00056", "tokens": ["aur", "suno,", "phone", "ka", "bill", "[[PS0]]", "par", "bhejj", "do"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00060", "tokens": ["can", "you", "submit", "the", "form"], "labels": ["D", "D", "K", "D", "K"]}
+{"id": "hing-00061", "tokens": ["can", "you", "submit", "the", "form"], "labels": ["D", "D", "K", "D", "K"]}
+{"id": "hing-00062", "tokens": ["can", "you", "submit", "the", "form"], "labels": ["D", "D", "K", "D", "K"]}
+{"id": "hing-00063", "tokens": ["yaar", "matlab", "mera", "email", "[[PS0]]", "par", "bhejo", "na"], "labels": ["D", "D", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00064", "tokens": ["yaar", "matlab", "mra", "email", "[[PS0]]", "par", "bhejo", "na"], "labels": ["D", "D", "D", "K", "K", "D", "K", "D"]}
+{"id": "hing-00065", "tokens": ["yaar", "matlabb", "mera", "email", "[[PS0]]", "par", "bhejo", "na"], "labels": ["D", "D", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00066", "tokens": ["achha", "toh", "ye", "error", "aa", "raha", "hai:", "index", "out", "of", "range,", "kya", "karein"], "labels": ["D", "D", "D", "D", "D", "D", "D", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00067", "tokens": ["achha", "toh", "ye", "error", "aa", "raha", "hai:", "index", "out", "of", "range,", "kya", "karein"], "labels": ["D", "D", "D", "D", "D", "D", "D", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00068", "tokens": ["achha", "toh", "ye", "error", "aa", "raha", "hai:", "index", "out", "of", "range,", "kya", "karein"], "labels": ["D", "D", "D", "D", "D", "D", "D", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00069", "tokens": ["I", "like", "this", "hostel", "room"], "labels": ["D", "D", "K", "K", "K"]}
+{"id": "hing-00070", "tokens": ["I", "like", "this", "hostel", "room"], "labels": ["D", "D", "K", "K", "K"]}
+{"id": "hing-00072", "tokens": ["mera", "bhai", "kal", "aayega"], "labels": ["D", "K", "K", "K"]}
+{"id": "hing-00073", "tokens": ["mera", "bhai", "kal", "aayega"], "labels": ["D", "K", "K", "K"]}
+{"id": "hing-00074", "tokens": ["mra", "bhai", "kal", "aayega"], "labels": ["D", "K", "K", "K"]}
+{"id": "hing-00075", "tokens": ["you", "know", "the", "deadline", "is", "tomorrow"], "labels": ["D", "D", "D", "K", "D", "K"]}
+{"id": "hing-00076", "tokens": ["you", "know", "the", "deadline", "is", "tomorrow"], "labels": ["D", "D", "D", "K", "D", "K"]}
+{"id": "hing-00077", "tokens": ["you", "know", "the", "deadline", "is", "tomorrow"], "labels": ["D", "D", "D", "K", "D", "K"]}
+{"id": "hing-00078", "tokens": ["download", "matlab", "free", "version", "for", "students"], "labels": ["K", "D", "K", "K", "K", "K"]}
+{"id": "hing-00080", "tokens": ["download", "matlab", "free", "version", "for", "students"], "labels": ["K", "D", "K", "K", "K", "K"]}
+{"id": "hing-00081", "tokens": ["suno,", "mera", "phone", "charge", "nahi", "ho", "raha,", "charger", "kharab", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00082", "tokens": ["suno,", "mera", "fone", "charge", "nahi", "ho", "raha,", "charger", "kharab", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00083", "tokens": ["suno,", "mera", "phone", "charge", "nahin", "ho", "raha,", "charger", "kharab", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00084", "tokens": ["please", "mera", "laptop", "return", "karo,", "size", "galat", "aaya", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00085", "tokens": ["please", "mra", "laptop", "return", "karo,", "size", "galat", "aaya", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00086", "tokens": ["please", "mera", "laptop", "return", "karo,", "size", "galat", "aaya", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00090", "tokens": ["the", "sun", "rises", "in", "the", "east"], "labels": ["D", "K", "K", "D", "D", "K"]}
+{"id": "hing-00091", "tokens": ["the", "sun", "rises", "in", "the", "east"], "labels": ["D", "K", "K", "D", "D", "K"]}
+{"id": "hing-00092", "tokens": ["the", "sun", "rises", "in", "the", "east"], "labels": ["D", "K", "K", "D", "D", "K"]}
+{"id": "hing-00093", "tokens": ["bhai", "mera", "app", "baar", "baar", "crash", "ho", "raha", "hai,", "please", "fix", "karo"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00094", "tokens": ["bhai", "mera", "app", "baar", "baar", "crashh", "ho", "rha", "hai,", "pls", "fix", "karo"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00095", "tokens": ["bhai", "mra", "app", "baar", "baar", "crash", "ho", "raha", "hai,", "please", "fix", "karo"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00096", "tokens": ["arre", "bhai", "suno", "mera", "form", "bharna", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K"]}
+{"id": "hing-00097", "tokens": ["arre", "bhai", "suno", "mra", "form", "bharna", "h"], "labels": ["D", "D", "D", "K", "K", "K", "K"]}
+{"id": "hing-00098", "tokens": ["arre", "bhai", "suno", "mra", "form", "bharna", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K"]}
+{"id": "hing-00099", "tokens": ["hello", "sir", "please", "mera", "charger", "approve", "kar", "do,", "bahut", "urgent", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00100", "tokens": ["hello", "sir", "please", "mera", "charger", "approve", "kar", "do,", "bahut", "urgent", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00101", "tokens": ["hello", "sir", "please", "mra", "charger", "approve", "kr", "do,", "bahut", "urgent", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00102", "tokens": ["matlab", "ye", "wala", "issue", "phir", "se", "aa", "gaya", "hai,", "please", "dekho"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "D", "K"]}
+{"id": "hing-00103", "tokens": ["matlab", "ye", "wala", "issue", "phir", "se", "aa", "gaya", "hai,", "plz", "dekho"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "D", "K"]}
+{"id": "hing-00104", "tokens": ["matlab", "ye", "wala", "issue", "phir", "se", "aa", "gaya", "hai,", "pls", "dekho"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "D", "K"]}
+{"id": "hing-00105", "tokens": ["hostel", "ka", "wifi", "matlab", "bahut", "slow", "chal", "raha", "hai"], "labels": ["K", "K", "K", "D", "K", "K", "K", "D", "D"]}
+{"id": "hing-00106", "tokens": ["hostel", "ka", "wifi", "matlab", "bahut", "slow", "chal", "raha", "h"], "labels": ["K", "K", "K", "D", "K", "K", "K", "D", "D"]}
+{"id": "hing-00107", "tokens": ["hostel", "ka", "wifi", "matlab", "bahut", "slow", "chal", "raha", "h"], "labels": ["K", "K", "K", "D", "K", "K", "K", "D", "D"]}
+{"id": "hing-00108", "tokens": ["suno,", "mera", "phone", "charge", "nahi", "ho", "raha,", "charger", "kharab", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00109", "tokens": ["suno,", "mra", "phone", "charge", "nahi", "ho", "raha,", "charger", "kharab", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00110", "tokens": ["suno,", "mera", "phone", "charge", "nhi", "ho", "raha,", "charger", "kharabb", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00111", "tokens": ["mere", "bhai", "ka", "phone", "kho", "gaya", "hai"], "labels": ["K", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00112", "tokens": ["mere", "bhai", "ka", "fon", "kho", "gaya", "h"], "labels": ["K", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00113", "tokens": ["mere", "bhai", "ka", "phone", "kho", "gaya", "hai"], "labels": ["K", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00114", "tokens": ["hostel", "ka", "wifi", "matlab", "bahut", "slow", "chal", "raha", "hai"], "labels": ["K", "K", "K", "D", "K", "K", "K", "D", "D"]}
+{"id": "hing-00115", "tokens": ["hostel", "ka", "wifi", "matlab", "bahut", "slow", "chal", "rha", "hai"], "labels": ["K", "K", "K", "D", "K", "K", "K", "D", "D"]}
+{"id": "hing-00116", "tokens": ["hostel", "ka", "wifi", "matlab", "bahut", "slow", "chal", "raha", "hai"], "labels": ["K", "K", "K", "D", "K", "K", "K", "D", "D"]}
+{"id": "hing-00117", "tokens": ["hello", "sir", "please", "mera", "form", "approve", "kar", "do,", "bahut", "urgent", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00118", "tokens": ["hello", "sir", "please", "mera", "form", "approve", "kr", "do,", "bahut", "urgent", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00119", "tokens": ["hello", "sir", "pleasee", "mera", "form", "approve", "kar", "do,", "bahut", "urgentt", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00121", "tokens": ["bhai", "mera", "assignment", "submit", "nahin", "hua"], "labels": ["D", "K", "K", "K", "K", "K"]}
+{"id": "hing-00123", "tokens": ["hostel", "ka", "wifi", "matlab", "bahut", "slow", "chal", "raha", "hai"], "labels": ["K", "K", "K", "D", "K", "K", "K", "D", "D"]}
+{"id": "hing-00124", "tokens": ["hostel", "ka", "wifi", "matlab", "bahut", "slow", "chal", "raha", "hai"], "labels": ["K", "K", "K", "D", "K", "K", "K", "D", "D"]}
+{"id": "hing-00125", "tokens": ["hostell", "ka", "wifi", "matlab", "bahut", "slow", "chal", "raha", "h"], "labels": ["K", "K", "K", "D", "K", "K", "K", "D", "D"]}
+{"id": "hing-00126", "tokens": ["suno,", "mera", "phone", "charge", "nahi", "ho", "raha,", "charger", "kharab", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00127", "tokens": ["suno,", "mera", "phone", "charge", "nahi", "ho", "raha,", "charger", "kharab", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00128", "tokens": ["suno,", "mera", "phone", "charge", "nahii", "ho", "raha,", "charger", "kharab", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00129", "tokens": ["hello", "sir,", "mera", "wifi", "jama", "karna", "hai,", "deadline", "kab", "hai"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00130", "tokens": ["helloo", "sir,", "mra", "wifi", "jama", "karna", "hai,", "deadline", "kab", "hai"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00131", "tokens": ["helloo", "sir,", "mera", "wifi", "jama", "karna", "hai,", "deadline", "kab", "hai"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00132", "tokens": ["mera", "bhai", "kal", "aayega"], "labels": ["D", "K", "K", "K"]}
+{"id": "hing-00133", "tokens": ["mera", "bhaii", "kal", "aayega"], "labels": ["D", "K", "K", "K"]}
+{"id": "hing-00134", "tokens": ["mera", "bhai", "kal", "aayega"], "labels": ["D", "K", "K", "K"]}
+{"id": "hing-00135", "tokens": ["mera", "order", "305", "abhi", "tak", "deliver", "nahi", "hua,", "status", "kya", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00136", "tokens": ["mera", "order", "305", "abhi", "tak", "deliver", "nahi", "hua,", "status", "kya", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00137", "tokens": ["mera", "order", "305", "abhi", "tak", "deliver", "nahi", "hua,", "status", "kya", "hai"], "labels": ["D", "K", "K", "K", "K", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00138", "tokens": ["matlab", "ek", "numerical", "tool", "hai"], "labels": ["D", "K", "K", "K", "K"]}
+{"id": "hing-00139", "tokens": ["matlab", "ek", "numerical", "tool", "hai"], "labels": ["D", "K", "K", "K", "K"]}
+{"id": "hing-00140", "tokens": ["matlab", "ek", "numerical", "tool", "hai"], "labels": ["D", "K", "K", "K", "K"]}
+{"id": "hing-00141", "tokens": ["bhai", "mera", "app", "baar", "baar", "crash", "ho", "raha", "hai,", "please", "fix", "karo"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00142", "tokens": ["bhai", "mera", "app", "baar", "baar", "crash", "ho", "raha", "h,", "pls", "fix", "karo"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00143", "tokens": ["bhai", "mera", "app", "baar", "baar", "crash", "ho", "raha", "hai,", "plz", "fix", "karoo"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K", "K", "D", "K", "K"]}
+{"id": "hing-00144", "tokens": ["phone", "toh", "charge", "ho", "raha", "hai", "par", "bahut", "slow", "hai", "bhai"], "labels": ["K", "K", "K", "K", "K", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00145", "tokens": ["phone", "toh", "charge", "ho", "raha", "hai", "par", "bahut", "slow", "h", "bhai"], "labels": ["K", "K", "K", "K", "K", "K", "K", "K", "K", "K", "D"]}
+{"id": "hing-00146", "tokens": ["fon", "toh", "charge", "ho", "raha", "hai", "par", "bahut", "slow", "h", "bhaii"], "labels": ["K", "K", "K", "K", "K", "K", "K", "K", "K", "D", "D"]}
+{"id": "hing-00147", "tokens": ["arre", "yaar", "mera", "assignment", "missing", "ho", "gaya", "hai"], "labels": ["D", "D", "K", "K", "K", "K", "K", "K"]}
+{"id": "hing-00148", "tokens": ["arre", "yr", "mra", "assignment", "missing", "ho", "gaya", "hai"], "labels": ["D", "D", "D", "K", "K", "K", "K", "K"]}

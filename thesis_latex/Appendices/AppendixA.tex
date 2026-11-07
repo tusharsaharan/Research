@@ -1,0 +1,75 @@
+% Appendix A: Gateway API Specification & Hyperparameters
+
+\chapter{Gateway API Specification and Implementation Details}
+\label{AppendixA}
+
+\section{Core REST Endpoints}
+The serving gateway is deployed using FastAPI and exposes over 20 REST endpoints designed to comply with the official OpenAI Chat Completions API standard while enriching responses with transparency metadata.
+
+\subsection{\texttt{POST /v1/chat/completions}}
+The primary completion endpoint. It accepts standard OpenAI payloads and performs inline prompt compression and conformal cascade routing before dispatching the request to the upstream provider.
+
+\begin{lstlisting}[language=Python, caption={Example Gateway Chat Completion Request Payload.}]
+{
+  "model": "auto",
+  "messages": [
+    {"role": "user", "content": "Bhai kal meeting kyu cancel hui thi?"}
+  ],
+  "temperature": 0.7,
+  "stream": false
+}
+\end{lstlisting}
+
+\subsubsection{Enriched Gateway Metadata (\texttt{x\_gateway})}
+In addition to the standard OpenAI choice array, the gateway attaches an \texttt{x\_gateway} metadata object containing full audit details:
+
+\begin{lstlisting}[language=Python, caption={Gateway Metadata Object Attached to Responses.}]
+{
+  "original_tokens": 38,
+  "compressed_tokens": 19,
+  "compression_ratio": 0.50,
+  "difficulty_score": 0.124,
+  "conformal_threshold": 0.910,
+  "tier": "cheap",
+  "model_routed": "groq/llama-3.1-8b-instant",
+  "estimated_cost_usd": 0.0000042,
+  "estimated_cost_savings_usd": 0.0000858,
+  "error_bound": 0.048,
+  "receipt_id": "cmg-1727678912345"
+}
+\end{lstlisting}
+
+\subsection{\texttt{GET /receipt/\{id\}}}
+Retrieves an immutable, auditable receipt of any prior query by its transaction identifier.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{System Configuration and Hyperparameter Defaults.}
+\label{tab:hyperparameters}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default Value} & \textbf{Description} \\
+\midrule
+\texttt{GATEWAY\_ALPHA} & \texttt{0.05} & Conformal routing failure tolerance budget ($5\%$). \\
+\texttt{GATEWAY\_DELTA} & \texttt{0.05} & Statistical confidence level ($95\%$ bound). \\
+\texttt{LLMLINGUA2\_RATE} & \texttt{0.50} & Default kept token ratio for neural baseline. \\
+\texttt{CRF\_C1} & \texttt{0.10} & $L_1$ regularization penalty for CRF tagger. \\
+\texttt{CRF\_C2} & \texttt{0.10} & $L_2$ regularization penalty for CRF tagger. \\
+\texttt{CRF\_MAX\_ITER} & \texttt{200} & Maximum L-BFGS optimization iterations. \\
+\texttt{TIMEOUT\_S} & \texttt{60.0} & Upstream HTTP client timeout in seconds. \\
+\texttt{FX\_INR\_PER\_USD} & \texttt{83.5} & Currency exchange conversion rate for INR receipts. \\
+\texttt{CHEAP\_PER\_1K\_USD} & \texttt{\$0.00006} & Groq Llama-3.1-8B token pricing schedule. \\
+\texttt{PREMIUM\_PER\_1K\_USD} & \texttt{\$0.00250} & OpenAI GPT-4o token pricing schedule. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Environment and Dependencies}
+The gateway system is implemented in Python 3.11+. The core dependencies and runtime libraries include:
+\begin{itemize}
+    \item \textbf{Web Framework:} \texttt{fastapi >= 0.110.0}, \texttt{uvicorn >= 0.28.0}, \texttt{httpx >= 0.27.0}.
+    \item \textbf{Machine Learning \& Sequence Labeling:} \texttt{sklearn-crfsuite >= 0.3.6}, \texttt{scikit-learn >= 1.4.0}, \texttt{numpy >= 1.26.0}.
+    \item \textbf{Tokenization:} \texttt{tiktoken >= 0.6.0}, \texttt{tokenizers >= 0.15.0}.
+    \item \textbf{Evaluation \& Metrics:} \texttt{sacrebleu >= 2.4.0}, \texttt{rouge-score >= 0.1.2}.
+\end{itemize}

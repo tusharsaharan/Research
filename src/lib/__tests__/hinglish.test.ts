@@ -44,8 +44,15 @@ describe("toDevanagariApprox", () => {
     expect(toDevanagariApprox("mera")).toBe("मेरा");
   });
 
+  it("uses long-ee for common possessives", () => {
+    expect(toDevanagariApprox("meri")).toBe("मेरी");
+    expect(toDevanagariApprox("teri")).toBe("तेरी");
+    expect(toDevanagariApprox("yaar shivam meri jaan hai")).toContain("मेरी");
+  });
+
   it("keeps unknown english", () => {
     expect(toDevanagariApprox("hello world")).toBe("hello world");
+    expect(toDevanagariApprox("hello, meri world!")).toBe("hello, मेरी world!");
   });
 
   it("preserves punctuation", () => {

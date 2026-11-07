@@ -241,7 +241,7 @@ bullets(body_box(s, top), [
     ("Used: LLMLingua-2 ACL 2024.", "Trained baseline. Package 0.2.2 plus bert base multilingual meetingbank checkpoint on CPU. Not retrained."),
     ("Used: LLMLingua EMNLP 2023.", "Budget controlled pruning reference. Our heuristic comparator mirrors filler pruning logic."),
     ("Used: PRESTO (Goel et al.).", "Primary eval dataset with structured parses as machine checkable gold. 550K plus human task conversations."),
-    ("Used: SentiMix SemEval 2020.", "300 row handpicked routing label set, balanced 100/100/100 by code mix band."),
+    ("Used: Hinglish-Instruct.", "Sujalvc/hinglish-instruct-dataset (10,378 romanized prompts, 300-prompt pilot slice) for cascade routing calibration."),
     ("Cited only.", "LongLLMLingua, Petrov tokenizer fairness, FrugalGPT, RouteLLM, X-RiSAWOZ (no official download), GupShup (reserved for romanized arm), GLUECoS."),
 ])
 add_notes(s,

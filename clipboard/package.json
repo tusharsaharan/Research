@@ -1,0 +1,12 @@
+{
+  "name": "public-clipboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Public shared clipboard — post text from CLI or web, fetch from anywhere. Vercel-ready.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "npx serve public -l 3000"
+  }
+}

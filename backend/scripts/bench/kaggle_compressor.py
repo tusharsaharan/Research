@@ -45,7 +45,9 @@ def main():
     dataset_identity = f"{user}/tokenopt-compressor-pilot-v{args.revision}"
 
     def kaggle(*parts, check=True):
-        result = subprocess.run(["kaggle", *parts], env=env, capture_output=True, text=True,
+        command = ([sys.executable, str(Path(__file__).with_name('kaggle_upload_bounded.py')), *parts]
+                   if parts[:2] == ('datasets', 'create') else ["kaggle", *parts])
+        result = subprocess.run(command, env=env, capture_output=True, text=True,
                                 encoding="utf-8", errors="replace", timeout=args.command_timeout)
         output = result.stdout + result.stderr
         print(output[-1800:], flush=True)

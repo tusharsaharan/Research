@@ -1,0 +1,223 @@
+\frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the pre-content pages
+
+\pagestyle{plain} 
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\begin{titlepage}
+\begin{center}
+\begin{spacing}{1.2}
+
+{\huge \bfseries \ttitle\par}
+
+\vspace{5mm}
+\textit{A thesis submitted in partial fulfillment of the requirements\\for the award of the degree of} 
+
+\vspace{7mm}
+\textsc{\huge \MakeUppercase{\degreename}}
+
+\vspace{3mm}
+\includegraphics[width=5cm]{Figures/IIITA_Logo.png}
+\vspace{5mm}
+
+\begin{minipage}[t]{0.5\textwidth}
+    \begin{flushleft} \large
+        \textit{By:-} \\
+        \textsc{\studentnamesformatted}
+    \end{flushleft}
+\end{minipage}
+\begin{minipage}[t]{0.45\textwidth}
+    \begin{flushright} \large
+        \textit{Enrollment No.} \\
+        \textsc{\rollnumbersformatted}
+    \end{flushright}
+\end{minipage}\\[1cm]
+
+\textit{Under the Supervision of}\\[2mm]
+\textsc{\Large \supname}\\
+\vspace{7mm}
+\textit{Submitted to the}\\[2mm]
+\textsc{\Large \deptname}\\
+
+\vspace{12mm}
+\ifdefined\devanagarifont
+\begin{hindi}
+    {\Large\textbf{भारतीय सूचना प्रौद्योगिकी संस्थान, इलाहाबाद}}
+\end{hindi} \\[3mm]
+\else
+{\Large\textbf{भारतीय सूचना प्रौद्योगिकी संस्थान, इलाहाबाद}}\\[3mm]
+\fi
+\textsc{\Large \univname}
+
+\vspace{5mm}
+\monthyear
+
+\end{spacing}
+\end{center}
+\end{titlepage}
+
+%----------------------------------------------------------------------------------------
+%	CERTIFICATE
+%----------------------------------------------------------------------------------------
+\checktoopen
+\begin{figure}[htp]
+    \includegraphics[height=2.8cm,keepaspectratio]{Figures/IIITA_Header.png}
+\end{figure}
+\thispagestyle{empty}
+
+\begin{spacing}{1.5}
+\begin{center}
+    {\centering\large\bfseries CERTIFICATE \par\vspace{10pt}}
+\end{center}
+
+\noindent It is certified that the work contained in the thesis titled \enquote{\ttitle} by {\studentnamescomma} has been carried out under my supervision and that this work has not been submitted elsewhere for a degree.
+
+\vspace{3cm}
+\hfill\begin{minipage}{7.5cm}
+    \begin{spacing}{1.2}
+        \par
+        \rule{\textwidth}{0.2pt}\\
+        {\supname} \par
+        {\deptname} \par
+        IIIT Allahabad \par
+    \end{spacing}
+\end{minipage}
+
+\end{spacing}
+\cleardoublepage
+
+%----------------------------------------------------------------------------------------
+%	CANDIDATE DECLARATION
+%----------------------------------------------------------------------------------------
+\checktoopen
+\begin{figure}[htp]
+    \includegraphics[height=2.8cm,keepaspectratio]{Figures/IIITA_Header.png}
+\end{figure}
+\thispagestyle{empty}
+\vspace{1mm}
+
+\begin{center}
+    {\large\bfseries CANDIDATE DECLARATION}
+\end{center}
+
+\begin{spacing}{1.2}
+
+\noindent \pronounwe, \studentnamesdeclaration, hereby certify that the thesis titled \enquote{\ttitle} has been submitted by \pronounus{} in partial fulfillment of the requirements for the Degree of \degreename{} in the \deptname{} at the \univname.
+
+\par
+\noindent We acknowledge that plagiarism includes: 
+\begin{enumerate} 
+    \item Reproducing another person's work (fully or partially) or ideas and presenting them as our own.
+    \item Copying or paraphrasing another person's work without appropriate attribution.
+    \item Engaging in literary theft by reproducing a unique literary construct without crediting its source.
+\end{enumerate}
+\par
+We affirm that due credit has been given to all original authors and sources through proper citations for words, ideas, diagrams, graphics, computer programs, experiments, results, and websites that are not our own contributions. Direct quotations have been appropriately marked, and sources have been properly referenced. Furthermore, we declare that no portion of our work is plagiarized. In the event of a plagiarism claim, we accept full responsibility for the contents of this thesis. We acknowledge that our supervisor may not be able to verify the originality of every aspect of our work.
+\end{spacing}
+
+\begin{spacing}{2.0}
+\noindent
+\begin{minipage}[t]{0.4\textwidth}  
+    \begin{flushleft} 
+        Place: Prayagraj\\
+    \end{flushleft}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.4\textwidth}  
+    \begin{flushright}         
+        Date: \rule{40mm}{0.1pt}\\       
+    \end{flushright}
+\end{minipage}
+\par
+{\studentsignatures}
+\end{spacing}
+
+\cleardoublepage
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT PAGE
+%----------------------------------------------------------------------------------------
+
+\begin{abstract}
+\begin{spacing}{1.5}
+
+\addchaptertocentry{\abstractname}
+
+Large Language Model (LLM) serving costs scale directly with prompt token count and selected model tier. While prompt compression reduces costs on clean English corpora, standard subword tokenizers (e.g., Byte-Pair Encoding) severely over-segment Hindi-English (Hinglish) code-mixed text, imposing an implicit 2.1$\times$ \textit{Tokenizer Tax} on multilingual users. Furthermore, naive neural compressors mangle named entities, numerical values, and transliterated syntax, dropping downstream task completion.
+
+In this thesis, we design, implement, and empirically validate an OpenAI-compatible 12-module serving gateway that jointly optimizes prompt length and model selection for code-mixed dialogue. Our architecture couples a 5-stage CPU-efficient prompt compressor with a conformal cascade router. The compressor introduces consonant-skeleton phonetic hashing to collapse spelling entropy, heuristic filler stripping, force-preserved regex safety masking, and a 25-feature Linear-Chain Conditional Random Field (CRF) sequence tagger operating in under 10\,ms without GPU overhead. The cascade router employs a fine-tuned ModernBERT-large difficulty classifier calibrated via Hoeffding Learn-Then-Test (LTT) risk bounds to dispatch simple queries to cost-efficient 8B models while routing complex reasoning to frontier 120B models under a provable statistical error budget ($\alpha = 0.05$).
+
+Evaluated across 5,804 task-oriented dialogue rows from the PRESTO benchmark and 3,000 code-mixed queries, our protected-span mechanism achieves exactly 1.000 entity recall across 680 dialogue rows, eliminating the 20--31\% entity mangling observed in raw baselines. In addition, the gateway reduces metered token intake by 38.3--47.6\% and cuts inference costs by over 60\% without degrading downstream task success. All modules, benchmarks, and interactive audit receipt tools are open-sourced to promote equitable NLP serving in low-resource and code-mixed settings.
+
+\end{spacing}
+\end{abstract}
+
+%----------------------------------------------------------------------------------------
+%	ACKNOWLEDGEMENTS
+%----------------------------------------------------------------------------------------
+
+\begin{acknowledgements}
+\begin{spacing}{1.5}
+\addchaptertocentry{\acknowledgementname}
+
+We would like to express our deepest gratitude to our project supervisor, \textbf{Dr. Sonali Agrawal}, Department of Information Technology, Indian Institute of Information Technology, Allahabad, for her constant guidance, constructive critique, and invaluable encouragement throughout this research. Her high standards for empirical rigor and methodological discipline shaped the direction and execution of this work.
+
+We extend our sincere thanks to the faculty members and staff of the Department of Information Technology for providing the institutional support, computational infrastructure, and academic environment essential for completing this project.
+
+We are also thankful to our peers and lab colleagues for engaging discussions, review feedback, and collaborative testing of our gateway system. Lastly, we owe heartfelt gratitude to our parents and families for their unwavering patience, support, and sacrifices that enabled our academic journey.
+
+\vspace{1cm}
+\begin{flushright}
+\textit{Tushar Saharan}\\
+\textit{Shivam Kumar}\\
+\textit{Sahil Gupta}
+\end{flushright}
+
+\end{spacing}
+\end{acknowledgements}
+
+%----------------------------------------------------------------------------------------
+%	LIST OF CONTENTS/FIGURES/TABLES PAGES
+%----------------------------------------------------------------------------------------
+
+\tableofcontents
+
+\listoffigures
+
+\listoftables
+
+%----------------------------------------------------------------------------------------
+%	ABBREVIATIONS
+%----------------------------------------------------------------------------------------
+
+\begin{abbreviations}{ll}
+
+\textbf{API}  & \textbf{A}pplication \textbf{P}rogramming \textbf{I}nterface \\
+\textbf{BERT} & \textbf{B}idirectional \textbf{E}ncoder \textbf{R}epresentations from \textbf{T}ransformers \\
+\textbf{BLEU} & \textbf{B}i\textbf{L}ingual \textbf{E}valuation \textbf{U}nderstudy \\
+\textbf{BPE}  & \textbf{B}yte \textbf{P}air \textbf{E}ncoding \\
+\textbf{CI}   & \textbf{C}onfidence \textbf{I}nterval \\
+\textbf{CRF}  & \textbf{C}onditional \textbf{R}andom \textbf{F}ield \\
+\textbf{ECE}  & \textbf{E}xpected \textbf{C}alibration \textbf{E}rror \\
+\textbf{EM}   & \textbf{E}xact \textbf{M}atch \\
+\textbf{GPU}  & \textbf{G}raphics \textbf{P}rocessing \textbf{U}nit \\
+\textbf{GRPO} & \textbf{G}roup \textbf{R}elative \textbf{P}olicy \textbf{O}ptimization \\
+\textbf{LLM}  & \textbf{L}arge \textbf{L}anguage \textbf{M}odel \\
+\textbf{LPU}  & \textbf{L}anguage \textbf{P}rocessing \textbf{U}nit \\
+\textbf{LTT}  & \textbf{L}earn-\textbf{T}hen-\textbf{T}est \\
+\textbf{MuRIL}& \textbf{Mu}ltilingual \textbf{R}epresentations for \textbf{I}ndian \textbf{L}anguages \\
+\textbf{NER}  & \textbf{N}amed \textbf{E}ntity \textbf{R}ecognition \\
+\textbf{NLP}  & \textbf{N}atural \textbf{L}anguage \textbf{P}rocessing \\
+\textbf{ROUGE}& \textbf{R}ecall-\textbf{O}riented \textbf{U}nderstudy for \textbf{G}isting \textbf{E}valuation \\
+\textbf{SSE}  & \textbf{S}erver-\textbf{S}ent \textbf{E}vents \\
+\textbf{UCB}  & \textbf{U}pper \textbf{C}onfidence \textbf{B}ound \\
+
+\end{abbreviations}
+
+%----------------------------------------------------------------------------------------
+%	DEDICATION
+%----------------------------------------------------------------------------------------
+
+\dedicatory{Dedicated to our families, teachers, and the open-source NLP research community.}

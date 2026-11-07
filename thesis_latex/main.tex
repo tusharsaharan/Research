@@ -1,0 +1,233 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Masters/Doctoral Thesis 
+% LaTeX Template for IIITA Students
+%
+% Modified for:
+% Token Optimisation: Cost-Efficient LLM Inference for Hindi-English Code-Mixed Task Prompts
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[
+12pt, % The default document font size, options: 10pt, 11pt, 12pt
+oneside, % Two side (alternating margins) for binding by default, uncomment to switch to one side
+english, % ngerman for German
+singlespacing, % options: singlespacing, onehalfspacing or doublespacing
+liststotoc, % Add list of figures/tables/etc to table of contents
+parskip, % Add space between paragraphs
+headsepline, % Line under the header
+]{Thesis} % The class file specifying the document structure
+
+\usepackage{iftex}
+\ifXeTeX
+  % XeLaTeX has native UTF-8 and fontspec is loaded in Thesis.cls
+  \usepackage{amssymb,amsfonts}
+\else
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{mathpazo}
+  \usepackage{amssymb,amsfonts}
+\fi
+
+\usepackage{tabularx}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\usepackage[backend=biber,
+style=numeric,
+bibencoding=utf8,
+sorting=none
+]{biblatex}
+\addbibresource{example.bib} % The filename of the bibliography
+\usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes
+\usepackage{array}
+
+% Code snippet styling
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.96,0.96,0.96}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+%----------------------------------------------------------------------------------------
+%	MARGIN SETTINGS
+%----------------------------------------------------------------------------------------
+
+\geometry{
+	paper=a4paper,
+	inner=20mm,
+	outer=20mm,
+	bindingoffset=5mm,
+	top=25mm,
+	bottom=20mm,
+}
+
+%----------------------------------------------------------------------------------------
+%	THESIS DETAILS & STUDENT CONFIGURATION
+%----------------------------------------------------------------------------------------
+
+\thesistitle{Token Optimisation: Cost-Efficient LLM Inference for Hindi-English Code-Mixed Task Prompts}
+\degree{Bachelor of Technology}
+
+% SUPERVISOR DETAILS
+\supervisor{Dr. Sonali Agrawal}
+
+% STUDENT DETAILS
+\newcommand{\studentonename}{Tushar Saharan}
+\newcommand{\studentoneroll}{IIT2021001}
+
+\newcommand{\studenttwoname}{Shivam Kumar}
+\newcommand{\studenttworoll}{IIT2021002}
+
+\newcommand{\studentthreename}{Sahil Gupta}
+\newcommand{\studentthreeroll}{IIT2021003}
+
+% DEPARTMENT & UNIVERSITY
+\department{Department of Information Technology}
+\university{Indian Institute of Information Technology, Allahabad}
+\subject{Information Technology}
+
+% Helper formatting commands
+\newcommand{\studentnamesformatted}{%
+\studentonename%
+\ifdefined\studenttwoname%
+\\\studenttwoname%
+\fi%
+\ifdefined\studentthreename%
+\\\studentthreename%
+\fi%
+}
+
+\newcommand{\rollnumbersformatted}{%
+\studentoneroll%
+\ifdefined\studenttworoll%
+\\\studenttworoll%
+\fi%
+\ifdefined\studentthreeroll%
+\\\studentthreeroll%
+\fi%
+}
+
+\newcommand{\studentnamescomma}{%
+\studentonename%
+\ifdefined\studenttwoname%
+, \studenttwoname%
+\fi%
+\ifdefined\studentthreename%
+, \studentthreename%
+\fi%
+}
+
+\newcommand{\studentnamesdeclaration}{%
+\studentonename{} (\studentoneroll)%
+\ifdefined\studenttwoname%
+, \studenttwoname{} (\studenttworoll)%
+\fi%
+\ifdefined\studentthreename%
+, and \studentthreename{} (\studentthreeroll)%
+\fi%
+}
+
+\newcommand{\studentsignatures}{%
+\studentonename{} (\studentoneroll)%
+\ifdefined\studenttwoname%
+\\\studenttwoname{} (\studenttworoll)%
+\fi%
+\ifdefined\studentthreename%
+\\\studentthreename{} (\studentthreeroll)%
+\fi%
+}
+
+\newcommand{\pronounwe}{%
+\ifdefined\studenttwoname%
+We%
+\else%
+I%
+\fi%
+}
+
+\newcommand{\pronounus}{%
+\ifdefined\studenttwoname%
+us%
+\else%
+me%
+\fi%
+}
+
+\firstauthor{\studentnamesformatted}
+\enrollmentnumber{\rollnumbersformatted}
+
+\examiner{} 
+\addresses{} 
+\keywords{Prompt Compression, Code-Mixing, Hinglish, Cascade Routing, Conformal Prediction, Inference Economics, Tokenizer Tax} 
+\faculty{Faculty of Information Technology}
+
+\AtBeginDocument{
+\hypersetup{pdftitle=\ttitle}
+\hypersetup{pdfkeywords=\keywordnames}
+}
+
+\begin{document}
+\begin{sloppypar}
+
+%----------------------------------------------------------------------------------------
+%	FRONT MATTER
+%----------------------------------------------------------------------------------------
+
+\include{frontmatter}
+
+%----------------------------------------------------------------------------------------
+%	THESIS CONTENT - CHAPTERS
+%----------------------------------------------------------------------------------------
+
+\mainmatter % Begin numeric (1,2,3...) page numbering
+
+\pagestyle{thesis} % Return the page headers back to the "thesis" style
+\begin{spacing}{1.5}
+
+\include{Chapters/1_introduction}
+\include{Chapters/2_literature}
+\include{Chapters/3_methods}
+\include{Chapters/4_experiments_and_results}
+\include{Chapters/5_conclusion}
+
+\end{spacing}
+
+%----------------------------------------------------------------------------------------
+%	THESIS CONTENT - APPENDICES
+%----------------------------------------------------------------------------------------
+
+\appendix
+
+\include{Appendices/AppendixA}
+
+%----------------------------------------------------------------------------------------
+%	BIBLIOGRAPHY
+%----------------------------------------------------------------------------------------
+
+\printbibliography[heading=bibintoc]
+
+\end{sloppypar}
+\end{document}

@@ -508,7 +508,12 @@ export function phoneticWordToDevanagari(word: string): string {
       // Try matras
       for (const [rom, matra] of PHONETIC_VOWELS_MATRA) {
         if (s.startsWith(rom, i)) {
-          result += matra;
+          // Word-final "a" after a consonant is almost always a pronounced ा
+          // in roman Hinglish ("mera"→मेरा, "karna"→करना); the inherent vowel
+          // is simply never typed ("kam"→कम has no trailing a). Medial "a"
+          // keeps the empty matra ("shivam"→शिवम).
+          const atEnd = i + rom.length === s.length;
+          result += rom === "a" && atEnd ? "ा" : matra;
           i += rom.length;
           matched = true;
           lastWasConsonant = false;
@@ -566,6 +571,15 @@ export function toEnglishGloss(text: string): string {
   return j || text;
 }
 
+// Common words the algorithmic transliterator gets wrong (single-i → short ि,
+// but these spellings carry a long ई; `ee` doubling is not how users type them).
+const DEVANAGARI_EXCEPTIONS: Record<string, string> = {
+  meri: "मेरी",
+  teri: "तेरी",
+  merii: "मेरी",
+  terii: "तेरी",
+};
+
 export function toDevanagariApprox(text: string): string {
   const tokens = text.split(/(\s+)/);
   return tokens
@@ -575,6 +589,9 @@ export function toDevanagariApprox(text: string): string {
       if (!m) return tok;
       const core = m[1]!;
       const punct = m[2] ?? "";
+      const fixed = DEVANAGARI_EXCEPTIONS[core.toLowerCase()];
+      if (fixed) return fixed + punct;
+      if (!Object.prototype.hasOwnProperty.call(HINGLISH_TO_EN, core.toLowerCase())) return tok;
       const dev = phoneticWordToDevanagari(core);
       return dev + punct;
     })

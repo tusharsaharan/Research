@@ -47,6 +47,9 @@ data/*.sqlite-wal
 /mcp.json
 !.vscode/mcp.json
 .env
+# Python runtime caches
+__pycache__/
+*.py[cod]
 # Lockfile: bun is canonical for this template (tanstack_start_ts_current); npm lock is ignored
 package-lock.json
 backend/experiments/cascade_routing/data/cascade.db

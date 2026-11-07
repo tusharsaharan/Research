@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>public-clip — paste from CLI, fetch from anywhere</title>
+<style>
+  :root { --bg:#0b0f14; --panel:#111823; --line:#1f2a3a; --txt:#d7e3f4; --dim:#8aa0b8; --acc:#4ade80; --amber:#fbbf24; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:14px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  .wrap { max-width:860px; margin:0 auto; padding:28px 16px 60px; }
+  header { border:1px solid var(--line); background:var(--panel); border-radius:12px; padding:18px 20px; }
+  h1 { margin:0 0 4px; font-size:20px; }
+  h1 .dot { color:var(--acc); }
+  p.sub { margin:0; color:var(--dim); }
+  .grid { display:grid; gap:14px; margin-top:14px; }
+  @media(min-width:760px){ .grid.two { grid-template-columns:1fr 1fr; } }
+  .card { border:1px solid var(--line); background:var(--panel); border-radius:12px; padding:16px; }
+  .card h2 { margin:0 0 10px; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--acc); }
+  textarea, input[type=text] { width:100%; background:#0a0e13; color:var(--txt); border:1px solid var(--line); border-radius:8px; padding:10px; font:inherit; }
+  textarea { min-height:130px; resize:vertical; }
+  .row { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  button { background:var(--acc); color:#052012; border:0; border-radius:8px; padding:9px 14px; font:inherit; font-weight:700; cursor:pointer; }
+  button.ghost { background:transparent; color:var(--txt); border:1px solid var(--line); font-weight:400; }
+  button:disabled { opacity:.5; cursor:wait; }
+  pre.out { background:#0a0e13; border:1px solid var(--line); border-radius:8px; padding:10px; white-space:pre-wrap; word-break:break-word; max-height:260px; overflow:auto; margin:10px 0 0; }
+  .cli { background:#0a0e13; border:1px solid var(--line); border-radius:8px; padding:10px; margin:8px 0; position:relative; }
+  .cli code { white-space:pre-wrap; word-break:break-all; color:#e8f3ff; }
+  .cli button { padding:4px 10px; font-size:12px; position:absolute; top:8px; right:8px; }
+  .cli .lang { color:var(--amber); font-size:11px; display:block; margin-bottom:6px; padding-right:70px; }
+  .feed button { all:unset; cursor:pointer; color:var(--acc); }
+  .feed li { margin:6px 0; }
+  .dim { color:var(--dim); }
+  .pill { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:1px 10px; font-size:12px; color:var(--dim); }
+  a { color:var(--acc); }
+  footer { margin-top:16px; color:var(--dim); font-size:12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="dot">●</span> public-clip</h1>
+    <p class="sub">Anyone can <b>paste</b> text (web or CLI). Anyone with the link can <b>fetch</b> it. Hosted on Vercel.</p>
+    <p style="margin:10px 0 0"><span class="pill" id="store">store: …</span> <span class="pill" id="base">…</span></p>
+  </header>
+
+  <div class="grid two">
+    <div class="card">
+      <h2>$ paste — put text</h2>
+      <textarea id="pasteBox" placeholder="type or paste anything here…"></textarea>
+      <div class="row">
+        <button id="publishBtn">publish ⏎</button>
+        <button class="ghost" id="clearBtn">clear</button>
+      </div>
+      <pre class="out" id="pasteOut">% ready — publish to get an id + shareable link.</pre>
+    </div>
+
+    <div class="card">
+      <h2>$ fetch — get text</h2>
+      <input type="text" id="fetchId" placeholder="paste id, or leave empty for latest" />
+      <div class="row">
+        <button id="fetchBtn">fetch ⏎</button>
+        <button class="ghost" id="fetchLatestBtn">latest</button>
+        <button class="ghost" id="copyBtn">copy</button>
+      </div>
+      <pre class="out" id="fetchOut">% ready — enter an id and hit fetch.</pre>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>$ cli — command line</h2>
+    <p class="dim" style="margin-top:0">These commands are pre-filled with this site's URL. Works from any machine with internet.</p>
+    <div class="cli"><span class="lang">bash — publish JSON</span><code id="c1"></code><button data-copy="c1">copy</button></div>
+    <div class="cli"><span class="lang">bash — pipe stdin</span><code id="c2"></code><button data-copy="c2">copy</button></div>
+    <div class="cli"><span class="lang">bash — fetch latest / by id</span><code id="c3"></code><button data-copy="c3">copy</button></div>
+    <div class="cli"><span class="lang">powershell</span><code id="c4"></code><button data-copy="c4">copy</button></div>
+  </div>
+
+  <div class="card feed" style="margin-top:14px">
+    <h2>$ recent — live feed</h2>
+    <ul id="feed" style="padding-left:18px;margin:0"></ul>
+  </div>
+
+  <footer>Tip: open <span id="tip"></span> — append <code>?id=XXX</code> to deep-link a paste. Raw text: <code>/api/clip?id=XXX&amp;format=text</code></footer>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const BASE = window.location.origin;
+$('base').textContent = BASE;
+$('tip').textContent = BASE + '/';
+
+$('c1').textContent = `curl -s -X POST ${BASE}/api/clip -H "Content-Type: application/json" -d '{"text":"hello from cli"}'`;
+$('c2').textContent = `echo "hello from pipe" | curl -s -X POST ${BASE}/api/clip -H "Content-Type: text/plain" --data-binary @-`;
+$('c3').textContent = `curl -s ${BASE}/api/clip\ncurl -s "${BASE}/api/clip?id=PASTE_ID"\ncurl -s "${BASE}/api/clip?id=PASTE_ID&format=text"`;
+$('c4').textContent = `Invoke-RestMethod -Uri "${BASE}/api/clip" -Method Post -ContentType "application/json" -Body '{"text":"hello from powershell"}'\nInvoke-RestMethod -Uri "${BASE}/api/clip"`;
+
+document.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => {
+  navigator.clipboard.writeText($(b.dataset.copy).textContent);
+  b.textContent = 'copied'; setTimeout(() => b.textContent = 'copy', 1200);
+});
+
+async function refreshStore() {
+  try {
+    const r = await fetch('/api/health'); const j = await r.json();
+    $('store').textContent = 'store: ' + j.store + (j.store === 'memory' ? ' (ephemeral — add Vercel KV for persistence)' : ' (shared ✓)');
+  } catch { $('store').textContent = 'store: ?'; }
+}
+
+$('publishBtn').onclick = async () => {
+  const text = $('pasteBox').value;
+  if (!text.trim()) { $('pasteOut').textContent = '% nothing to publish.'; return; }
+  $('publishBtn').disabled = true;
+  try {
+    const r = await fetch('/api/clip', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ text }) });
+    const j = await r.json();
+    if (!r.ok) { $('pasteOut').textContent = '% error: ' + (j.error || r.status); return; }
+    $('pasteOut').textContent = `% published ✓\nid: ${j.id}\nlink: ${j.url}\napi: ${j.apiUrl}\nlen: ${j.len} chars\n\nfetch it:\n  curl "${j.apiUrl}"\n  curl "${j.apiUrl}&format=text"`;
+    $('fetchId').value = j.id;
+    loadFeed();
+  } catch (e) { $('pasteOut').textContent = '% network error: ' + e.message; }
+  finally { $('publishBtn').disabled = false; }
+};
+$('clearBtn').onclick = () => { $('pasteBox').value = ''; };
+
+async function fetchPaste(id) {
+  $('fetchBtn').disabled = true;
+  try {
+    const q = id ? ('?id=' + encodeURIComponent(id)) : '';
+    const r = await fetch('/api/clip' + q); const j = await r.json();
+    if (!r.ok) { $('fetchOut').textContent = '% ' + (j.error || r.status); return; }
+    $('fetchOut').textContent = j.text;
+  } catch (e) { $('fetchOut').textContent = '% network error: ' + e.message; }
+  finally { $('fetchBtn').disabled = false; }
+}
+$('fetchBtn').onclick = () => fetchPaste($('fetchId').value.trim());
+$('fetchLatestBtn').onclick = () => { $('fetchId').value = ''; fetchPaste(''); };
+$('copyBtn').onclick = () => { navigator.clipboard.writeText($('fetchOut').textContent); };
+
+async function loadFeed() {
+  try {
+    const r = await fetch('/api/clips?limit=15'); const j = await r.json();
+    const ul = $('feed'); ul.innerHTML = '';
+    if (!j.items || !j.items.length) { ul.innerHTML = '<li class="dim">empty — be the first to paste.</li>'; return; }
+    j.items.forEach(it => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.textContent = it.id;
+      b.onclick = () => { $('fetchId').value = it.id; fetchPaste(it.id); window.scrollTo({top:0, behavior:'smooth'}); };
+      li.append(b, ` — ${it.len} chars — `, document.createTextNode((it.preview || '').slice(0, 80)));
+      const s = document.createElement('span'); s.className = 'dim'; s.textContent = ` (${it.createdAt || ''})`;
+      li.append(s); ul.append(li);
+    });
+  } catch {}
+}
+
+// deep link ?id=XXX
+const params = new URLSearchParams(location.search);
+if (params.get('id')) { $('fetchId').value = params.get('id'); fetchPaste(params.get('id')); }
+
+refreshStore(); loadFeed(); setInterval(loadFeed, 5000);
+</script>
+</body>
+</html>

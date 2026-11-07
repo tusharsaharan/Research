@@ -1,0 +1,5 @@
+$xelatex = 'xelatex -synctex=1 -interaction=nonstopmode -file-line-error %O %S';
+$pdflatex = 'pdflatex -synctex=1 -interaction=nonstopmode -file-line-error %O %S';
+$bibtex = 'bibtex %O %B';
+$biber = 'biber %O %B';
+$max_repeat = 3;
