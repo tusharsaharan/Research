@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 from gateway.modules.m2_compressor.budgeted import BudgetedCompression, _STOP, _WORD, bm25_scores
+from gateway.modules.m2_compressor.phonetic import normalize_chars
 from gateway.modules.m2_compressor.safety_span import detect_spans
 
 _BOUNDARY = re.compile(r"(?<=[.!?।])\s+|\n[ \t]*\n(?:[ \t]*\n)*")
@@ -139,19 +140,22 @@ def evidence_spans(text: str) -> list[tuple[int, int]]:
     return result
 
 
-def _terms(text: str) -> set[str]:
-    # A narrowly scoped negation spelling equivalence, never a text rewrite.
+def _terms(text: str, *, normalize_variants: bool = False) -> set[str]:
+    # This changes ranking features only; emitted spans always retain source text.
+    words = _WORD.findall(text.casefold())
+    if normalize_variants:
+        words = [normalize_chars(word) for word in words]
     return {"nahi" if word in _NEGATIONS else word
-            for word in _WORD.findall(text.casefold()) if word not in _QUERY_STOP}
+            for word in words if word not in _QUERY_STOP}
 
 
 def _grams(word: str) -> set[str]:
     return {word[i:i + 3] for i in range(len(word) - 2)}
 
 
-def _coverage(units: list[str], question: str) -> tuple[list[list[float]], list[float]]:
-    terms = [_terms(unit) for unit in units]
-    query = sorted(_terms(question))
+def _coverage(units: list[str], question: str, *, normalize_variants: bool = False) -> tuple[list[list[float]], list[float]]:
+    terms = [_terms(unit, normalize_variants=normalize_variants) for unit in units]
+    query = sorted(_terms(question, normalize_variants=normalize_variants))
     features = []
     causal_query = bool(_CAUSE_QUERY.search(question))
     for unit, words in zip(units, terms, strict=True):
@@ -179,7 +183,7 @@ def _coverage(units: list[str], question: str) -> tuple[list[list[float]], list[
 
 def compress_evidence(
     passage: str, question: str, target: float, count: Callable[[str], int], *, coverage: bool = True,
-    repair: bool = False, refill: bool = False,
+    repair: bool = False, refill: bool = False, normalize_variants: bool = False,
 ) -> EvidenceCompression:
     """Pack intact evidence using diminishing-return question coverage.
 
@@ -195,6 +199,8 @@ def compress_evidence(
         raise ValueError("target must be in (0, 1]")
     if refill and not repair:
         raise ValueError("refill requires repaired segmentation")
+    if normalize_variants and not coverage:
+        raise ValueError("normalize_variants requires coverage scoring")
     original_n = count(passage)
     budget = max(1, math.floor(target * original_n)) if original_n else 0
     spans = repaired_evidence_spans(passage) if repair else evidence_spans(passage)
@@ -218,7 +224,7 @@ def compress_evidence(
     if not spans:
         return result((), "empty_input")
     if coverage:
-        features, weights = _coverage(units, question)
+        features, weights = _coverage(units, question, normalize_variants=normalize_variants)
 
         def value(indices):
             return sum(weight * max((features[i][j] for i in indices), default=0.0)

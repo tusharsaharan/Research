@@ -255,3 +255,17 @@
 - PLANNED: fresh human annotation/source splits, independent-family native budgets + XProvence, cheap evidence-preserving ranker, sealed evaluation; router certification remains separate.
 - COMPLETE: initial whole-upload timeout recovered using 14 parts; evidence-2026-11-07 release published with all 17 asset sizes/server SHA-256s verified (836 research files).
 - Evidence: backend/data/bench/evidence_release_20261107.json; restore instructions in README/release. Backup finished; next research priorities above, SSH availability still unconfirmed.
+- 2026-11-09: audited untracked `to-do.md` against repo status, README, roadmap, and evidence; central fresh-data, human-review, independent-family, native-budget, student-efficiency, and sealed-eval gates remain open.
+- COMPLETE: wrote `TO-DO-EXECUTION-PLAN.md` (3,485 lines); marks existing campaign/archive complete, A.4/A.5 partial, and adds source-family, power, licensing, and freeze prerequisites.
+- NEXT: owner decisions and human annotation/source acquisition are required before a confirmatory run; GPU availability remains unverified after the 7 Nov SSH timeout.
+- 2026-11-09: CPU-only annotation guide, dual-review template/agree script, and strict source-family splitter added; template generated for 500 exposed development items.
+- COMPLETE: tooling scaffolds only; no human labels or fresh-data splits created. No GPU work and no tests run.
+- NEXT: owner assigns bilingual reviewers/overlap and approves eligibility; source owner supplies licensed fresh records, family groups, split policy, and power assumptions.
+- 2026-11-09: AI pre-review completed for all 500 exposed Belebele items in `docs/annotation/belebele_cm_ai_suggestions.csv`; original template preserved.
+- COMPLETE: 307 same / 150 partly / 43 no meaning judgments; gold remains answerable on 444 and not on 56. Suggestions are AI-only, not human-verified or confirmatory evidence.
+- 2026-11-09: Added opt-in no-fragment Qwen packing and phonetic scoring-only normalization; defaults and historical outputs preserved.
+- VERIFIED: targeted suites 50 passed; one existing pytest config warning. No model/GPU calls.
+- COMPLETE: 500 known-exposed rows quarantined to development across 372 exact-passage groups; train=0, sealed=0. Near-duplicate/license audit remains open.
+- NEXT: owner single-review annotation + delayed 50-row repeat, eligibility decision, fresh licensed sources; raw stress JSONL absent, aggregate rerun pending.
+- COMPLETE: created compressor-specific data card and primary-source related-work memo; router paper/chapter left separate.
+- NEXT: actual owner labels/thresholds, near-duplicate and license audit, fresh source acquisition; no confirmatory or GPU work started.

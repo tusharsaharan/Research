@@ -55,6 +55,25 @@ def test_oversized_span_has_explicit_clipping_flag():
     assert result['text'] == 'One'
 
 
+def test_atomic_fallback_emits_no_fragment_when_no_complete_span_fits():
+    passage = 'One long sentence with more words than the budget.'
+    units, _, _ = ranking_request(passage, 'Which?')
+    result = pack_ranked(passage, units, [0], 0.2, lambda t: len(t.split()),
+                         fallback_policy='empty')
+    assert result['text'] == ''
+    assert result['actual_tokens'] == 0
+    assert result['budget_met']
+    assert result['detail']['fallback'] == 'no_complete_unit_fits'
+    assert not result['detail']['evidence_feasible']
+
+
+def test_unknown_fallback_policy_is_rejected():
+    passage = 'One sentence.'
+    units, _, _ = ranking_request(passage, 'Which?')
+    with pytest.raises(ValueError, match='fallback_policy'):
+        pack_ranked(passage, units, [0], 0.2, len, fallback_policy='slice')
+
+
 def test_person_initials_are_not_detached_from_their_actions():
     text = 'John F. Kennedy ko unhone advice di. Lyndon B. Johnson ke liye kaam kiya.'
     assert source_units(text) == ['John F. Kennedy ko unhone advice di.',

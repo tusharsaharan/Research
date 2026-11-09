@@ -72,6 +72,26 @@ def test_matching_variants_does_not_rewrite_output_or_merge_kya_kiya():
     assert features == [[1.0], [0.0], [0.0]]
 
 
+def test_opt_in_abbreviation_normalization_changes_ranking_only():
+    raw = ['mra']
+    exact, _ = _coverage(raw, 'mera')
+    normalized, _ = _coverage(raw, 'mera', normalize_variants=True)
+    assert exact == [[0.0]]
+    assert normalized == [[1.0]]
+
+    passage = 'Completely separate words. Mra answer evidence.'
+    result = compress_evidence(passage, 'mera', 0.7, count, normalize_variants=True)
+    assert result.text == 'Mra answer evidence.'
+    assert result.text in passage
+    assert result.text != 'Mera answer evidence.'
+
+
+def test_variant_normalization_is_not_enabled_for_additive_bm25_control():
+    with pytest.raises(ValueError, match='requires coverage scoring'):
+        compress_evidence('Mra report.', 'Mera?', 0.5, count, coverage=False,
+                          normalize_variants=True)
+
+
 @pytest.mark.parametrize('question', ['Radar mushkil kyun tha?', 'Why was radar difficult?'])
 def test_causal_questions_cover_explanations_in_both_languages(question):
     text = 'Radar mushkil tha. Car ke size ki wajah se radar reading mushkil thi. Police ghar gayi.'
