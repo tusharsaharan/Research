@@ -255,3 +255,7 @@
 - PLANNED: fresh human annotation/source splits, independent-family native budgets + XProvence, cheap evidence-preserving ranker, sealed evaluation; router certification remains separate.
 - COMPLETE: initial whole-upload timeout recovered using 14 parts; evidence-2026-11-07 release published with all 17 asset sizes/server SHA-256s verified (836 research files).
 - Evidence: backend/data/bench/evidence_release_20261107.json; restore instructions in README/release. Backup finished; next research priorities above, SSH availability still unconfirmed.
+
+- 2026-11-16 RUNNING: user-authorized full GSM8K main train+test Qwen3.6:35b collection; first check 11/8792, GPU residency 22796 MiB.
+- Evidence remote: /home/user/hinglish-research/gsm8k_20261116/{manifest.json,state.json,responses.jsonl,run.log}; 72h cap, shared GPU lock, no retries.
+- Script: backend/scripts/bench/gsm8k_ollama_full.py; no accuracy claim; next verify completion and retrieve raw artifacts.
