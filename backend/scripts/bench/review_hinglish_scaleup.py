@@ -21,7 +21,7 @@ def records(path):
                 yield json.loads(line)
 
 
-def review(data):
+def review(data, output=None):
     from tokenizers import Tokenizer
 
     def read(name):
@@ -155,7 +155,9 @@ def review(data):
             )
         },
     )
-    (data / "verified_review.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
+    output = output or data
+    output.mkdir(parents=True, exist_ok=True)
+    (output / "verified_review.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
     lines = [
         "# Hinglish compressor: completed development evaluation",
         "",
@@ -250,7 +252,7 @@ def review(data):
         "",
         "Evidence: verified_review.json, report.json, stress_report.json and their fingerprinted raw files.",
     ]
-    (data / "RESULTS.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (output / "RESULTS.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(
         json.dumps(
             {
@@ -272,4 +274,6 @@ def review(data):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", type=Path, required=True)
-    review(parser.parse_args().data)
+    parser.add_argument("--output", type=Path, help="Write the new review separately from restored evidence")
+    args = parser.parse_args()
+    review(args.data, args.output)

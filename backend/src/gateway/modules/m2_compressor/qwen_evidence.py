@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 
 from gateway.modules.m2_compressor.budgeted import _WORD, bm25_scores
 from gateway.modules.m2_compressor.hinglish_budget import _CLAUSE, strict_prefix
@@ -81,6 +82,8 @@ def pack_ranked(passage, units, order, target, count, *, fallback_policy="word_p
     budget = max(1, math.floor(original * target)) if original else 0
     selected = []
     for index in order:
+        if fallback_policy == "empty" and not re.search(r"[^\W_]", units[index]):
+            continue
         trial = sorted([*selected, index])
         if count('\n'.join(units[i] for i in trial)) <= budget:
             selected = trial

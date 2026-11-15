@@ -121,3 +121,52 @@ Interim runs on partial data are allowed for debugging and are labelled
 - 2026-11-09 (CPU-only no-prefix fallback diagnostic; prepared, not executed): preserve the historical `bqwen35b_span` and its prefix fallback unchanged. Add a separately selectable packing policy that emits only complete ranked source spans; when none fits, return an empty, explicitly infeasible result rather than a word-prefix fragment. Do not split protected literals or invent an unvalidated grammar-based sub-clause. This is a surface/budget diagnostic, not QA accuracy or semantic preservation. If raw diagnostic inputs are restored, use only the frozen 10,000 stress items, their saved rank order, and budgets 0.25/0.33/0.50/0.75; preserve original-Roman and derived-romanization strata and raw outputs. Expected SHA-256: stress_inputs.jsonl `3dcb60f1d744e0f653d1ec997f24c86bf91c709f128bf1bdb1017e546874392`; stress_variants.jsonl `10888d73571a79978abb627a786377da362ef608f130f700074d497b73e27e36`; stress_rankings.jsonl `eab87e953ee95113e0a43d551e205faf364e6f192957a1f16d38f72c2597d4c7`. Current checkout lacks these three JSONL files, so no aggregate stress rerun or result selection is authorized. No GPU, model calls, answer labels, or serving-default change.
 - 2026-11-09 (CPU-only spelling-normalization diagnostic; prepared, not executed): preserve the current raw-token retrieval candidate as the default and add a separately selectable scoring-only path that applies the existing `phonetic.normalize_chars` abbreviation map to question/span terms. Output must remain exact original source substrings. Compare only retrieval mechanics on pinned development examples; record false matches and exact-source checks. Do not expand the equivalence dictionary or promote the path without bilingual review of the applicable equivalence groups. This diagnostic is not answer accuracy or semantic preservation. No GPU, model calls, answer labels, or serving-default change.
 - 2026-11-09 (single-human-review annotation workflow; frozen before owner review): the owner is the sole human reviewer. The owner first annotates all 500 historically exposed rows in reviewer-A fields without viewing the separate AI suggestions where feasible; if the owner has already seen them, disclose that the first pass was not blind to AI recommendations. A deterministic 50-row sample (seed `single-review-repeat-20261109`) is assigned for the same owner to repeat after at least seven days in reviewer-B fields. Report this only as intra-rater stability; do not call it inter-annotator agreement or use it to claim independent validation. Eligibility/exclusion decisions remain pending and must be dated before filtering. If the delayed repeat is not completed, report agreement as unavailable.
+
+## 2026-11-16: compressor continuation before new computations
+
+The owner authorizes GPU access and completion of the compressor implementation.
+Restore the 7 November public evidence release into a separate directory and
+verify every restored file against its archived SHA-256 before use. Preserve raw
+outputs and prior reports. Existing Belebele remains exposed development data;
+AI annotation suggestions are excluded from human-validation claims and from
+student input features. The router study is unaffected.
+
+1. **Fallback diagnostic:** replay all 10,000 frozen stress inputs at 0.25,
+   0.33, 0.50, and 0.75 with the saved teacher order and matched BM25 order.
+   Compare historical prefix packing to an opt-in complete-span policy that
+   excludes punctuation-only spans. An oversized complete span produces an
+   explicit empty/infeasible output. Report all strata, empty outputs, literal
+   loss, punctuation-only output, and budget misses. This measures mechanics,
+   not semantic preservation. No new ranker calls or retries.
+2. **Student development:** build ordinal teacher-order supervision from all
+   valid saved 35B rankings, excluding explicit teacher failures/fallbacks.
+   Assign exact source-passage groups by SHA-256 of
+   `20261116|passage_group`: first 80% of the hash range for training, remainder
+   for development. All related questions share a group. Never call either
+   partition fresh or sealed. Preserve full teacher provenance; ranks are
+   ordinal positions, not invented probabilities. Gold/options and downstream
+   answers are not scorer inputs. A first compact candidate is a fixed
+   pairwise logistic ranker over lexical/character/length/position/causal
+   features, L2 C=1, no hyperparameter search, seed 20261116, maximum 50,000
+   directed training pairs and 1,000 optimizer iterations. Keep negative
+   findings. Report held-out teacher NDCG@3, top-1 agreement, and rank
+   correlation separately from downstream accuracy, which requires answer runs.
+3. **Power planning:** estimate empirical paired passage difference/cluster
+   sizes from archived development answers only. Target +0.03 accuracy,
+   80% power, two-sided family alpha 0.05 conservatively split across the two
+   baseline comparisons. Primary planning cell is qwen3.5:4b at 0.50; other
+   cells are sensitivity analyses, never model selection. Use 10,000 seeded
+   cluster resamples at 100/200/400/800/1200/2000/3000 independent passages,
+   weighted by question count with a cluster-robust normal approximation.
+   Include null rejection rate and Monte Carlo standard error. These are
+   planning assumptions, not a guarantee about a future source distribution.
+4. **Execution limits:** CPU preparation/replay is bounded to 30 minutes per
+   command. Any GPU run must first confirm the host, free memory, current jobs,
+   and cooperative lock. Freeze an exact run manifest with model/tokenizer
+   digests, rendered prompts, source hashes, candidate names, primary budget,
+   and failure policy before inference. Maximum 4 hours for the next GPU
+   development stage; no paid providers or automatic failed-run retries.
+5. **Completion gates:** report software, development measurements, human
+   validation, fresh-data confirmation, independent-family results, and total
+   efficiency separately. Missing gates stay open. A negative result is valid;
+   neither token savings nor rank imitation establishes answer preservation.

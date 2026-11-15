@@ -67,6 +67,15 @@ def test_atomic_fallback_emits_no_fragment_when_no_complete_span_fits():
     assert not result['detail']['evidence_feasible']
 
 
+def test_atomic_policy_rejects_whole_punctuation_span():
+    passage = '!!! ... ???'
+    units = source_units(passage)
+    result = pack_ranked(passage, units, list(range(len(units))), .5,
+                         lambda text: len(text.split()), fallback_policy='empty')
+    assert result['text'] == ''
+    assert not result['detail']['evidence_feasible']
+
+
 def test_unknown_fallback_policy_is_rejected():
     passage = 'One sentence.'
     units, _, _ = ranking_request(passage, 'Which?')
