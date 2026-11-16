@@ -40,6 +40,24 @@ def test_clustered_statistics_refuse_one_source_family(bench):
         analysis.clustered_difference(rows,'candidate','baseline')
 
 
+def test_archive_reuse_rejects_changed_settings_and_excludes_capped_outputs(bench,tmp_path):
+    runner=importlib.import_module('run_compressor_development')
+    artifacts=importlib.import_module('compressor_artifacts')
+    spec=dict(models={'m':'digest'},options={'seed':42},think=False)
+    artifacts.save(tmp_path/'manifest.json',spec)
+    replies=[dict(model='m',prompt_sha256='complete',response={'done':True,'response':'A'}),
+             dict(model='m',prompt_sha256='capped',response={'done':True,'done_reason':'length','response':'A'}),
+             dict(model='m',prompt_sha256='failed',response={'done':True,'generation_error':'timeout'})]
+    (tmp_path/'answers.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in replies))
+    manifest={**spec,'source_hashes':{name:artifacts.digest(tmp_path/name) for name in ['manifest.json','answers.jsonl']}}
+    assert set(runner.verified_archive_cache(tmp_path,manifest))=={('m','complete')}
+    with pytest.raises(ValueError,match='settings differ'):
+        runner.verified_archive_cache(tmp_path,{**manifest,'options':{'seed':43}})
+    (tmp_path/'answers.jsonl').write_text('')
+    with pytest.raises(ValueError,match='checksum'):
+        runner.verified_archive_cache(tmp_path,manifest)
+
+
 def test_native_analysis_keeps_capped_answer_and_missing_usage_in_denominator(bench,tmp_path):
     module=importlib.import_module('review_mistral_native')
     artifacts=importlib.import_module('compressor_artifacts')

@@ -12,7 +12,9 @@ from pathlib import Path
 from compressor_artifacts import digest, records, save
 
 
-def merge(source,previous,review_dir,output):
+def merge(source,previous,review_dir,output,adjudications=None):
+    from gpu_annotation_review import validate
+    adjudicated={} if adjudications is None else json.loads(adjudications.read_text(encoding='utf-8'))
     state=json.loads((review_dir/'state.json').read_text())
     spec=json.loads((review_dir/'manifest.json').read_text())
     if state['status']!='complete' or state['completed']!=500:raise ValueError('GPU review not complete')
@@ -28,6 +30,12 @@ def merge(source,previous,review_dir,output):
     rows=[];counts=Counter();disagreements=[]
     for source_row in inputs:
         item=source_row['id'];gpu=reviewed[item];result=gpu['result'];old=prior[item]
+        original_result=result
+        if item in adjudicated:
+            result=adjudicated[item]
+            validate(result,source_row['gold'])
+            counts['adjudicated']+=1
+        counts['gpu_valid' if original_result is not None else 'gpu_failed_initial']+=1
         row=dict(source_row)
         row.update(previous_ai_same_meaning=old['ai_suggested_same_meaning'],
             previous_ai_answerable_same_gold=old['ai_suggested_answerable_same_gold'],
@@ -36,16 +44,18 @@ def merge(source,previous,review_dir,output):
         changed=[]
         for name in ['same_meaning','answerable_same_gold','natural_hinglish']:
             value='' if result is None else result[name]
-            row['gpu_ai_'+name]=value
+            row['reviewed_ai_'+name]=value
+            row['gpu_ai_'+name]='' if original_result is None else original_result[name]
             if result is not None:
                 counts[name+':'+str(value)]+=1
                 if str(value)!=str(old['ai_suggested_'+name]):changed.append(name)
-        row.update(gpu_ai_english_supported_option='' if result is None else result['english_supported_option'],
-            gpu_ai_hinglish_supported_option='' if result is None else result['hinglish_supported_option'],
-            gpu_ai_notes='' if result is None else result['notes'],
+        row.update(reviewed_ai_english_supported_option='' if result is None else result['english_supported_option'],
+            reviewed_ai_hinglish_supported_option='' if result is None else result['hinglish_supported_option'],
+            reviewed_ai_notes='' if result is None else result['notes'],
+            gpu_ai_notes='' if original_result is None else original_result['notes'],
             gpu_ai_error=gpu['error'] or '',ai_changed_fields=', '.join(changed),
-            review_status='GPU_AI_REVIEWED' if result is not None else 'GPU_AI_FAILED_REQUIRES_ADJUDICATION',
-            provenance='AI review by '+spec['model']+'; not human-verified',gpu_model_digest=spec['digest'])
+            review_status=('AI_ADJUDICATED_AFTER_GPU_REVIEW' if item in adjudicated else 'GPU_AI_REVIEWED') if result is not None else 'GPU_AI_FAILED_REQUIRES_ADJUDICATION',
+            provenance=('Codex source-based AI adjudication after '+spec['model'] if item in adjudicated else 'AI review by '+spec['model'])+'; not human-verified',gpu_model_digest=spec['digest'])
         if changed:disagreements.append(dict(id=item,fields=changed))
         counts['valid' if result is not None else 'failed']+=1
         if result is not None and result['english_supported_option']!=source_row['gold']:
@@ -59,6 +69,7 @@ def merge(source,previous,review_dir,output):
     report=dict(status='complete',rows=len(rows),counts=dict(counts),changed_rows=len(disagreements),disagreements=disagreements,
         sources=dict(source=digest(source),previous_ai=digest(previous),gpu_manifest=digest(review_dir/'manifest.json'),
                      raw_gpu=digest(review_dir/'raw_reviews.jsonl')),script_sha256=digest(Path(__file__)))
+    if adjudications is not None:report['sources']['ai_adjudications']=digest(adjudications)
     save(output/'report.json',report)
     return {k:report[k] for k in ['status','rows','counts','changed_rows']}
 
@@ -66,4 +77,5 @@ def merge(source,previous,review_dir,output):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['source','previous','review-dir','output']:p.add_argument('--'+name,type=Path,required=True)
-    a=p.parse_args();print(json.dumps(merge(a.source,a.previous,a.review_dir,a.output),indent=2))
+    p.add_argument('--adjudications',type=Path)
+    a=p.parse_args();print(json.dumps(merge(a.source,a.previous,a.review_dir,a.output,a.adjudications),indent=2))

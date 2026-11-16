@@ -17,7 +17,28 @@ def api(endpoint,payload=None,timeout=180):
     with opener.open(request,timeout=timeout) as response:return json.load(response)
 
 
-def run(data, lock_path):
+def verified_archive_cache(reuse_data,manifest):
+    previous=json.loads((reuse_data/'manifest.json').read_text())
+    if digest(reuse_data/'manifest.json')!=manifest['source_hashes']['manifest.json']:
+        raise ValueError('Archive manifest checksum mismatch')
+    if previous['options']!=manifest['options'] or previous['think']!=manifest['think']:
+        raise ValueError('Archive inference settings differ')
+    if digest(reuse_data/'answers.jsonl')!=manifest['source_hashes']['answers.jsonl']:
+        raise ValueError('Archive raw answer checksum mismatch')
+    for name,expected in manifest['models'].items():
+        if previous['models'].get(name)!=expected:raise ValueError('Archive model digest differs')
+    cache={}
+    for row in records(reuse_data/'answers.jsonl'):
+        response=row.get('response') or {}
+        if (row['model'] in manifest['models'] and not response.get('generation_error')
+                and response.get('done') and response.get('done_reason')!='length'):
+            key=(row['model'],row['prompt_sha256'])
+            if key in cache and cache[key]!=response:raise ValueError('Conflicting archived exact-prompt replies')
+            cache[key]=response
+    return cache
+
+
+def run(data, lock_path, reuse_data=None):
     import fcntl
     if (data/'state.json').exists():raise ValueError('Run already exists; no automatic duplicate/retry')
     manifest=json.loads((data/'manifest.json').read_text())
@@ -26,6 +47,7 @@ def run(data, lock_path):
     models={m['name']:m for m in api('tags')['models']}
     for name,expected in manifest['models'].items():
         if models.get(name,{}).get('digest')!=expected:raise ValueError('Model missing/digest changed: '+name)
+    archive_cache={} if reuse_data is None else verified_archive_cache(reuse_data,manifest)
     state=dict(status='waiting_for_lock',completed=0,models={},max_seconds=manifest['max_seconds'])
     save(data/'state.json',state)
     start=time.monotonic()
@@ -37,7 +59,8 @@ def run(data, lock_path):
             with (data/'answers.jsonl').open('x',encoding='utf-8') as stream:
                 for model in manifest['models']:
                     state['models'][model]=dict(completed=0,errors=0)
-                    cache={}
+                    cache={key[1]:value for key,value in archive_cache.items() if key[0]==model}
+                    archived_prompts=set(cache)
                     for variant in variants:
                         if time.monotonic()-start+180>manifest['max_seconds']:
                             raise TimeoutError('Frozen campaign wall cap reached')
@@ -59,6 +82,7 @@ def run(data, lock_path):
                             model_digest=manifest['models'][model],prompt_sha256=variant['prompt_sha256'],
                             content='' if error else (response or {}).get('response',''),error=error,
                             response=response,reused_exact_prompt=reused,
+                            reused_from_archive=reused and variant['prompt_sha256'] in archived_prompts,
                             manifest_sha256=digest(data/'manifest.json'))
                         stream.write(json.dumps(result,ensure_ascii=False)+'\n');stream.flush()
                         state['completed']+=1;state['models'][model]['completed']+=1
@@ -81,4 +105,5 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--data',type=Path,required=True)
     p.add_argument('--lock',type=Path,default=Path('/home/user/hinglish-research/gpu-campaign.lock'))
-    a=p.parse_args();run(a.data,a.lock)
+    p.add_argument('--reuse-data',type=Path,help='Hash-verified historical campaign with identical model/options and exact rendered prompt hashes')
+    a=p.parse_args();run(a.data,a.lock,a.reuse_data)

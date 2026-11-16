@@ -228,3 +228,22 @@ paired cells; show all 18 candidate/baseline comparisons with passage-clustered
 intervals and Holm-adjusted cluster-robust tests. Primary is student 0.50 against
 the three baselines. This is independent-family **development** evidence and
 does not replace fresh human-validated sealed confirmation.
+
+- Preflight correction on 2026-11-16, before any new QA answers: the initial
+  prepared Qwen model pin had one duplicated character (65 rather than 64 hex
+  digits). No run used that invalid pin. Read the full digest from the verified
+  original manifest instead and reject wrong-length digests. Prepare Qwen4B
+  alone at the same 183 items/methods in a new manifest; independent-family
+  evaluation uses the separate native Mistral protocol above. Reuse archived
+  replies only with verified raw-answer hash, identical model digest/options,
+  thinking setting, and exact system-plus-prompt hash. Preserve reuse provenance;
+  historical timing is not a fresh serving measurement.
+
+- Engineering preflight, 2026-11-16: the first native Mistral attempt stopped
+  before creating results or QA replies because protobuf was absent. Install
+  protobuf and verify the cached tokenizer on CPU. The first XProvence asset
+  download reached its 1,800-second cap with a reusable partial weight file;
+  allow one explicitly bounded 1,800-second continuation, only after verifying
+  its downloader has exited. A separately named native attempt may proceed
+  only after pinned assets and dependencies pass preflight. Methods, inputs,
+  decoding, budgets, and analysis remain frozen. Preserve both setup failures.

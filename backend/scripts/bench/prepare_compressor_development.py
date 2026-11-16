@@ -15,10 +15,11 @@ from gateway.native_tokenizer import ArtifactTokenCounter
 from local_qwen_campaign import ANSWER_SYSTEM, OPTIONS, answer_prompt, fingerprint
 
 
-def prepare(data, training, student, output):
+def prepare(data, training, student, output, qwen_only=False):
     if output.exists():
         raise ValueError('Output already exists')
-    hashes=verify_archive(data,['inputs.jsonl','rankings.jsonl','tokenizer.json','variants.jsonl'])
+    hashes=verify_archive(data,['inputs.jsonl','rankings.jsonl','tokenizer.json','variants.jsonl','manifest.json','answers.jsonl'])
+    original_manifest=json.loads((data/'manifest.json').read_text(encoding='utf-8'))
     train_manifest=json.loads((training/'manifest.json').read_text())
     for name,expected in train_manifest['outputs'].items():
         if digest(training/name)!=expected:raise ValueError('Distillation dataset hash mismatch')
@@ -63,17 +64,18 @@ def prepare(data, training, student, output):
                     reference_rendered_prompt_tokens=count(ANSWER_SYSTEM+'\n'+prompt),
                     preparation_seconds=time.perf_counter()-start,detail=details),ensure_ascii=False)+'\n')
     root=Path(__file__).resolve().parents[3]
+    models={'qwen3.5:4b':original_manifest['models']['qwen3.5:4b']}
+    if not qwen_only:models['gemma4:26b']='001e5dafc3c77684c2307ebc6ab8e336e10c9b18eca52acf547d72fc83c3ca8c'
+    if any(len(value)!=64 for value in models.values()):raise ValueError('Expected full SHA-256 model digests')
     manifest=dict(scope='Exposed source-grouped student development; not fresh or confirmatory',
         methods=methods,items=len(rows),passages=len({r['passage_group'] for r in rows}),
-        rates=[.5,.33],models={
-            'qwen3.5:4b':'d8b0f5e9760cd1682034f292d7ef72ec46f432149bbe0df7574bf2d6e92e38c04',
-            'gemma4:26b':'001e5dafc3c77684c2307ebc6ab8e336e10c9b18eca52acf547d72fc83c3ca8c'},
+        rates=[.5,.33],models=models,
         answer_system=ANSWER_SYSTEM,options=OPTIONS,think=False,tokenizer=counter.receipt,
         max_seconds=14400,request_timeout=180,failure_policy='Record capped/invalid/error outputs as incorrect; no automatic retries.',
         source_hashes=hashes,training_manifest_sha256=digest(training/'manifest.json'),student_sha256=digest(student),
         files={name:digest(output/name) for name in ['inputs.jsonl','variants.jsonl']},
         git_head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),
-        expected_answers=len(rows)*len(methods)*2,
+        expected_answers=len(rows)*len(methods)*len(models),
         note='Teacher and prefix variants reuse saved teacher ranks. No gold/options enter any compressor. Native serving budgets and XProvence/LLMLingua cells remain separate pending arms.')
     save(output/'manifest.json',manifest)
     return {key:manifest[key] for key in ['items','passages','expected_answers','scope','tokenizer']}
@@ -85,5 +87,6 @@ if __name__=='__main__':
     p.add_argument('--training',type=Path,required=True)
     p.add_argument('--student',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--qwen-only',action='store_true',help='Independent family is evaluated in the separate native Mistral campaign')
     a=p.parse_args()
-    print(json.dumps(prepare(a.data,a.training,a.student,a.output),indent=2))
+    print(json.dumps(prepare(a.data,a.training,a.student,a.output,a.qwen_only),indent=2))

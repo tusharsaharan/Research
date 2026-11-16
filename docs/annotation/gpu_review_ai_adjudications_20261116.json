@@ -1,0 +1,272 @@
+{
+  "bb-430": {
+    "same_meaning": "no",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 1,
+    "english_supported_option": "A",
+    "hinglish_supported_option": "ambiguous",
+    "critical_translation_issue": true,
+    "notes": "The English NOT-true answer is A because the orbiter was unmanned. Hinglish also corrupts C to 'Investigation rejection successful rahi' and D to depicting both sides, so several options are false/unsupported. Gold A is no longer uniquely defensible. This resolves the GPU reply's contradictory same-gold=yes field."
+  },
+  "bb-758": {
+    "same_meaning": "no",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 3,
+    "english_supported_option": "D",
+    "hinglish_supported_option": "ambiguous",
+    "critical_translation_issue": true,
+    "notes": "English asks which statement accurately describes boomerangs, supporting D. Hinglish asks which does NOT describe them accurately. A is false, while B/C are unsupported, so the polarity reversal destroys the original gold and uniqueness. The GPU rationale identified this but its same-gold=yes field contradicted it."
+  },
+  "bb-439": {
+    "same_meaning": "yes",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 3,
+    "english_supported_option": "B",
+    "hinglish_supported_option": "B",
+    "critical_translation_issue": false,
+    "notes": "The source gold C is wrong: sanctions are explicitly a reason for not buying new aircraft. Lack of budget (B) is not stated in either passage, making B the NOT-a-reason answer. Translation preserves the item; original gold is retained for audit and B is proposed separately. The GPU rationale already identified B."
+  },
+  "bb-320": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 2,
+    "english_supported_option": "ambiguous",
+    "hinglish_supported_option": "ambiguous",
+    "critical_translation_issue": true,
+    "notes": "Both A (Benin joining) and B (the start date) are not listed as pending agreements: Benin's joining was announced and July 1, 2020 is specified. Only origin rules and tariff concessions remain unagreed. The negative question therefore lacks a unique answer in both versions; source gold A is not uniquely supported."
+  },
+  "bb-146": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 2,
+    "english_supported_option": "D",
+    "hinglish_supported_option": "D",
+    "critical_translation_issue": false,
+    "notes": "Gomulka's appointment follows the riots as a concession, so D is the non-cause in both versions. The GPU incorrectly marked English A while its own source describes anti-Communist protest. Hinglish awkwardly changes conceding economic demands into making demands, but the question's D remains supported."
+  },
+  "bb-215": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 2,
+    "english_supported_option": "A",
+    "hinglish_supported_option": "A",
+    "critical_translation_issue": false,
+    "notes": "Harappa is explicitly attached to a sophisticated sewage system; Santorini has sewage remains and Egypt/China have toilets, without the advanced/sophisticated qualifier. A is the best supported answer in both. 'Better' weakens 'advanced', but the Hinglish passage preserves 'sophisticated'. The GPU overstated English ambiguity."
+  },
+  "bb-28": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 2,
+    "english_supported_option": "B",
+    "hinglish_supported_option": "B",
+    "critical_translation_issue": false,
+    "notes": "The castle's large windows and thin walls are typical and cannot resist a determined attack. A foundation designed to sustain attacks (B) is the atypical choice in both versions. The GPU rationale actually supports B despite its English-supported=A field. Dates and fortified-house wording are imperfectly translated."
+  },
+  "bb-92": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 2,
+    "english_supported_option": "C",
+    "hinglish_supported_option": "C",
+    "critical_translation_issue": true,
+    "notes": "English assigns straighter phalanges to humans, so A is false; chimpanzee hands bear weight in knuckle walking, supporting C in both. Hinglish damages anatomical details ('orangutans', knee walking, 'Straight leaps'), but retains the weight-bearing relation. The GPU English-supported=A field contradicted its rationale."
+  },
+  "bb-421": {
+    "same_meaning": "yes",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 3,
+    "english_supported_option": "ambiguous",
+    "hinglish_supported_option": "ambiguous",
+    "critical_translation_issue": false,
+    "notes": "Both A (a few minutes after the display started) and D (before the hail) fit the stated sequence in both versions. The translation preserves the strongest-wind question and timing; the GPU wrongly alleged a question-intent change. Source gold D is defensible but not unique, so flag source ambiguity rather than inventing a different gold."
+  },
+  "bb-85": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 2,
+    "english_supported_option": "ambiguous",
+    "hinglish_supported_option": "ambiguous",
+    "critical_translation_issue": true,
+    "notes": "Iron first appears as a strip on the wooden tracks, before iron wheels or full-iron rails. Crossties are mentioned without an iron material, so gold A is unsupported. B (wagonways) versus D (rails) depends on what counts as the track retrofit. Hinglish A also corrupts crossties to Cruelty. Do not assert a unique corrected letter."
+  },
+  "bb-857": {
+    "same_meaning": "yes",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 3,
+    "english_supported_option": "B",
+    "hinglish_supported_option": "B",
+    "critical_translation_issue": false,
+    "notes": "The passage advises expecting differences to avoid disappointment. Willingness to try unfamiliar food (B) is the only option consistent with that advice; A/C expect sameness and D avoids preparation. The question asks what COULD help, permitting this direct practical inference. The GPU used an overly literal unsupported-answer standard."
+  },
+  "bb-174": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 2,
+    "english_supported_option": "C",
+    "hinglish_supported_option": "C",
+    "critical_translation_issue": true,
+    "notes": "C is supported by the fort remaining a major attraction after the fire. A says the image was the only relic, contradicting some relics such as the image. The GPU English-supported=A field was wrong. Hinglish adds an unsupported drought cause in the question and distorts names, but the preserved outcome still supports C."
+  },
+  "bb-695": {
+    "same_meaning": "no",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 1,
+    "english_supported_option": "B",
+    "hinglish_supported_option": "ambiguous",
+    "critical_translation_issue": true,
+    "notes": "English B is least dangerous: seeing a mirage differs from pursuing it and wasting water/energy. The GPU rationale states this despite choosing English A. Hinglish changes least dangerous to what is dangerous and garbles the options, making several risks fit and destroying the original gold criterion."
+  },
+  "bb-883": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 2,
+    "english_supported_option": "ambiguous",
+    "hinglish_supported_option": "ambiguous",
+    "critical_translation_issue": true,
+    "notes": "The passage covers war-zone training, first aid and role play, and says wilderness-survival publications are common. Few war-zone publications does not mean war-zone readiness is absent from both classes and publications. The broad negative question is not uniquely resolved; the GPU A answer contradicts the common-publications statement. Hinglish A also changes survival to jungle existence."
+  },
+  "bb-896": {
+    "same_meaning": "yes",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 3,
+    "english_supported_option": "B",
+    "hinglish_supported_option": "B",
+    "critical_translation_issue": false,
+    "notes": "The passage distinguishes general arts/science World Fairs from specialized horticultural exhibitions. B conflates their displays and is the intended inaccurate description. Describing participating countries does not logically make participation compulsory, so the GPU claim that D must be false is unsupported. Both versions preserve the distinction."
+  },
+  "bb-760": {
+    "same_meaning": "no",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 3,
+    "english_supported_option": "A",
+    "hinglish_supported_option": "B",
+    "critical_translation_issue": true,
+    "notes": "English asks about contagious disease, explicitly spread by proximity to infected people (A). Hinglish asks about infectious disease, defined in its passage as caused by pathogens (B). The GPU supported-option fields were swapped relative to its own correct rationale. Gold A no longer matches the changed category in the Hinglish question."
+  },
+  "bb-564": {
+    "same_meaning": "yes",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 3,
+    "english_supported_option": "C",
+    "hinglish_supported_option": "C",
+    "critical_translation_issue": false,
+    "notes": "Vidal joined Barca FROM Sevilla three seasons ago, so he started playing for Barca then (C). The GPU incorrectly interpreted started playing for as where he came from. Both questions ask the destination club at that time; Barka is a recognizable transliteration of Barca. Source gold C is supported."
+  },
+  "bb-125": {
+    "same_meaning": "no",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 1,
+    "english_supported_option": "D",
+    "hinglish_supported_option": "none",
+    "critical_translation_issue": true,
+    "notes": "English D describes an inexperienced folder who has tried origami only once or twice, matching the stated purpose of Pureland. The GPU English none was overly literal. Hinglish D instead gives an incoherent seam instruction and loses that novice scenario, so no coherent option preserves D."
+  },
+  "bb-647": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 2,
+    "english_supported_option": "ambiguous",
+    "hinglish_supported_option": "ambiguous",
+    "critical_translation_issue": true,
+    "notes": "English C accurately restates the definition of auxiliary languages, so it cannot answer the NOT-accurate question. A calls them organic and B calls them natural as well as constructed, making multiple inaccurate descriptions. Hinglish retains multiple problematic choices. Source gold C is wrong, but the text does not support a unique replacement."
+  },
+  "bb-324": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 2,
+    "english_supported_option": "B",
+    "hinglish_supported_option": "B",
+    "critical_translation_issue": true,
+    "notes": "B is the established location information in both passages. Eight deaths is attributed to some reports and final numbers are explicitly not yet known; the GPU overstates D as established English information. Hinglish incorrectly changes three more bombs to two and mangles option A, but the supported gold B remains."
+  },
+  "bb-74": {
+    "same_meaning": "no",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 2,
+    "english_supported_option": "A",
+    "hinglish_supported_option": "ambiguous",
+    "critical_translation_issue": true,
+    "notes": "English asks which factor the effects do NOT rely on: A (amount affected) is not listed; B/C/D are explicitly listed dependencies. Hinglish drops NOT and asks what they depend on, making B/C/D valid instead of A. The GPU English B and Hinglish A fields contradicted its own explanation."
+  },
+  "bb-644": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 2,
+    "english_supported_option": "ambiguous",
+    "hinglish_supported_option": "ambiguous",
+    "critical_translation_issue": true,
+    "notes": "Both North Harbour and Central Auckland beaches are explicitly safe for swimming; Devonport and Long Bay lie within the North Shore area. No comparative safest ranking is provided. Hinglish weakens safest to safe, retaining multiple defensible options, and changes Long Bay to Long Gulf. Source gold C is not uniquely supported."
+  },
+  "bb-464": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 2,
+    "english_supported_option": "D",
+    "hinglish_supported_option": "D",
+    "critical_translation_issue": true,
+    "notes": "Hamlin is third, Kahne fifth, and Bowyer lies behind Hamlin and ahead of Kahne, so Bowyer is fourth (D). The GPU rationale supports this but its English-supported=C field was wrong. Hinglish preserves D as Boyar/Boyer, though Kahne becomes Kyun in distractor B, limiting equivalence/naturalness."
+  },
+  "bb-628": {
+    "same_meaning": "no",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 2,
+    "english_supported_option": "B",
+    "hinglish_supported_option": "ambiguous",
+    "critical_translation_issue": true,
+    "notes": "English B (booking) comes last: the passage explicitly says compare prices and check the airline website BEFORE booking. The GPU English D reverses that ordering. Hinglish removes the do-last criterion and asks what to tick, leaving several sensible actions with no unique ordering answer."
+  },
+  "bb-486": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 2,
+    "english_supported_option": "C",
+    "hinglish_supported_option": "C",
+    "critical_translation_issue": true,
+    "notes": "Both passages explicitly say four skiers in the sitting group failed to finish, supporting C. Forty-five failed to rank, which is a distinct metric and must not be silently equated with failed to finish. The GPU English D was wrong. Hinglish damages race-time and sitting-group wording, but retains the direct four-finish-failures statement."
+  },
+  "bb-728": {
+    "same_meaning": "yes",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 2,
+    "english_supported_option": "B",
+    "hinglish_supported_option": "B",
+    "critical_translation_issue": false,
+    "notes": "Waving usually means hello, BUT in rural Malaysia the same gesture means come over. The bent index finger is introduced as a similar Western gesture, not the answer replacing waving in Malaysia. Both passages preserve that contrast. The GPU reversed the comparison; B remains the supported answer despite awkward lehrate wording."
+  },
+  "bb-717": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 2,
+    "english_supported_option": "C",
+    "hinglish_supported_option": "C",
+    "critical_translation_issue": false,
+    "notes": "The standard numbering system is explicitly understood because it is taught in school, ruling out A. Certain different pronunciations (C) are the only stated contrast not covered by that specific assurance and best match the question wording might not understand. Hinglish accent retains this intended distinction, though other option wording is awkward. The GPU A answer contradicts the explicit assurance."
+  },
+  "bb-655": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "no",
+    "natural_hinglish": 2,
+    "english_supported_option": "ambiguous",
+    "hinglish_supported_option": "ambiguous",
+    "critical_translation_issue": true,
+    "notes": "English B (indoor ice events), C (Winter Olympics) and D (closing ceremonies) are all explicitly hosted in Beijing. Without a best-overall-event constraint the question is not unique. Hinglish B is corrupted, but C and D are still both true. Do not replace source C with the GPU B as a uniquely corrected gold."
+  },
+  "bb-259": {
+    "same_meaning": "yes",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 3,
+    "english_supported_option": "B",
+    "hinglish_supported_option": "B",
+    "critical_translation_issue": false,
+    "notes": "Stone construction continued throughout the Old Kingdom, while Giza remained exceptional in size/construction and was over a thousand years old. B is the unexceptional quality. Hinglish nahi correctly preserves the English NOT; it is not a double-negative error. The GPU A judgment contradicted its own observation that age was remarkable."
+  },
+  "bb-313": {
+    "same_meaning": "partly",
+    "answerable_same_gold": "yes",
+    "natural_hinglish": 3,
+    "english_supported_option": "D",
+    "hinglish_supported_option": "D",
+    "critical_translation_issue": false,
+    "notes": "Economically viable/commercial in English and economically practical/commercial in Hinglish point to cost (D), the only option supported by the passage inference. No in-principle objection rules against treating controversy as the reason. Hinglish overstates Costello succeeding Howard rather than being most likely, so equivalence is partial, but the cost answer is retained."
+  }
+}
