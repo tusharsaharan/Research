@@ -293,3 +293,7 @@
 - 2026-11-16 / 6e84a4b: COMPLETE presentation guide with 12-slide outline, exact results, speaker notes and Q&A.
 - VERIFIED: native 24-comparison minimum Holm p=.1384; no adjusted p<.05; historical teacher-over-BM25 gains approximately 4.8–7.3 points.
 - EVIDENCE: docs/research/COMPRESSOR_PRESENTATION_FINAL.md; no new inference or metric changes. AI-only scope unchanged.
+
+- 2026-11-16: VERIFIED native original prompt mean 266.60 tokens from saved report; long-document performance is untested.
+- UPDATED: presentation guide distinguishes completed study/artifacts from unmet quality/efficiency objective; timing explanations remain hypotheses.
+- No new inference, labels, metric changes or serving changes.

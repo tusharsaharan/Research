@@ -149,6 +149,13 @@ throughput benchmarks. Use `native_tradeoff.png` and state the limitation.
 Say: "The context got shorter, but compression overhead and answer behavior
 prevented a demonstrated end-to-end speedup."
 
+The original native Mistral prompts average 266.60 input tokens, according to
+the saved original-cell `prompt_tokens_mean`. These are short QA prompts, not
+a long-document benchmark. Limited input-generation savings are one plausible
+reason compressor overhead did not pay off here. The experiment does not
+establish performance on much longer contexts or isolate a causal explanation
+for the timing result.
+
 ## Slide 9 — What failure analysis taught us
 
 - Removing punctuation-only outputs can create empty evidence instead.
@@ -213,6 +220,10 @@ assigned as part of this completed AI-only delivery.
 
 **Did you meet the original objective?** We completed implementation and
 evaluation. We did not establish the intended combined quality/efficiency gain.
+"AI-only delivery complete" means the executed study and its artifacts are
+finalized, not that the original performance objective or production readiness
+has been achieved. Do not describe administrative scope closure as scientific
+success.
 
 **Did the project fail?** The student-performance hypothesis was not supported
 in these experiments. The system, measurement pipeline and documented negative
