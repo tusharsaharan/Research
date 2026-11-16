@@ -58,12 +58,24 @@ def test_archive_reuse_rejects_changed_settings_and_excludes_capped_outputs(benc
         runner.verified_archive_cache(tmp_path,manifest)
 
 
-def test_native_analysis_keeps_capped_answer_and_missing_usage_in_denominator(bench,tmp_path):
+def test_neural_pair_builder_uses_ordinal_order_and_only_question_span_text(bench):
+    module=importlib.import_module('neural_student_campaign')
+    texts,pairs=module.ordinal_pairs([dict(question='question',spans=['one','two','three'],teacher_order=[2,0,1],
+        gold='SECRET_GOLD',options=['SECRET_OPTIONS'])])
+    assert texts==[('question','one'),('question','two'),('question','three')]
+    assert pairs==[(2,0),(2,1),(0,1)]
+    with pytest.raises(ValueError,match='permutation'):
+        module.ordinal_pairs([dict(question='q',spans=['one','two'],teacher_order=[1,1])])
+
+
+@pytest.mark.parametrize('neural_addition',[False,True])
+def test_native_analysis_keeps_capped_answer_and_missing_usage_in_denominator(bench,tmp_path,neural_addition):
     module=importlib.import_module('review_mistral_native')
     artifacts=importlib.import_module('compressor_artifacts')
     methods=['original','no_context']+[f'{method}@{rate}' for method in
         ['teacher_prefix','teacher_atomic','student_atomic','bm25_atomic','shuffled','llml2_strict','xprovence_strict']
         for rate in [.5,.33]]
+    if neural_addition:methods+=['student_neural@0.5','student_neural@0.33']
     inputs=[dict(uid='one',passage_group='family-one',gold='A'),dict(uid='two',passage_group='family-two',gold='A')]
     path=tmp_path/'inputs.jsonl'
     path.write_text(''.join(json.dumps(row)+'\n' for row in inputs))
@@ -87,3 +99,5 @@ def test_native_analysis_keeps_capped_answer_and_missing_usage_in_denominator(be
     assert metric['n']==2 and metric['accuracy']==.5 and metric['invalid']==1
     assert metric['generation_seconds_mean'] is None and metric['usage_rows']==0
     assert metric['full_prompt_retention']==.8
+    assert len(report['comparisons'])==(24 if neural_addition else 18)
+    assert all(r['holm_p_all_comparisons']>=r['cluster_robust_p'] for r in report['comparisons'])

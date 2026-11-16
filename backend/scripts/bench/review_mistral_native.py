@@ -59,7 +59,9 @@ def review(data,inputs_path):
             for uid,row in inputs.items()}
     comparisons=[]
     for rate in [.5,.33]:
-        for candidate in [f'student_atomic@{rate}',f'teacher_atomic@{rate}',f'teacher_prefix@{rate}']:
+        candidates=[f'student_atomic@{rate}',f'teacher_atomic@{rate}',f'teacher_prefix@{rate}']
+        if f'student_neural@{rate}' in spec['methods']:candidates.append(f'student_neural@{rate}')
+        for candidate in candidates:
             for baseline in [f'bm25_atomic@{rate}',f'llml2_strict@{rate}',f'xprovence_strict@{rate}']:
                 comparisons.append(dict(candidate=candidate,baseline=baseline,**clustered_difference(paired,candidate,baseline)))
     maximum=0
@@ -79,7 +81,7 @@ def review(data,inputs_path):
         limitations=['Exposed development data; no independent human translation validation.',
             'Teacher imitation candidate selected without a hyperparameter search; no sealed confirmation.',
             'Timing is local component accounting, not a deployment throughput benchmark; teacher rank cost is historical.',
-            'Percentile intervals are exploratory; p-values adjusted over all 18 disclosed comparisons.'])
+            f'Percentile intervals are exploratory; p-values adjusted over all {len(comparisons)} disclosed comparisons.'])
     save(data/'report.json',report)
     lines=['# Independent-family native-token development results','',spec['scope'],'',
         '| Method | Accuracy | Invalid | Context kept | Empty contexts |','|---|---:|---:|---:|---:|']

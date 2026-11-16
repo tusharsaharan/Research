@@ -251,3 +251,33 @@ does not replace fresh human-validated sealed confirmation.
   check, environment versions, CUDA-synchronized compression timing, explicit
   full-prompt token counts, and separate unique-call versus reused timing
   accounting. These are engineering/measurement checks, not method selection.
+
+### 2026-11-16: one bounded neural teacher-imitation candidate
+
+After observing the six-weight student's Qwen development failure, implement
+the originally planned neural student as a separate exploratory candidate.
+This is development adaptation, not a preregistered confirmation or an excuse
+to discard the lexical student's negative result. Do not search architectures,
+seeds, epochs, or hyperparameters until a score improves.
+
+Reuse the cached LLMLingua-2 XLM-R large base encoder at revision
+`ebaba9b0e874dadd3003ffcff828e4397e568089`. It is about 0.56B parameters,
+smaller than the 35B teacher but not a tiny encoder. Remove its token-classifier
+head, add a linear CLS ranking head, and update only the last transformer block
+and this head. Inputs are question/span pairs only. Use all ordinal winner/loser
+pairs from the frozen 717-question/391-passage train split, two fixed epochs,
+seed 42, 16 pairs per minibatch, maximum 192 pair tokens, AdamW, encoder LR
+1e-5 / head LR 1e-3, weight decay .01, gradient norm cap 1.0, BF16 autocast with
+FP32 parameters, and a 1,800-second training cap. No early stopping or checkpoint
+selection from development scores. Save the final changed tensors as safetensors
+plus full base-asset hashes and training configuration before evaluation.
+
+Report teacher-imitation metrics on all 183 development items. Pack full
+original source spans under native Mistral caps at .50/.33 with the same
+empty-if-no-unit-fits policy. Reuse the completed native campaign's baseline
+answers unchanged and generate only the two added neural-student cells, with
+the same Mistral checkpoint/template/greedy 128-token decoder and no prompt
+truncation. Persist failures and exact-prompt reuse. Compare all four candidate
+types against all three baselines at both budgets; disclose 24 comparisons and
+Holm-adjust across all 24 in a separately named combined report. Original
+reports remain immutable. No serving-default change follows automatically.

@@ -9,6 +9,9 @@ person to read and judge the source material themselves.
 
 [Corrected 500-row workbook](C:/Research/outputs/01a1bfe0-4611-7052-8d83-ed5711b41950/belebele_ai_review_corrected.xlsx)
 
+[Current AI-label CSV](C:/Research/docs/annotation/belebele_cm_ai_reviewed.csv)
+contains the same current judgments in a small, row-matched text file.
+
 - `Overview`: counts and scope.
 - `Review`: final AI labels, supported answers, changed fields, and notes.
 - `Sources`: original English/Hinglish text and original answer key.
