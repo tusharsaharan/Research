@@ -46,6 +46,25 @@ recommendations.
 
 ## Known limitations
 
+### GPU-assisted AI update: 16 November 2026
+
+The current AI labels are in `docs/annotation/belebele_cm_ai_reviewed.csv` and
+the corrected workbook linked from `COMPRESSOR_HUMAN_INPUT_20261116.md`.
+The earlier `belebele_cm_ai_suggestions.csv` remains unchanged as history.
+All 500 rows were sent to pinned Qwen3.6-35B, blind to those earlier labels;
+497 structured reviews passed validation and three did not. Source-based
+Codex AI adjudication resolved those three and corrected additional disputed
+judgments, 30 rows in total. The final labels change 286 rows: same meaning
+268 yes / 88 partly / 144 no; same-gold answerability 406 yes / 94 no;
+naturalness 13 at 1 / 255 at 2 / 232 at 3. Eleven source-gold judgments remain
+flagged, including ambiguity. None are automatically applied to QA gold.
+
+These remain AI judgments, not completed human fields or independent human
+validation. Both raw replies and all adjudications are preserved under
+`backend/data/bench/gpu_annotation_review_20261116/` and
+`docs/annotation/gpu_review_ai_adjudications_20261116.json`. No frozen QA row
+was excluded or relabelled using this review.
+
 - Historical exposure includes prior local evaluation and possible external
   exposure; a clean external-evaluation history is not established.
 - Translation provenance and upstream license review are incomplete.

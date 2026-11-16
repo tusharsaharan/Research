@@ -12,7 +12,7 @@ from pathlib import Path
 from compressor_artifacts import digest, records, save
 
 
-def merge(source,previous,review_dir,output,adjudications=None):
+def merge(source,previous,review_dir,output,adjudications=None,labels_output=None):
     from gpu_annotation_review import validate
     adjudicated={} if adjudications is None else json.loads(adjudications.read_text(encoding='utf-8'))
     state=json.loads((review_dir/'state.json').read_text())
@@ -70,6 +70,18 @@ def merge(source,previous,review_dir,output,adjudications=None):
         sources=dict(source=digest(source),previous_ai=digest(previous),gpu_manifest=digest(review_dir/'manifest.json'),
                      raw_gpu=digest(review_dir/'raw_reviews.jsonl')),script_sha256=digest(Path(__file__)))
     if adjudications is not None:report['sources']['ai_adjudications']=digest(adjudications)
+    if labels_output is not None:
+        labels=[]
+        for row in rows:
+            label=dict(id=row['id'])
+            label.update({'ai_suggested_'+name:row['reviewed_ai_'+name]
+                for name in ['same_meaning','answerable_same_gold','natural_hinglish','notes']})
+            label.update({name:row[name] for name in ['review_status','provenance']})
+            labels.append(label)
+        labels_output.parent.mkdir(parents=True,exist_ok=True)
+        with labels_output.open('w',encoding='utf-8-sig',newline='') as stream:
+            writer=csv.DictWriter(stream,fieldnames=list(labels[0]));writer.writeheader();writer.writerows(labels)
+        report['outputs']={'reviewed_labels':str(labels_output),'reviewed_labels_sha256':digest(labels_output)}
     save(output/'report.json',report)
     return {k:report[k] for k in ['status','rows','counts','changed_rows']}
 
@@ -78,4 +90,5 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['source','previous','review-dir','output']:p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--adjudications',type=Path)
-    a=p.parse_args();print(json.dumps(merge(a.source,a.previous,a.review_dir,a.output,a.adjudications),indent=2))
+    p.add_argument('--labels-output',type=Path,help='Separate current AI suggestion CSV; never overwrites the source or human-review sheet')
+    a=p.parse_args();print(json.dumps(merge(a.source,a.previous,a.review_dir,a.output,a.adjudications,a.labels_output),indent=2))

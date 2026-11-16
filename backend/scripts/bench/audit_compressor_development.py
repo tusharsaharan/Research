@@ -31,7 +31,7 @@ def audit(data,tokenizer_path,output):
     misses=[]
     for (uid,method),row in variants.items():
         count=counter.count(row['text'])
-        if count!=row['reference_context_tokens']:raise ValueError('Recorded token count mismatch')
+        if count!=row['context_tokens']:raise ValueError('Recorded token count mismatch')
         if '@' in method:
             budget=max(1,math.floor(counter.count(inputs[uid]['context'])*float(method.split('@')[1])))
             if count>budget:misses.append(dict(uid=uid,method=method,count=count,budget=budget))
