@@ -1,0 +1,29 @@
+{
+  "status": "complete_for_ai_only_development",
+  "rows": 500,
+  "label_file": "docs\\annotation\\belebele_cm_ai_reviewed.csv",
+  "labels_sha256": "42f3c5656c31ea264125fca5e0fbd9763b334ae40ba8b45982f6589f89ac2734",
+  "source_sha256": "436ad412c4d71bd92a0c922d9c56fbc7ffbb6dacf9c3812b8d01fbf82d5bf61e",
+  "label_origin": "Qwen3.6-35B plus source-based Codex AI adjudication",
+  "owner_acceptance": "Working AI labels accepted by owner on 2026-11-16; no human review requested",
+  "human_review_performed": false,
+  "historically_exposed": true,
+  "confirmatory_eligible": false,
+  "original_gold_preserved": true,
+  "counts": {
+    "gpu_valid": 497,
+    "same_meaning:no": 144,
+    "answerable_same_gold:no": 94,
+    "natural_hinglish:2": 255,
+    "valid": 500,
+    "adjudicated": 30,
+    "same_meaning:yes": 268,
+    "natural_hinglish:3": 232,
+    "source_gold_flag": 11,
+    "answerable_same_gold:yes": 406,
+    "same_meaning:partly": 88,
+    "natural_hinglish:1": 13,
+    "gpu_failed_initial": 3
+  },
+  "changed_rows": 286
+}
