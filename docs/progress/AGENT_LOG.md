@@ -297,3 +297,12 @@
 - 2026-11-16: VERIFIED native original prompt mean 266.60 tokens from saved report; long-document performance is untested.
 - UPDATED: presentation guide distinguishes completed study/artifacts from unmet quality/efficiency objective; timing explanations remain hypotheses.
 - No new inference, labels, metric changes or serving changes.
+
+- 2026-11-16: COMPLETE presentation-content PDF, 39 pages; output/pdf/Hinglish-Compressor-Presentation-Content.pdf.
+- VERIFIED: full tables, core numeric values, source hash, rendered page layouts and zero out-of-margin characters; no new inference or PPT edits.
+- COMMIT BLOCKED: automatic approval review hit usage limit; no bypass/retry. PDF ready; receipt backend/data/bench/presentation_pdf_20261116/validation.json.
+
+- 2026-11-16: COMPLETE plain-English replacement report, 21 PDF pages / 6,546-word Markdown; no slide instructions.
+- CONTENT: goal, methods, datasets/splits, baselines/configs, training, results interpreted as counts, failures, timing, limitations and conclusions.
+- VERIFIED: source hashes/core values, rendered layouts, chapter/table formatting and zero margin violations; no new inference.
+- OUTPUT: output/pdf/Hinglish-Compressor-Explained.pdf; editable MD in outputs/01a1bfe0-4611-7052-8d83-ed5711b41950/. Git commit remains blocked by prior review-service limit.

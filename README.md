@@ -5,6 +5,19 @@ compression. A language-conditional model router and web gateway form a separate
 supporting track. Research results, prototype behavior and historical pilots are
 not interchangeable.
 
+## Read the project explanation
+
+The current report explains the datasets, baselines, implementation, training,
+results, failures, limitations and conclusions in plain English:
+
+- [Project report (PDF)](output/pdf/Hinglish-Compressor-Explained.pdf)
+- [Editable report (Markdown)](outputs/01a1bfe0-4611-7052-8d83-ed5711b41950/Hinglish-Compressor-Explained.md)
+
+The implementation and fixed AI-only study are complete. The original goal of
+establishing a better, faster compressor was not achieved. Raw run data, model
+patches and internal evidence ZIPs are retained locally; they are not included
+in this repository push. Their checksums remain in the research receipts.
+
 ## Current continuation — 16 November 2026
 
 **AI-only delivery finalized:** the owner has chosen to proceed without human
