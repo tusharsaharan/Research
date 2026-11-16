@@ -170,3 +170,17 @@ student input features. The router study is unaffected.
    validation, fresh-data confirmation, independent-family results, and total
    efficiency separately. Missing gates stay open. A negative result is valid;
    neither token savings nor rank imitation establishes answer preservation.
+
+### 2026-11-16: GPU annotation assistance
+
+At the owner's explicit request, obtain a second AI review of every row in the
+500-row translation sheet using installed digest-pinned qwen3.6:35b. It sees
+both language versions and gold for annotation, and is blind to prior Codex
+labels. This is distinct from the question-only compressor input policy.
+Freeze the review prompt/schema before launch. Store raw replies and English
+and Hinglish supported-option judgments. Temperature 0, seed 20261116, 512-token
+output cap, 8,192 context tokens, 180-second request timeout, two-hour wall cap.
+Do not automatically retry failures or fill missing labels. Report disagreement
+with the earlier AI labels and keep human-review columns untouched. Corrected
+AI judgments remain provisional, exposed development annotations; their
+agreement is not independent human validation or inter-annotator kappa.
