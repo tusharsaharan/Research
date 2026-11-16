@@ -5,6 +5,9 @@ import subprocess
 import sys
 
 SOURCES=[
+    'docs/research/COMPRESSOR_AI_ONLY_FINAL.md',
+    'docs/research/COMPRESSOR_AI_ONLY_FINAL.json',
+    'backend/tests/test_compressor_ai_only_closeout.py',
     'backend/data/bench/restored_evidence_20261116/RESTORE_RECEIPT.json',
     'backend/data/bench/restored_audit_20261116',
     'backend/data/bench/atomic_replay_20261116',

@@ -1,5 +1,12 @@
 # Compressor continuation: 16 November 2026
 
+**Final scope decision:** the owner has requested completion without human
+review. The [AI-only final report](COMPRESSOR_AI_ONLY_FINAL.md) and
+[verified closeout](COMPRESSOR_AI_ONLY_FINAL.json) supersede this document's
+earlier pending-human workflow. The computational study and working AI labels
+are complete. No manual input remains assigned to the owner. Quality/speed
+superiority was not achieved; future confirmation is outside this delivery.
+
 The GPU connection, evidence restoration, stress replay, compact-student
 development, power planning, 500-row AI review, Qwen comparison, native Mistral
 comparison, and one fixed neural-distillation candidate are complete. Both
@@ -249,7 +256,7 @@ it is not relabelled as a new campaign. Full model weights are not bundled.
 This is an internal research snapshot; upstream data/model licenses and
 attribution still govern any future redistribution. No public release occurred.
 
-## Remaining gates
+## Future research outside the completed AI-only scope
 
 - Develop a method that meets a prespecified quality/efficiency target on
   development data; the tested student candidates do not. Keep these negatives.

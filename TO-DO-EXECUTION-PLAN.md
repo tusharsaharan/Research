@@ -2,6 +2,13 @@
 
 **Created:** 9 November 2026
 
+**Final scope, 16 November 2026:** the owner has chosen AI-only completion.
+No human-review task below remains assigned for this delivery. The final
+deliverable and measured limitations are in
+[COMPRESSOR_AI_ONLY_FINAL.md](C:/Research/docs/research/COMPRESSOR_AI_ONLY_FINAL.md).
+Human agreement, fresh sealed confirmation and superiority claims are outside
+this completed exploratory scope, rather than silently marked as performed.
+
 **Continuation status, 16 November 2026:** the original verdict and work-package
 states below are historical. See
 [the dated execution results](C:/Research/docs/research/COMPRESSOR_STATUS_20261116.md)

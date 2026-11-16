@@ -281,3 +281,16 @@ truncation. Persist failures and exact-prompt reuse. Compare all four candidate
 types against all three baselines at both budgets; disclose 24 comparisons and
 Holm-adjust across all 24 in a separately named combined report. Original
 reports remain immutable. No serving-default change follows automatically.
+
+### 2026-11-16: owner-approved AI-only closeout, after results
+
+The owner explicitly requests no human review and accepts the existing AI
+judgments as the working labels. Close this delivery as an AI-only exploratory
+implementation/development study. This is a scope decision after results,
+not prospective registration of a successful outcome. Freeze the reviewed-label
+CSV and its provenance; do not claim human validation, assume a measured win,
+filter inconvenient QA rows, change gold, promote the failed students, or turn
+exposed examples into a sealed test. No new inference is needed for closeout.
+Human annotation/agreement and fresh sealed confirmation are outside this
+delivery. Finalize the report, machine-readable evidence checks and internal
+archive; no human input remains required for this scope.

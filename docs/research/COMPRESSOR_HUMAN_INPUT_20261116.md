@@ -1,4 +1,10 @@
-# Human input for the compressor study
+# Optional human-review guide — outside the current delivery
+
+**Superseded workflow:** on 16 November 2026 the owner chose AI-only completion.
+No action in this document is required. The AI labels are the accepted working
+annotations, and the [final AI-only report](COMPRESSOR_AI_ONLY_FINAL.md) closes
+the current delivery. The instructions below are retained only for a possible
+separate future human-validation study.
 
 No manual input is needed to run the current GPU comparisons or use the
 corrected AI-review spreadsheet. The agent has completed the AI labels. They

@@ -7,10 +7,16 @@ not interchangeable.
 
 ## Current continuation — 16 November 2026
 
+**AI-only delivery finalized:** the owner has chosen to proceed without human
+review. No manual review or file editing is required for this delivery.
+See the [final report](docs/research/COMPRESSOR_AI_ONLY_FINAL.md) and
+[machine-readable closeout](docs/research/COMPRESSOR_AI_ONLY_FINAL.json).
+The completed experiments do not establish a student-quality or speed advantage.
+
 The 500-row GPU-assisted AI review is complete:
 [current AI labels](docs/annotation/belebele_cm_ai_reviewed.csv),
 [corrected workbook](outputs/01a1bfe0-4611-7052-8d83-ed5711b41950/belebele_ai_review_corrected.xlsx),
-and [exact human-input instructions](docs/research/COMPRESSOR_HUMAN_INPUT_20261116.md).
+and the final report above.
 Human-review fields remain distinct from AI judgments.
 
 Native-token Mistral development evaluation, XProvence/LLMLingua-2 baselines,
@@ -63,7 +69,7 @@ The 500-row Belebele annotation sheet and 3,491-row router verification sheet
 have no completed human-verification fields in the saved copies. Recover any
 external annotations before treating either corpus as human-validated.
 
-## Next research priorities
+## Future research beyond the closed AI-only delivery
 
 1. Build the annotation protocol and fresh source-family-disjoint data; reserve
    a sealed test before further selection. Start a small development annotation
