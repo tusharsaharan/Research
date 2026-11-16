@@ -275,3 +275,10 @@
 - VERIFIED: 29 focused tests plus four native-analysis checks; 183-question/97-passage development bundle frozen. Native Mistral/strong-baseline scripts committed e75bfc6.
 - PREPARING: pinned XProvence download/dependencies. Gemma pull failed proxy HTTP 503; cached Mistral7B selected before QA. No human validation or fresh test claimed.
 - NEXT: retrieve all GPU annotations, adjudicate failures/proposed corrections, export workbook; run native-token independent-family development under shared lock.
+
+- 2026-11-16 / source 3d77578: COMPLETE GPU AI review 500 rows; 286 revised; current CSV and workbook saved; human fields preserved.
+- COMPLETE: Qwen 2,196 / native Mistral 3,294 paired records; both students underperform; all native caps/prompts independently verified.
+- COMPLETE: fixed neural RankNet candidate, 2 epochs / 1,718 steps; checkpoint and raw outputs in backend/data/bench/neural_student_20261116/.
+- VERIFIED: 48 focused checks covered; offline replay matches all 30 contrasts; 293-file archive receipt docs/research/COMPRESSOR_EVIDENCE_20261116.json.
+- RUNNING: no compressor jobs; GPU released. Evidence ZIP 53,012,076 bytes, SHA e5cd704d98efc5b31542bf4be983cf08841dd68069bfcfba4c7af596ab343bb9.
+- NEXT: new method development plus licensed human-validated source pool before sealed confirmation; exact files in COMPRESSOR_HUMAN_INPUT_20261116.md. No default change/push.

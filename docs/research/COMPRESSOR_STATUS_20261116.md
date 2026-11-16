@@ -10,6 +10,20 @@ Current review files: [corrected workbook](C:/Research/outputs/01a1bfe0-4611-705
 [current AI CSV](C:/Research/docs/annotation/belebele_cm_ai_reviewed.csv), and
 [exact human-input guide](C:/Research/docs/research/COMPRESSOR_HUMAN_INPUT_20261116.md).
 
+[Internal evidence ZIP](C:/Research/outputs/01a1bfe0-4611-7052-8d83-ed5711b41950/compressor_evidence_20261116.zip)
+contains 293 files, with [the complete checksum receipt](C:/Research/docs/research/COMPRESSOR_EVIDENCE_20261116.json).
+The archive is 53,012,076 bytes and verified after creation. Its SHA-256 is
+`e5cd704d98efc5b31542bf4be983cf08841dd68069bfcfba4c7af596ab343bb9`.
+Forty excluded files are runtime bytecode/cache files. Full base-model weights,
+local access files and credentials are not packaged.
+
+Verification: 48 focused checks are covered; two initial tokenizer-cache network
+failures passed after populating the workspace cache, and all nine affected
+checks passed in the final targeted rerun. Independent local analysis replay
+matches all 12 Qwen cells / six contrasts and 18 native cells / 24 contrasts
+within 1e-12 numeric tolerance. This is not a claim that the full repository
+test suite was run.
+
 ## Saved measurements
 
 The verified 7 November archive was restored byte-for-byte into
