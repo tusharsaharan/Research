@@ -306,3 +306,7 @@
 - CONTENT: goal, methods, datasets/splits, baselines/configs, training, results interpreted as counts, failures, timing, limitations and conclusions.
 - VERIFIED: source hashes/core values, rendered layouts, chapter/table formatting and zero margin violations; no new inference.
 - OUTPUT: output/pdf/Hinglish-Compressor-Explained.pdf; editable MD in outputs/01a1bfe0-4611-7052-8d83-ed5711b41950/. Git commit remains blocked by prior review-service limit.
+
+- 2026-11-16 / 4736ba2: COMPLETE authorized GitHub main push; remote verified at 4736ba2 after normal fast-forward publication.
+- VERIFIED: report PDF bytes preserved; outgoing credential scan clear; repo-local college proxy fixed GitHub access. Earlier commit block resolved.
+- PUBLISHED: compressor source, research records, reviewed workbook, readable report PDF/Markdown. Internal archives, GPU access files and caches remain local.
