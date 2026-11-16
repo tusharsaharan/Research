@@ -1,5 +1,6 @@
 """Critical study invariants: source controls, annotation consistency, clustering."""
 import importlib
+import json
 from pathlib import Path
 
 import pytest
@@ -37,3 +38,32 @@ def test_clustered_statistics_refuse_one_source_family(bench):
           'b':dict(group='one',correct={'candidate':0,'baseline':1})}
     with pytest.raises(ValueError,match='two independent'):
         analysis.clustered_difference(rows,'candidate','baseline')
+
+
+def test_native_analysis_keeps_capped_answer_and_missing_usage_in_denominator(bench,tmp_path):
+    module=importlib.import_module('review_mistral_native')
+    artifacts=importlib.import_module('compressor_artifacts')
+    methods=['original','no_context']+[f'{method}@{rate}' for method in
+        ['teacher_prefix','teacher_atomic','student_atomic','bm25_atomic','shuffled','llml2_strict','xprovence_strict']
+        for rate in [.5,.33]]
+    inputs=[dict(uid='one',passage_group='family-one',gold='A'),dict(uid='two',passage_group='family-two',gold='A')]
+    path=tmp_path/'inputs.jsonl'
+    path.write_text(''.join(json.dumps(row)+'\n' for row in inputs))
+    answers=[];variants=[]
+    for row in inputs:
+        for method in methods:
+            answers.append(dict(uid=row['uid'],method=method,content='A',usage=None,
+                error='Output cap reached' if row['uid']=='one' and method=='student_atomic@0.5' else None))
+            variants.append(dict(uid=row['uid'],method=method,text='Evidence',context_tokens=1,budget=2,
+                original_context_tokens=4,compression_seconds=.001,historical_teacher_rank_seconds=0,budget_clipped=False))
+    for name,rows in [('answers.jsonl',answers),('variants.jsonl',variants)]:
+        (tmp_path/name).write_text(''.join(json.dumps(row)+'\n' for row in rows))
+    artifacts.save(tmp_path/'manifest.json',dict(methods=methods,source_hashes={'inputs':artifacts.digest(path)},
+        scope='synthetic plumbing only',tokenizer_scope='synthetic'))
+    artifacts.save(tmp_path/'state.json',dict(status='complete',answers_sha256=artifacts.digest(tmp_path/'answers.jsonl'),
+        variants_sha256=artifacts.digest(tmp_path/'variants.jsonl')))
+    module.review(tmp_path,path)
+    report=json.loads((tmp_path/'report.json').read_text())
+    metric=report['metrics']['student_atomic@0.5']
+    assert metric['n']==2 and metric['accuracy']==.5 and metric['invalid']==1
+    assert metric['generation_seconds_mean'] is None and metric['usage_rows']==0

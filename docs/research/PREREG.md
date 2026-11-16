@@ -200,3 +200,31 @@ complete paired coverage, with passage-clustered bootstrap intervals and Holm
 adjustment over every disclosed comparison. Record missing usage as missing,
 never as free inference. Four-hour answer-run cap, no automatic failed-run
 retry. GPU lock contention is not permission to stop another study.
+
+### 2026-11-16: independent-family native-token development, before answers
+
+The Gemma4-26B pull failed at the college proxy with HTTP 503 before any model
+weights or answers were obtained. Preserve that failure. Use the already
+installed Mistral-7B-Instruct-v0.3 snapshot
+`c170c708c41dac9275d15a8fff4eca08d52bab71` as the independent answer family;
+this decision uses availability only, before observing its QA outputs.
+Evaluate every frozen student-development item (183 questions, 97 passages).
+Count and pack with that snapshot's own tokenizer, and serve the same local
+weights using its exact chat template. Freeze all model/tokenizer file hashes
+before compression or generation. Use greedy decoding, seed 42, 128 new tokens,
+no prompt truncation, and a four-hour campaign cap under the GPU lock.
+
+Compare original/no-context and teacher prefix, teacher complete-span, compact
+student, matched BM25, shuffled controls, LLMLingua-2 large, and XProvence at
+0.50/0.33. The latter uses pinned revision
+`f2798d357213c40164bdd79557d6d2e43ca7d8d2`, published threshold 0.3 and no
+forced first sentence, then explicit word-boundary native-cap clipping.
+LLMLingua-2 uses its previously frozen large revision and the same explicit cap.
+Preserve pruner failures and empty evidence. Do not tune thresholds after QA.
+Report classifier setup separately, per-query packing/scoring and generation,
+and historical teacher-ranker cost separately from current packing. Cache exact
+rendered prompts only; disclose reuse and output usage. Compare only complete
+paired cells; show all 18 candidate/baseline comparisons with passage-clustered
+intervals and Holm-adjusted cluster-robust tests. Primary is student 0.50 against
+the three baselines. This is independent-family **development** evidence and
+does not replace fresh human-validated sealed confirmation.
