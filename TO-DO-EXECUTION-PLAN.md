@@ -1,6 +1,14 @@
 # Detailed execution plan for the Hinglish compressor research
 
 **Created:** 9 November 2026
+
+**Continuation status, 16 November 2026:** the original verdict and work-package
+states below are historical. See
+[the dated execution results](C:/Research/docs/research/COMPRESSOR_STATUS_20261116.md)
+for completed CPU/GPU work and negative findings, and
+[the human-input guide](C:/Research/docs/research/COMPRESSOR_HUMAN_INPUT_20261116.md)
+for exact files and remaining personal judgments. The 500-row AI review is now
+complete; it does not count as human validation or a fresh test.
 **Source reviewed:** `to-do.md`, current `README.md`, `docs/progress/ROADMAP.md`, last six lines of `docs/progress/AGENT_LOG.md`, the paper-alignment note, preregistration, current campaign results, and relevant code/test/artifact paths.
 
 ## Status verdict

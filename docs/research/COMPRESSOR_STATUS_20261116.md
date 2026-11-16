@@ -1,8 +1,13 @@
 # Compressor continuation: 16 November 2026
 
-The GPU connection is restored. Local evidence restoration, stress replay,
-compact-student development, and power planning are complete. Fresh-data
-confirmation and the GPU annotation review are incomplete.
+The GPU connection, evidence restoration, stress replay, compact-student
+development, power planning, 500-row AI review, and Qwen student comparison
+are complete. Native Mistral and one fixed neural-distillation candidate are
+in progress. Fresh human-validated confirmation is not available.
+
+Current review files: [corrected workbook](C:/Research/outputs/01a1bfe0-4611-7052-8d83-ed5711b41950/belebele_ai_review_corrected.xlsx),
+[current AI CSV](C:/Research/docs/annotation/belebele_cm_ai_reviewed.csv), and
+[exact human-input guide](C:/Research/docs/research/COMPRESSOR_HUMAN_INPUT_20261116.md).
 
 ## Saved measurements
 
@@ -38,8 +43,30 @@ hyperparameter search. On development, top-1 teacher agreement is 43.72%, versus
 not downstream answer accuracy. Local mean scoring time was about 0.46 ms for
 the student and 0.16 ms for BM25; hardware and deployment differ from GPU serving.
 
+The subsequent 183-question Qwen4B comparison also rejects a student-quality
+win: at .50 the student answers 53.01% correctly, versus matched BM25 55.19%,
+teacher 66.67%, and original context 71.04%. The student-minus-BM25 difference
+is -2.19 percentage points (paired passage bootstrap 95% interval -6.91 to
++2.21; Holm-adjusted p=.698 across six declared Qwen comparisons). At .33,
+student 51.91% and BM25 53.01%. No request failures or invalid replies occurred.
+All original gold and all questions remain in the denominators.
+
+The run contains 2,196 records: 1,586 exact replies reused from the verified
+historical archive, 31 reused within this run, and 579 new calls. A separate
+tokenizer replay verifies zero reference-cap misses. These are Qwen2.5
+reference-text budgets, not newly established native Qwen3.5 serving caps.
+Historical timing is not a fresh latency measurement.
+
+Three inspected teacher-win examples are saved by the reproducibility audit:
+bb-76 retains the minimum-strokes criterion; bb-93 retains removal from the
+expressed variation pool. In bb-105, the teacher answers correctly even though
+its selected text omits the explicit daily-life-break sentence. This cautions
+against treating answer accuracy as evidence that every needed fact survived.
+
 Evidence: `backend/data/training/compressor_distill_20261116/manifest.json` and
 `backend/data/bench/compact_student_20261116/{student,report}.json`.
+QA evidence: `backend/data/bench/qwen_student_20261116/analysis/` with raw
+inputs, variants, and answers in its sibling `data/` directory.
 
 ### Sample-size planning
 
@@ -61,24 +88,43 @@ environment, and four installed Qwen models. No credentials are stored in the
 repository or research artifacts.
 
 The first annotation launch failed before row 1 because another process held
-`/home/user/hinglish-research/gpu-campaign.lock`. The holder runs
-`/home/user/hinglish-research/gsm8k_20261116/run.py` under a 73-hour cap. Preserve
-that job unless the owner explicitly authorizes changing its priority. Fix the
-annotation cleanup so a failed lock acquisition cannot unload someone else's
-model. No annotation result exists from the failed launch.
+the shared GPU lock. It released the lock itself; no process was killed. The
+owner subsequently authorized compressor priority. Cleanup now unloads a model
+only after acquiring the lock.
 
-An official Gemma4-26B download was started separately with a 45-minute limit;
-it does not load the model onto the GPU. Its success and final installed digest
-must be checked before inference. Existing pinned XProvence source metadata
-exists remotely, but weights and baseline execution remain pending.
+The second annotation run processed all 500 rows in about 938 seconds, with
+497 valid structured replies and three invalid ones. Thirty source-based
+Codex AI adjudications resolve those three and other contradictory/disputed
+judgments. Final labels change 286 rows, with zero unresolved AI fields.
+Same meaning: 268 yes / 88 partly / 144 no. Same-gold answerability: 406 yes /
+94 no. Naturalness: 13 at 1 / 255 at 2 / 232 at 3. Eleven source-gold flags
+include ambiguity; they are not automatically corrected or excluded from QA.
+Raw GPU replies, the original labels, and all adjudications are preserved.
+These are AI-assisted development annotations, not human validation.
+
+Gemma4-26B could not be downloaded because the proxy returned HTTP 503. Before
+any independent-family answers, cached Mistral7B was substituted and frozen.
+The pinned XProvence download completed after one bounded continuation of a
+timed-out partial asset download. Official spaCy dependencies were installed.
+The first Mistral attempt failed during tokenizer setup, before any QA output;
+the corrected attempt passes synthetic compressor API checks and runs all
+2,928 native-token answer cells. It compares original/no-context, teacher
+prefix/atomic, lexical student, matched BM25, shuffled controls, LLMLingua-2
+large, and XProvence at .50/.33. No thresholds were tuned against answers.
+
+The lexical student's negative Qwen result motivated one separately declared
+neural candidate: cached XLM-R large, final transformer block plus linear head,
+two fixed RankNet epochs on the same training split. No hyperparameter search,
+development-based checkpoint choice, or repeated search for a win is allowed.
+Its two native Mistral cells will join immutable baseline outputs in a separate
+exploratory combined report, with all 24 candidate/baseline comparisons.
 
 ## Remaining gates
 
-- Complete GPU-assisted review of all 500 rows, export raw replies and a revised
-  AI-labelled workbook, and inspect disagreements. Preserve human columns.
-- Run the frozen source-grouped student-development answer comparisons.
-- Add and verify native target-model tokenization, XProvence and LLMLingua-2
-  comparisons, and controlled compression-plus-generation cost/latency.
+- Retrieve/verify the native Mistral and neural-student outputs and archive the
+  full continuation. Keep setup failures and negative candidates.
+- Treat measured component timings as local development accounting; a serving
+  throughput/latency guarantee needs a deployment-specific benchmark.
 - Establish appropriate source licenses and source-family grouping for a new
   Hinglish pool; obtain human validation and enough independent passages.
 - Freeze the final method and run one sealed evaluation. This work cannot
