@@ -261,3 +261,4 @@
 - Script: backend/scripts/bench/gsm8k_ollama_full.py; no accuracy claim; next verify completion and retrieve raw artifacts.
 - 2026-11-16: migrated GSM8K worker to detached session; preserved 6607 complete records, fixed Unicode checkpoint line parsing; remote log detached.log.
 - 2026-11-16 COMPLETE: compiled raw Qwen Jack solution; 5 supplied cases + max-length case pass; 33-digit counterexample (32 nines then 1) fails with blank line and -1. Evidence backend/data/bench/gsm8k_20261116/jack_validation.json; script check_jack_qwen.py.
+- 2026-11-16 COMPLETE: open-r1/codeforces default pinned subset downloaded to backend/data/bench/codeforces700_20261116; 500 native train + 200 native test, source-order dedup, excludes exposed 852/A/B; all four local output hashes/counts verified. Full records separate from problems; no model run started.
