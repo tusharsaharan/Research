@@ -10,7 +10,8 @@ from eval_final_paper import clustered_difference
 from grade import extract_letter
 
 
-def review(data,inputs_path):
+def review(data,inputs_path,output=None):
+    output=data if output is None else output
     spec=json.loads((data/'manifest.json').read_text())
     state=json.loads((data/'state.json').read_text())
     if state['status']!='complete':raise ValueError('Native campaign is not complete')
@@ -82,16 +83,18 @@ def review(data,inputs_path):
             'Teacher imitation candidate selected without a hyperparameter search; no sealed confirmation.',
             'Timing is local component accounting, not a deployment throughput benchmark; teacher rank cost is historical.',
             f'Percentile intervals are exploratory; p-values adjusted over all {len(comparisons)} disclosed comparisons.'])
-    save(data/'report.json',report)
+    save(output/'report.json',report)
     lines=['# Independent-family native-token development results','',spec['scope'],'',
         '| Method | Accuracy | Invalid | Context kept | Empty contexts |','|---|---:|---:|---:|---:|']
     for method,m in metrics.items():
         lines.append(f"| {method} | {m['accuracy']:.2%} | {m['invalid']} | {m['context_retention']:.2%} | {m['empty_contexts']} |")
     lines+=['','All failures remain in denominators. Full paired results, timings and multiplicity handling are in report.json.']
-    (data/'RESULTS.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+    (output/'RESULTS.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
     print(json.dumps(dict(status='complete',answers=len(answers),comparisons=len(comparisons))))
 
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--data',type=Path,required=True)
-    p.add_argument('--inputs',type=Path,required=True);a=p.parse_args();review(a.data,a.inputs)
+    p.add_argument('--inputs',type=Path,required=True)
+    p.add_argument('--output',type=Path,help='Separate analysis directory; preserve the original saved report during replay')
+    a=p.parse_args();review(a.data,a.inputs,a.output)

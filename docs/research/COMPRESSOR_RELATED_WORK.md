@@ -2,6 +2,10 @@
 
 **Prepared:** 2026-11-09
 **Status:** literature notes for study design; not a novelty claim or result section.
+The gate inventory below is historical. Native independent-family development
+and strong baselines were completed on 16 November; see
+[the dated results](COMPRESSOR_STATUS_20261116.md). Fresh human validation and
+confirmatory evidence remain absent.
 
 ## Scope
 

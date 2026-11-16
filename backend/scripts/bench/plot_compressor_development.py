@@ -25,12 +25,12 @@ def plot(report_path,output):
         axes[0].scatter(metric['context_retention'],100*metric['accuracy'],color=colors[base],marker=marker,s=55,label=label)
         seconds=metric['compression_plus_generation_seconds_mean']
         if seconds is not None:axes[1].scatter(seconds,100*metric['accuracy'],color=colors[base],marker=marker,s=55)
-        if base in ['original','no_context','student_neural']:
+        if base in ['original','no_context']:
             text=names[base]+(' '+method.split('@')[1] if '@' in method else '')
             for ax,x in [(axes[0],metric['context_retention']),(axes[1],seconds)]:
                 if x is not None:ax.annotate(text,(x,100*metric['accuracy']),xytext=(4,6),textcoords='offset points',fontsize=8)
     axes[0].set(xlabel='Actual context tokens kept / original context tokens',ylabel='QA accuracy (%)',xlim=(-.05,1.10),ylim=(0,100))
-    axes[1].set(xlabel='Compression + generation component seconds / query')
+    axes[1].set(xlabel='Compression + generation component seconds / query',xlim=(0,None))
     for ax in axes:ax.grid(alpha=.2);ax.set_axisbelow(True)
     fig.suptitle('Native Mistral: exposed development, 183 questions / 97 passages',fontsize=12)
     handles,labels=axes[0].get_legend_handles_labels()

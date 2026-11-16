@@ -93,8 +93,10 @@ def test_native_analysis_keeps_capped_answer_and_missing_usage_in_denominator(be
         scope='synthetic plumbing only',tokenizer_scope='synthetic'))
     artifacts.save(tmp_path/'state.json',dict(status='complete',answers_sha256=artifacts.digest(tmp_path/'answers.jsonl'),
         variants_sha256=artifacts.digest(tmp_path/'variants.jsonl')))
-    module.review(tmp_path,path)
-    report=json.loads((tmp_path/'report.json').read_text())
+    destination=tmp_path/'separate-analysis' if neural_addition else tmp_path
+    module.review(tmp_path,path,destination)
+    if neural_addition:assert not (tmp_path/'report.json').exists()
+    report=json.loads((destination/'report.json').read_text())
     metric=report['metrics']['student_atomic@0.5']
     assert metric['n']==2 and metric['accuracy']==.5 and metric['invalid']==1
     assert metric['generation_seconds_mean'] is None and metric['usage_rows']==0
