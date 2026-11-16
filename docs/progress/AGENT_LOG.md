@@ -289,3 +289,7 @@
 - VERIFIED: two additional closeout tests reject edited raw data and duplicate coverage; prior 48 targeted checks retained.
 - ARCHIVED: 298 files, 53,024,257 bytes; SHA 615513079a4c9a1f8800f99d189b831ae10cf09b3a4484afe582c833bf5ba322; receipt COMPRESSOR_AI_ONLY_ARCHIVE.json.
 - RUNNING: none. No defaults changed or push. Fresh confirmation is outside this closed scope; no manual review assigned.
+
+- 2026-11-16 / 6e84a4b: COMPLETE presentation guide with 12-slide outline, exact results, speaker notes and Q&A.
+- VERIFIED: native 24-comparison minimum Holm p=.1384; no adjusted p<.05; historical teacher-over-BM25 gains approximately 4.8–7.3 points.
+- EVIDENCE: docs/research/COMPRESSOR_PRESENTATION_FINAL.md; no new inference or metric changes. AI-only scope unchanged.
