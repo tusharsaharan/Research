@@ -57,7 +57,7 @@ def main():
         done = set()
         output = ROOT / 'responses.jsonl'
         if output.exists():
-            for line in output.read_text().splitlines():
+            for line in output.open(encoding='utf-8'):
                 done.add(json.loads(line)['id'])
         with output.open('a', encoding='utf-8') as sink:
             for split, spec in manifest['splits'].items():
@@ -94,3 +94,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

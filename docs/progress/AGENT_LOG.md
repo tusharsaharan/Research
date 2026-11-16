@@ -259,3 +259,4 @@
 - 2026-11-16 RUNNING: user-authorized full GSM8K main train+test Qwen3.6:35b collection; first check 11/8792, GPU residency 22796 MiB.
 - Evidence remote: /home/user/hinglish-research/gsm8k_20261116/{manifest.json,state.json,responses.jsonl,run.log}; 72h cap, shared GPU lock, no retries.
 - Script: backend/scripts/bench/gsm8k_ollama_full.py; no accuracy claim; next verify completion and retrieve raw artifacts.
+- 2026-11-16: migrated GSM8K worker to detached session; preserved 6607 complete records, fixed Unicode checkpoint line parsing; remote log detached.log.
