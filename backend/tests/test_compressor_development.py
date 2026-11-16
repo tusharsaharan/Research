@@ -71,6 +71,7 @@ def test_native_analysis_keeps_capped_answer_and_missing_usage_in_denominator(be
     for row in inputs:
         for method in methods:
             answers.append(dict(uid=row['uid'],method=method,content='A',usage=None,
+                rendered_prompt_tokens=10 if method=='original' else 8,
                 error='Output cap reached' if row['uid']=='one' and method=='student_atomic@0.5' else None))
             variants.append(dict(uid=row['uid'],method=method,text='Evidence',context_tokens=1,budget=2,
                 original_context_tokens=4,compression_seconds=.001,historical_teacher_rank_seconds=0,budget_clipped=False))
@@ -85,3 +86,4 @@ def test_native_analysis_keeps_capped_answer_and_missing_usage_in_denominator(be
     metric=report['metrics']['student_atomic@0.5']
     assert metric['n']==2 and metric['accuracy']==.5 and metric['invalid']==1
     assert metric['generation_seconds_mean'] is None and metric['usage_rows']==0
+    assert metric['full_prompt_retention']==.8

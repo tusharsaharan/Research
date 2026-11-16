@@ -9,7 +9,9 @@ import argparse
 import gc
 import json
 import math
+import platform
 import time
+from importlib.metadata import version
 from pathlib import Path
 
 from compressor_artifacts import digest, records, save
@@ -63,6 +65,9 @@ def run(base, teachers, student_path, model_path, output):
         baseline_budget_policy='Published model output followed by explicit word-boundary measured cap; report clipping.',
         source_hashes=dict(inputs=digest(base/'inputs.jsonl'),teachers=digest(teachers),student=digest(student_path)),
         code_sha256=digest(Path(__file__)),failure_policy='No retries. Exceptions, empty and capped replies count incorrect. No row filtering.')
+    spec['environment']=dict(python=platform.python_version(),
+        packages={name:version(name) for name in ['torch','transformers','llmlingua','spacy','protobuf','sentencepiece']},
+        gpu=torch.cuda.get_device_name(0),total_gpu_bytes=torch.cuda.get_device_properties(0).total_memory)
     output.mkdir(parents=True)
     save(output/'manifest.json',spec)
     state=dict(status='waiting_for_lock',stage='preparation',variants=0,answers=0)
@@ -78,11 +83,17 @@ def run(base, teachers, student_path, model_path, output):
             lingua=LLMLingua2Compressor(str(llml_path),device='cuda:0')
             lingua._ensure()
             xp=AutoModel.from_pretrained(xp_path,trust_remote_code=True,local_files_only=True).to('cuda').eval()
+            # API readiness only: no development question, options, gold, or answer-model output.
+            probe='Ravi ka ticket 42 tha. Meena ka ticket 17 tha.'
+            assert isinstance(lingua._ensure().compress_prompt(probe,rate=.5,force_tokens=['\n','?','.'])['compressed_prompt'],str)
+            assert isinstance(xp.process('Ravi ka ticket kya tha?',probe,threshold=.3,always_select_title=False)['pruned_context'],str)
+            torch.cuda.synchronize()
             state['compressor_setup_seconds']=time.perf_counter()-setup_start
             with (output/'variants.jsonl').open('x',encoding='utf-8') as stream:
                 for row in rows:
                     bounded();passage=row['context'];units=source_units(passage)
                     for method in methods:
+                        torch.cuda.synchronize()
                         tick=time.perf_counter();error=None;clip=False;teacher_cost=0
                         budget=count(passage)
                         try:
@@ -109,6 +120,7 @@ def run(base, teachers, student_path, model_path, output):
                             if count(text)>budget:raise ValueError('Native context cap exceeded')
                         except Exception as exc:
                             text='';error=f'{type(exc).__name__}: {exc}'
+                        torch.cuda.synchronize()
                         variant=dict(uid=row['uid'],method=method,text=text,budget=budget,context_tokens=count(text),
                             original_context_tokens=count(passage),compression_seconds=time.perf_counter()-tick,
                             historical_teacher_rank_seconds=teacher_cost,budget_clipped=clip,error=error)
@@ -128,6 +140,7 @@ def run(base, teachers, student_path, model_path, output):
                     prompt=ANSWER_SYSTEM+'\n\n'+answer_prompt(row,variant['text'])
                     rendered=tokenizer.apply_chat_template([dict(role='user',content=prompt)],tokenize=False,add_generation_prompt=True)
                     key=fingerprint(rendered)
+                    rendered_tokens=count(rendered)
                     if error:pass
                     elif key in cache:
                         text,error,usage=cache[key];reused=True
@@ -148,7 +161,7 @@ def run(base, teachers, student_path, model_path, output):
                             cache[key]=(text,error,usage)
                         except Exception as exc:error=f'{type(exc).__name__}: {exc}'
                     stream.write(json.dumps(dict(uid=row['uid'],method=variant['method'],content=text,error=error,usage=usage,
-                        exact_prompt_reuse=reused,rendered_prompt_sha256=key),ensure_ascii=False)+'\n');stream.flush()
+                        exact_prompt_reuse=reused,rendered_prompt_sha256=key,rendered_prompt_tokens=rendered_tokens),ensure_ascii=False)+'\n');stream.flush()
                     state['answers']+=1;state['elapsed_seconds']=time.monotonic()-start
                     save(output/'state.json',state)
                     if state['answers']%100==0:print(json.dumps(state),flush=True)

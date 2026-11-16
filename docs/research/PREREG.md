@@ -247,3 +247,7 @@ does not replace fresh human-validated sealed confirmation.
   its downloader has exited. A separately named native attempt may proceed
   only after pinned assets and dependencies pass preflight. Methods, inputs,
   decoding, budgets, and analysis remain frozen. Preserve both setup failures.
+  Before the new attempt, add a synthetic, unlabelled compressor API readiness
+  check, environment versions, CUDA-synchronized compression timing, explicit
+  full-prompt token counts, and separate unique-call versus reused timing
+  accounting. These are engineering/measurement checks, not method selection.

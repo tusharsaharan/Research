@@ -45,7 +45,13 @@ def review(data,inputs_path):
             generation_seconds_mean=float(np.mean([r['generation_seconds'] for r in usage])) if usage else None,
             prompt_tokens_mean=float(np.mean([r['prompt_tokens'] for r in usage])) if usage else None,
             answer_tokens_mean=float(np.mean([r['output_tokens'] for r in usage])) if usage else None,
-            usage_rows=len(usage))
+            usage_rows=len(usage),exact_prompt_reuse_rows=sum(r.get('exact_prompt_reuse',False) for r in selected),
+            actual_unique_generation_seconds=sum(r['usage']['generation_seconds'] for r in selected
+                if r.get('usage') and not r.get('exact_prompt_reuse',False)))
+        prompt_counts=[r.get('rendered_prompt_tokens') for r in selected]
+        original_counts=[answers[(uid,'original')].get('rendered_prompt_tokens') for uid in inputs]
+        metrics[method]['full_prompt_retention']=(sum(prompt_counts)/sum(original_counts)
+            if all(v is not None for v in prompt_counts+original_counts) else None)
         measured=metrics[method]
         measured['compression_plus_generation_seconds_mean']=None if measured['generation_seconds_mean'] is None else (
             measured['compression_seconds_mean']+measured['historical_teacher_rank_seconds_mean']+measured['generation_seconds_mean'])
