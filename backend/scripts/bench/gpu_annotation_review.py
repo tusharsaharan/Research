@@ -103,9 +103,11 @@ def run(source, output, lock_path):
     state=dict(status='running',completed=0,valid=0,invalid=0)
     save(output/'state.json',state)
     start=time.monotonic()
+    acquired=False
     with lock_path.open('a') as lock:
         try:
             fcntl.flock(lock.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
+            acquired=True
             with (output/'raw_reviews.jsonl').open('x',encoding='utf-8') as stream:
                 for row in rows:
                     if time.monotonic()-start+180>7200:
@@ -138,7 +140,8 @@ def run(source, output, lock_path):
             save(output/'state.json',state)
             raise
         finally:
-            api('generate',dict(model=MODEL,keep_alive=0),timeout=30)
+            if acquired:
+                api('generate',dict(model=MODEL,keep_alive=0),timeout=30)
     print(json.dumps(state),flush=True)
 
 

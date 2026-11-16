@@ -184,3 +184,19 @@ Do not automatically retry failures or fill missing labels. Report disagreement
 with the earlier AI labels and keep human-review columns untouched. Corrected
 AI judgments remain provisional, exposed development annotations; their
 agreement is not independent human validation or inter-annotator kappa.
+
+### 2026-11-16: next answer campaign preparation, before answers
+
+Prepare all 183 student-development questions from 97 exact source passages;
+never choose a subset based on model outcomes. Freeze original and no-context,
+plus saved teacher-prefix, complete-span teacher, compact student, matched BM25,
+and question-independent shuffled-span controls at 0.50 and 0.33. The first
+software bundle uses the fingerprinted Qwen2.5 reference tokenizer for identical
+fixed-text transfer to Qwen3.5-4B and Gemma4-26B. This does not satisfy the later
+native-serving-budget gate. Missing XProvence/LLMLingua arms remain openly
+pending; this bundle is not a final baseline comparison. Persist all raw
+replies, errors, usage, model hashes and exact-prompt reuse. Compare only after
+complete paired coverage, with passage-clustered bootstrap intervals and Holm
+adjustment over every disclosed comparison. Record missing usage as missing,
+never as free inference. Four-hour answer-run cap, no automatic failed-run
+retry. GPU lock contention is not permission to stop another study.
