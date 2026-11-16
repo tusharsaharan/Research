@@ -262,3 +262,5 @@
 - 2026-11-16: migrated GSM8K worker to detached session; preserved 6607 complete records, fixed Unicode checkpoint line parsing; remote log detached.log.
 - 2026-11-16 COMPLETE: compiled raw Qwen Jack solution; 5 supplied cases + max-length case pass; 33-digit counterexample (32 nines then 1) fails with blank line and -1. Evidence backend/data/bench/gsm8k_20261116/jack_validation.json; script check_jack_qwen.py.
 - 2026-11-16 COMPLETE: open-r1/codeforces default pinned subset downloaded to backend/data/bench/codeforces700_20261116; 500 native train + 200 native test, source-order dedup, excludes exposed 852/A/B; all four local output hashes/counts verified. Full records separate from problems; no model run started.
+- 2026-11-17 RUNNING: Codeforces700 Qwen v1 detached PID 2276267; verified 100/700 answers, GPU 23354 MiB, no log errors. 500 train/200 test; prompt allowlist excludes editorials/official tests/checkers.
+- Evidence remote: /home/user/hinglish-research/codeforces700_20261116/qwen_answers_v1/{manifest.json,prompts.jsonl,train_responses.jsonl,test_responses.jsonl,state.json,run.log}; frozen runner commit 6b2d715; next verify completion and download.
