@@ -213,7 +213,7 @@ is an upper token budget, not a promise that every output retains exactly 50%.
 - Lexical student: six weights, trained on 27,476 directed ranking comparisons.
 - Neural student: existing XLM-R large encoder; last block plus linear head updated.
 - Training and development have no exact source-group overlap.
-- Fixed configurations; no search until a favourable score appeared.
+- Each student used one fixed training configuration, without development-score early stopping.
 ''')
     table(['Neural training detail','Recorded result'],[
         ['Encoder parameters',f"{t['total_encoder_parameters']:,}"],
@@ -429,6 +429,13 @@ all four answer models and all 21 conditions, rather than selecting a favourable
 budget. Compression and generation columns are recorded component means; they
 are not an all-inclusive production benchmark. Checkpoint and configuration
 details remain in the archived manifests.
+
+Method-key legend: `bqwen35b_span` is the teacher ranker;
+`llml2L_strict` is the large LLMLingua-2 configuration;
+`bspan_bm25` is the saved same-packing lexical control;
+`bm25_strict` is the strict BM25 baseline; and `bhybrid_char_clause` is the
+historical character/clause hybrid condition. The number after `@` is the
+target retained-context fraction, not the percentage removed.
 ''')
     table(['Answer model','Condition','Accuracy','Invalid','Reference-cap misses','Mean context kept','Mean full prompt kept','Compression seconds','Generation seconds'],[
         [labels[model],key,f"{v['accuracy']:.2%}",v['invalid'],v['reference_budget_misses'],f"{v['mean_context_ratio']:.2%}",f"{v['mean_full_prompt_ratio']:.2%}",f"{v['mean_compression_seconds']:.4f}",f"{v['mean_generation_seconds']:.4f}"]
