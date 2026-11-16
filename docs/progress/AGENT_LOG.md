@@ -269,3 +269,9 @@
 - NEXT: owner single-review annotation + delayed 50-row repeat, eligibility decision, fresh licensed sources; raw stress JSONL absent, aggregate rerun pending.
 - COMPLETE: created compressor-specific data card and primary-source related-work memo; router paper/chapter left separate.
 - NEXT: actual owner labels/thresholds, near-duplicate and license audit, fresh source acquisition; no confirmatory or GPU work started.
+- 2026-11-16: Restored/hash-verified archived evidence; reproduced 75,600 QA / 80,000 stress records in restored_audit_20261116.
+- COMPLETE: full atomic replay exposes many empties; compact student and passage power planning saved under backend/data/bench/; negative findings retained.
+- RUNNING: GPU 500-row second AI review, tmux gpu-annotation-20261116-v2; log /home/user/hinglish-research/logs/gpu-annotation-20261116-v2.log; prior lock failure processed zero rows.
+- VERIFIED: 29 focused tests plus four native-analysis checks; 183-question/97-passage development bundle frozen. Native Mistral/strong-baseline scripts committed e75bfc6.
+- PREPARING: pinned XProvence download/dependencies. Gemma pull failed proxy HTTP 503; cached Mistral7B selected before QA. No human validation or fresh test claimed.
+- NEXT: retrieve all GPU annotations, adjudicate failures/proposed corrections, export workbook; run native-token independent-family development under shared lock.
