@@ -1,0 +1,15 @@
+"""Independent 2067/A-C answers."""
+import json
+from pathlib import Path
+ANSWERS=[
+('2067/A','Adding one turns k trailing nines to zeros and increases the preceding digit by one, so y=x+1-9k for k>=0. This condition is sufficient: choose a prefix of digit sum y-1 ending below nine, followed by k nines. Test x+1>=y and divisibility by nine. O(1) per case.',r'''#include <bits/stdc++.h>
+using namespace std;int main(){int t;cin>>t;while(t--){int x,y;cin>>x>>y;cout<<(x+1>=y&&(x+1-y)%9==0?"YES":"NO")<<'\n';}}'''),
+('2067/B','Process frequencies ascending. A lone copy of the current smallest value can neither be matched across bags nor incremented before placing a copy in the other bag, so it is impossible. With at least two copies, keep one in each bag and increment all remaining copies into the next value. Keeping additional pairs cannot help more than carrying them upward, so this greedy preserves feasibility. O(n) time and space with capacity 2n+2.',r'''#include <bits/stdc++.h>
+using namespace std;int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int t;cin>>t;while(t--){int n;cin>>n;vector<int>f(2*n+3);for(int i=0,x;i<n;i++){cin>>x;f[x]++;}bool ok=true;for(int x=1;x<=2*n;x++){if(f[x]==1){ok=false;break;}if(f[x]>=2)f[x+1]+=f[x]-2;}cout<<(ok?"YES":"NO")<<'\n';}}'''),
+('2067/C','For k operations the final number equals n-k plus k positive powers of ten, since each all-nine addend is 10^len-1. Use digit DP to decide whether any distribution of these k powers creates a digit seven. Try k=0..9; at each decimal position choose how many of the still-unassigned powers terminate there, with none allowed at units, propagate carry and a seen-seven bit. Process 22 positions (more than enough: only nine powers are distributed and the input has at most ten digits; any useful high digit can be shifted into this bounded leading-zero region). State (remaining powers,carry,seen). The first feasible k is optimal, and <=9 always succeeds by adjusting units with additions of nine. O(22*10^4) bounded work per case, constant space.',r'''#include <bits/stdc++.h>
+using namespace std;bool possible(long long n,int k){long long base=n-k;vector<int>d(22);for(int i=0;i<22;i++){d[i]=base%10;base/=10;}bool dp[10][3][2]={};dp[k][0][0]=true;for(int pos=0;pos<22;pos++){bool nd[10][3][2]={};for(int r=0;r<=k;r++)for(int c=0;c<3;c++)for(int s=0;s<2;s++)if(dp[r][c][s])for(int take=0;take<=r;take++){if(pos==0&&take)continue;int v=d[pos]+c+take;nd[r-take][v/10][s||(v%10==7)]=true;}memcpy(dp,nd,sizeof dp);}return dp[0][0][1];}int main(){ios::sync_with_stdio(false);cin.tie(nullptr);int t;cin>>t;while(t--){long long n;cin>>n;for(int k=0;k<=9;k++)if(possible(n,k)){cout<<k<<'\n';break;}}}''')]
+if __name__=='__main__':
+    p=Path('backend/data/bench/codeforces700_20261116/assistant_answers_v1/shard_test_000_199.jsonl')
+    with p.open('a',encoding='utf-8') as out:
+        for ident,explanation,code in ANSWERS:
+            out.write(json.dumps({'id':ident,'split':'test','author':'current chat assistant','status':'authored','explanation':explanation,'cpp_code':code,'validation':'not executed'})+'\n')
