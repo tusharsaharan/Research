@@ -269,3 +269,5 @@
 - 2026-11-17 PARTIAL/STOPPED: three user-requested subagents hit service usage limit; merged 417 train+118 test answer attempts, 15 unsupported Q# tasks, 150 pending (68 train/82 test).
 - Evidence: backend/data/bench/codeforces700_20261116/assistant_answers_v1/{train_answers.jsonl,test_answers.jsonl,collection_status.json,pending_ids.json}; new attempts unexecuted, some explicitly slow. Next resume pending source-only after usage reset; no workers remain running.
 - 2026-11-17 VERIFIED metadata audit: 110/700 generated checkers, 695 saved-test records, 124 marked complete testsets; judge correctness not validated. Evidence codeforces700_20261116/checking_inventory.json; script audit_codeforces_checking.py.
+- 2026-11-17 PLANNED/NOT STARTED: conservative sandboxed Qwen judge prepared; bubblewrap true probe passed, but two SSH upload attempts timed out. No correctness labels produced.
+- Evidence: codeforces700_20261116/qwen_judging_v1/local_status.json; judge_codeforces_qwen.py. Raw generation audit: 565 stop/135 length. Next reconnect GPU, upload/start judge; labels must distinguish saved-test pass from proof.
