@@ -283,3 +283,5 @@
 - Telegram stop watcher reactivated externally in LOCALAPPDATA/ResearchRunAlerts; no alert code/credentials in research repository. No completed IDs resubmitted.
 - 2026-11-20 RESUMED foreground85589: reconciled item1041796/B399181993 WRONG after delayed DOM receipt (not resubmitted); item1051796/C lacks code. Added event-based receipt wait before fail-stop; stop watcher restarted externally.
 - 2026-11-20 STOPPED105: 1796/D submission form explicitly requires anti-bot verification (distinct from landing check). No receipt yet; no automatic resend. User asked to complete normal form verification and click Submit once, then reconcile. Runner now reports specific verification error.
+- 2026-11-20 FIXED submission readiness: observe normal turnstile completion up to3min before click; if first click triggers verification, reconcile authenticated status before one post-verification click. No token solving/alteration/logging. User explicitly requested this correction.
+- RESUMED foreground49446: item1081796/F399182414 Compilation error recorded after normal verification; no duplicates. Telegram watcher restarted outside repo.

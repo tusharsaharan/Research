@@ -30,6 +30,27 @@ def snapshot():
       rows:Array.from(document.querySelectorAll('tr[data-submission-id]')).map(r=>({submission_id:r.getAttribute('data-submission-id'),text:r.innerText}))})'''))
 
 
+def wait_verified():
+    # Observe the normal widget result; never solve, alter, or expose its token.
+    return evaluate('''new Promise(resolve=>{
+      const ready=()=>{const t=document.querySelector('input[name=turnstileToken],input[name="cf-turnstile-response"]');
+        const b=document.querySelector('textarea[name=source]')?.form.querySelector('input[type=submit]');
+        return !!b&&!b.disabled&&(!document.querySelector('.cf-turnstile,.turnstile-container')||(!!t&&!!t.value));};
+      if(ready()){resolve(true);return;}const timer=setInterval(()=>{if(ready()){clearInterval(timer);clearTimeout(deadline);resolve(true);}},500);
+      const deadline=setTimeout(()=>{clearInterval(timer);resolve(false);},180000);
+    })''')
+
+
+def status_receipt(ident,existing):
+    result=evaluate('''(async()=>{const response=await fetch('/problemset/status?my=on',{credentials:'same-origin'});
+      const doc=new DOMParser().parseFromString(await response.text(),'text/html');
+      return {authenticated:!!doc.querySelector('a[href="/profile/research_test_acc"]'),
+      rows:Array.from(doc.querySelectorAll('tr[data-submission-id]')).map(r=>({submission_id:r.getAttribute('data-submission-id'),text:r.innerText}))};})()''')
+    if not result['authenticated']:raise RuntimeError('Cannot reconcile authenticated submission status; no retry')
+    old={r.get('submission_id') for r in existing.values()}
+    return next((r for r in result['rows'] if ident.replace('/','')+' - ' in r['text'] and r['submission_id'] not in old),None)
+
+
 def main():
     ROOT.mkdir(exist_ok=True)
     jobs=[]
@@ -87,6 +108,7 @@ def main():
                       return {length:source.value.length,language:lang.value};})()'''.replace('CODE',json.dumps(code))
                     prepared=evaluate(fill)
                     assert prepared['length']==len(code) and prepared['language']=='54'
+                    if not wait_verified():raise RuntimeError('ANTI_BOT_VERIFICATION_REQUIRED: verification did not finish within 3min; no click issued')
                     record['code_sha256']=hashlib.sha256(code.encode()).hexdigest()
                     record['language']='GNU G++17 7.3.0'
                     atomic('attempt_in_flight.json',record)
@@ -100,6 +122,15 @@ def main():
                       setTimeout(()=>{observer.disconnect();resolve(false);},20000);
                     })''')
                     page=snapshot()
+                    if not page['rows'] and 'Please complete the anti-bot verification' in page['text']:
+                        receipt=status_receipt(ident,existing)
+                        if receipt:
+                            page['rows']=[receipt]
+                        elif wait_verified():
+                            # One post-verification click only after confirming no receipt.
+                            evaluate('document.querySelector("textarea[name=source]").form.querySelector("input[type=submit]").click(); "clicked after completed verification"')
+                            last_submit=time.time();time.sleep(20)
+                            page=snapshot()
                     if not page['rows']:
                         if 'Please complete the anti-bot verification' in page['text'] or 'Just a moment' in page['title']:
                             raise RuntimeError('ANTI_BOT_VERIFICATION_REQUIRED: complete the normal browser verification and manually click Submit once; reconcile receipt before resume. No automatic resubmission.')

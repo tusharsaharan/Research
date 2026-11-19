@@ -9,7 +9,7 @@ def evaluate(expression):
     op=urllib.request.build_opener(urllib.request.ProxyHandler({}))
     tabs=json.load(op.open('http://127.0.0.1:9223/json/list',timeout=10))
     tab=next(t for t in tabs if t.get('type')=='page' and 'codeforces.com' in t.get('url',''))
-    ws=websocket.create_connection(tab['webSocketDebuggerUrl'],timeout=30,suppress_origin=True)
+    ws=websocket.create_connection(tab['webSocketDebuggerUrl'],timeout=210,suppress_origin=True)
     ws.send(json.dumps({'id':1,'method':'Runtime.evaluate','params':{
         'expression':expression,'returnByValue':True,'awaitPromise':True}}))
     try:
