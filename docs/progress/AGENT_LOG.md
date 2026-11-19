@@ -282,3 +282,4 @@
 - 2026-11-20 RESUMED account research_test_acc verified in browser; immutable first103 journal records retained with SUP3RMAN provenance, next104=1796/B; foreground session84241. Receipt account_switch_103.json.
 - Telegram stop watcher reactivated externally in LOCALAPPDATA/ResearchRunAlerts; no alert code/credentials in research repository. No completed IDs resubmitted.
 - 2026-11-20 RESUMED foreground85589: reconciled item1041796/B399181993 WRONG after delayed DOM receipt (not resubmitted); item1051796/C lacks code. Added event-based receipt wait before fail-stop; stop watcher restarted externally.
+- 2026-11-20 STOPPED105: 1796/D submission form explicitly requires anti-bot verification (distinct from landing check). No receipt yet; no automatic resend. User asked to complete normal form verification and click Submit once, then reconcile. Runner now reports specific verification error.

@@ -100,7 +100,10 @@ def main():
                       setTimeout(()=>{observer.disconnect();resolve(false);},20000);
                     })''')
                     page=snapshot()
-                    if not page['rows']:raise RuntimeError('No submission receipt; inspect browser, no automatic retry')
+                    if not page['rows']:
+                        if 'Please complete the anti-bot verification' in page['text'] or 'Just a moment' in page['title']:
+                            raise RuntimeError('ANTI_BOT_VERIFICATION_REQUIRED: complete the normal browser verification and manually click Submit once; reconcile receipt before resume. No automatic resubmission.')
+                        raise RuntimeError('No submission receipt; inspect browser, no automatic retry')
                     receipt=page['rows'][0]
                     target=ident.replace('/','')
                     if target+' - ' not in receipt['text'] or HANDLE not in receipt['text']:
