@@ -281,3 +281,4 @@
 - 2026-11-20 RESUMED: foreground official submissions session23067 from row19. Verified 1347/A Trial Problem routes redirect to status; runner now records authenticated status redirects as unavailable/not_submitted and continues, never WRONG. Existing17 submissions reconciled:6 Accepted/11 rejected;2 missingcode.
 - 2026-11-20 RESUMED account research_test_acc verified in browser; immutable first103 journal records retained with SUP3RMAN provenance, next104=1796/B; foreground session84241. Receipt account_switch_103.json.
 - Telegram stop watcher reactivated externally in LOCALAPPDATA/ResearchRunAlerts; no alert code/credentials in research repository. No completed IDs resubmitted.
+- 2026-11-20 RESUMED foreground85589: reconciled item1041796/B399181993 WRONG after delayed DOM receipt (not resubmitted); item1051796/C lacks code. Added event-based receipt wait before fail-stop; stop watcher restarted externally.

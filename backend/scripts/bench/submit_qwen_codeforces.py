@@ -92,6 +92,13 @@ def main():
                     atomic('attempt_in_flight.json',record)
                     evaluate('document.querySelector("textarea[name=source]").form.querySelector("input[type=submit]").click(); "clicked"')
                     last_submit=time.time();time.sleep(8)
+                    evaluate('''new Promise(resolve=>{
+                      const ready=()=>!!document.querySelector('tr[data-submission-id]');
+                      if(ready()){resolve(true);return;}
+                      const observer=new MutationObserver(()=>{if(ready()){observer.disconnect();resolve(true);}});
+                      observer.observe(document.documentElement,{childList:true,subtree:true});
+                      setTimeout(()=>{observer.disconnect();resolve(false);},20000);
+                    })''')
                     page=snapshot()
                     if not page['rows']:raise RuntimeError('No submission receipt; inspect browser, no automatic retry')
                     receipt=page['rows'][0]
