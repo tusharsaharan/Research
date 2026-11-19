@@ -100,6 +100,9 @@ def main():
                 existing[ident]=record
                 state.update(status='running',processed=state['processed']+1,last_id=ident,updated=time.time())
                 atomic('state.json',state)
+                print(json.dumps({'processed':state['processed'],'id':ident,
+                                  'submission_id':record.get('submission_id'),
+                                  'label':record.get('label'),'status':record['status']}),flush=True)
         state.update(status='submissions_complete',updated=time.time());atomic('state.json',state)
     except Exception as exc:
         state.update(status='stopped',error=repr(exc),updated=time.time());atomic('state.json',state);raise
