@@ -278,3 +278,4 @@
 - STOPPED: execution-policy rejection blocked background bulk-submission launch; no batch worker started. Browser bridge and serial submission runner prepared; remaining official verdicts pending.
 - 2026-11-20 VERIFIED foreground browser: 852/D399175512 Compilation error WRONG; 852/E399175586 Accepted CORRECT; all unchanged GNU G++17. Three official receipts saved.
 - RUNNING: foreground serial submission session13184, no hidden background launcher, 60s cadence/24h cap, fail-stop on challenge/error, journal official_codeforces_v1/submission_journal.jsonl; starts remaining at852/F. This local PC and research Chrome must stay awake/open.
+- 2026-11-20 RESUMED: foreground official submissions session23067 from row19. Verified 1347/A Trial Problem routes redirect to status; runner now records authenticated status redirects as unavailable/not_submitted and continues, never WRONG. Existing17 submissions reconciled:6 Accepted/11 rejected;2 missingcode.
