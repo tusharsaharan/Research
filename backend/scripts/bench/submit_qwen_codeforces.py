@@ -8,7 +8,7 @@ from codeforces_browser import evaluate
 
 DATA=Path('backend/data/bench/codeforces700_20261116')
 ROOT=DATA/'official_codeforces_v1'
-HANDLE='SUP3RMAN'
+HANDLE='research_test_acc'
 
 
 def atomic(name,obj):
