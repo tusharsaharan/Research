@@ -271,3 +271,5 @@
 - 2026-11-17 VERIFIED metadata audit: 110/700 generated checkers, 695 saved-test records, 124 marked complete testsets; judge correctness not validated. Evidence codeforces700_20261116/checking_inventory.json; script audit_codeforces_checking.py.
 - 2026-11-17 PLANNED/NOT STARTED: conservative sandboxed Qwen judge prepared; bubblewrap true probe passed, but two SSH upload attempts timed out. No correctness labels produced.
 - Evidence: codeforces700_20261116/qwen_judging_v1/local_status.json; judge_codeforces_qwen.py. Raw generation audit: 565 stop/135 length. Next reconnect GPU, upload/start judge; labels must distinguish saved-test pass from proof.
+- 2026-11-19 RUNNING: conservative Qwen judge detached PID 2642778, first7 processed (5 unverified/1 compile_error/1 saved-test pass). Remote codeforces700_20261116/qwen_judging_v1/{state.json,run.log,*_verdicts.jsonl}; 24h cap.
+- Official Codeforces submissions not started: no authenticated browser/session; public API has no submission method. User asked for account/session access details without secrets. Local pass is not official Accepted.
