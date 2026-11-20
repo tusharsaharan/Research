@@ -7,12 +7,13 @@ import os
 from pathlib import Path
 
 
-def evaluate(expression):
+def evaluate(expression, *, target_id=None):
     op=urllib.request.build_opener(urllib.request.ProxyHandler({}))
     tabs=json.load(op.open('http://127.0.0.1:9223/json/list',timeout=10))
     target_file=Path(os.environ['LOCALAPPDATA'])/'CodexCodeforcesResearch/research_target.json'
-    if target_file.exists():
+    if target_id is None and target_file.exists():
         target_id=json.loads(target_file.read_text())['target_id']
+    if target_id is not None:
         tab=next((t for t in tabs if t.get('id')==target_id),None)
         if tab is None:raise RuntimeError('Dedicated submission tab was closed; restore explicitly, never switch to another user tab')
     else:

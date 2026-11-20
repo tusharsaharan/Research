@@ -299,3 +299,8 @@
 - RESUMED after337: verification wait timed out on 1971/F before click; subsequently verified ready. Foreground12446 resumes at338; external Telegram watcher reactivated.
 - RESUMED after426: 801/A Accepted #399251525 reconciled after slow receipt; added authenticated read-only recovery for empty status page. Foreground83290 and external watcher active.
 - STOPPED at431: Codeforces explicitly reports 250 submissions/day for research account. 1197/E has no receipt and remains pending. Runner reports daily limit explicitly; resume after quota clears and reconcile in-flight first.
+- 2026-11-20 COMPLETE: Codeforces API synced all 229 pending C++ verdicts and corrected 519/B to Accepted. Main 169 Accepted/162 rejected/100 skips, all native train; Kotlin 2/6 separately.
+- VERIFIED: 330 saved code hashes match frozen responses. Legacy 852/C has no recorded hash; local prepared source matches, while Codeforces masks submitted source.
+- REVIEWED: 49 lack a C++ main (41 output-cap stops), 25 compiler-restricted, 19 route issues, 7 nonstandard. Eight Kotlin retries already judged; 17 compiler-restricted cases have no alternate.
+- BLOCKED at 1197/E: no receipt in prior account history. Browser is on a different account after quota stop. Main queue remains 431/700; resume with the prior account after quota clears.
+- Evidence: official_codeforces_v1/{api_verdict_sync,skip_review_after_sync,pending_receipt_check,skip_contest_route_probe,first_source_provenance_check}.json.
