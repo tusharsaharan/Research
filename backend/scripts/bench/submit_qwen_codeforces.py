@@ -173,7 +173,7 @@ def main():
                     txt=receipt['text']
                     if 'Accepted' in txt:record['label']='CORRECT'
                     elif re.search(r'Wrong answer|Runtime error|Compilation error|Time limit exceeded|Memory limit exceeded|Idleness limit exceeded|Output limit exceeded',txt,re.I):record['label']='WRONG'
-                    record['submission_url']='https://codeforces.com/problemset/submission/'+receipt['submission_id']
+                    record['submission_url']='https://codeforces.com/contest/'+ident.split('/')[0]+'/submission/'+receipt['submission_id']
                 sink.write(json.dumps(record,ensure_ascii=False)+'\n');sink.flush()
                 existing[ident]=record
                 state.update(status='running',processed=state['processed']+1,last_id=ident,updated=time.time())
