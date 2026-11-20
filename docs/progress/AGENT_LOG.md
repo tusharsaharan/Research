@@ -293,3 +293,4 @@
 - 2026-11-20 FIXED browser-tab interference: created separate pinned CDP target; runner never selects user inspection tabs. Main resumes at190 with first189 unchanged; closing pinned tab fails safely. Stop watcher restarted externally.
 - 2026-11-20 RESUMED after194:1440/A verification completed after3min timeout, no click/receipt previously. Preserve already-ready target form on resume rather than reload; allow5min normal verification, no bypass. Stop watcher restarted externally.
 - 2026-11-20 RESUMED after203: Chrome HTTP2 protocol error during65/B; authenticated latest history confirms no65/B receipt. Interrupted attempt archived/reconciled before user-requested resume. Null-body snapshot loading handled; no completed records repeated; external stop watcher restarted.
+- RESUMED after206: 65/D verification stop; restored saved Qwen code in ready form, confirmed submission399200160. Foreground73645, external Telegram watcher restarted.
