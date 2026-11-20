@@ -297,3 +297,4 @@
 - RESUMED after207: old runner exited without updating state; 65/D Accepted and 65/E compile error reconciled. Foreground8508 starts at 592/A, external watcher checked.
 - RESUMED: contest 1212 official page confirms Kotlin only; C++ journal records eight unsupported items pending alternate-language judging. Main foreground89107 at254/700; external watcher reactivated.
 - RESUMED after337: verification wait timed out on 1971/F before click; subsequently verified ready. Foreground12446 resumes at338; external Telegram watcher reactivated.
+- RESUMED after426: 801/A Accepted #399251525 reconciled after slow receipt; added authenticated read-only recovery for empty status page. Foreground83290 and external watcher active.

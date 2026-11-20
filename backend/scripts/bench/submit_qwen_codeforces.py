@@ -51,7 +51,9 @@ def status_receipt(ident,existing):
       rows:Array.from(doc.querySelectorAll('tr[data-submission-id]')).map(r=>({submission_id:r.getAttribute('data-submission-id'),text:r.innerText}))};})()''')
     if not result['authenticated']:raise RuntimeError('Cannot reconcile authenticated submission status; no retry')
     old={r.get('submission_id') for r in existing.values()}
-    return next((r for r in result['rows'] if ident.replace('/','')+' - ' in r['text'] and r['submission_id'] not in old),None)
+    return next((r for r in result['rows'] if ident.replace('/','')+' - ' in r['text']
+                 and re.search(r'\b'+re.escape(HANDLE)+r'\b',r['text'])
+                 and r['submission_id'] not in old),None)
 
 
 def wait_receipt_navigation(expression):
@@ -172,6 +174,11 @@ def main():
                             evaluate('document.querySelector("textarea[name=source]").form.querySelector("input[type=submit]").click(); "clicked after completed verification"')
                             last_submit=time.time();time.sleep(20)
                             page=snapshot()
+                    if (not page['rows'] and page['handle']==HANDLE
+                            and page['url'].split('?',1)[0]=='https://codeforces.com/problemset/status'):
+                        receipt=status_receipt(ident,existing)
+                        if receipt:
+                            page['rows']=[receipt]
                     if not page['rows']:
                         if 'Please complete the anti-bot verification' in page['text'] or 'Just a moment' in page['title']:
                             raise RuntimeError('ANTI_BOT_VERIFICATION_REQUIRED: complete the normal browser verification and manually click Submit once; reconcile receipt before resume. No automatic resubmission.')
