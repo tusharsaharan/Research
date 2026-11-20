@@ -11,6 +11,7 @@ DATA=Path('backend/data/bench/codeforces700_20261116')
 ALTERNATE='--alternate' in sys.argv
 ROOT=DATA/('alternate_languages_v1' if ALTERNATE else 'official_codeforces_v1')
 HANDLE='research_test_acc'
+DAILY_LIMIT_MESSAGE='You can submit no more than 250 times per day'
 
 
 def atomic(name,obj):
@@ -116,6 +117,8 @@ def main():
                         evaluate('location.href='+json.dumps('https://codeforces.com/problemset/submit/'+ident)+'; "navigating"')
                         time.sleep(6)
                     page=snapshot()
+                    if DAILY_LIMIT_MESSAGE in page['text']:
+                        raise RuntimeError('Codeforces daily submission limit reached before click')
                     # A navigation can still be loading, or the old document can
                     # briefly remain visible. Observe only; do not navigate/click again.
                     deadline=time.time()+45
@@ -180,6 +183,8 @@ def main():
                         if receipt:
                             page['rows']=[receipt]
                     if not page['rows']:
+                        if DAILY_LIMIT_MESSAGE in page['text']:
+                            raise RuntimeError('Codeforces daily submission limit reached; keep this item pending')
                         if 'Please complete the anti-bot verification' in page['text'] or 'Just a moment' in page['title']:
                             raise RuntimeError('ANTI_BOT_VERIFICATION_REQUIRED: complete the normal browser verification and manually click Submit once; reconcile receipt before resume. No automatic resubmission.')
                         raise RuntimeError('No submission receipt; inspect browser, no automatic retry')

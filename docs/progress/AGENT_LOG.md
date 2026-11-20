@@ -298,3 +298,4 @@
 - RESUMED: contest 1212 official page confirms Kotlin only; C++ journal records eight unsupported items pending alternate-language judging. Main foreground89107 at254/700; external watcher reactivated.
 - RESUMED after337: verification wait timed out on 1971/F before click; subsequently verified ready. Foreground12446 resumes at338; external Telegram watcher reactivated.
 - RESUMED after426: 801/A Accepted #399251525 reconciled after slow receipt; added authenticated read-only recovery for empty status page. Foreground83290 and external watcher active.
+- STOPPED at431: Codeforces explicitly reports 250 submissions/day for research account. 1197/E has no receipt and remains pending. Runner reports daily limit explicitly; resume after quota clears and reconcile in-flight first.
