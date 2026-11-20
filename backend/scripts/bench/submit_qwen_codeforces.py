@@ -28,8 +28,8 @@ def code_from(text):
 
 def snapshot():
     return json.loads(evaluate('''JSON.stringify({url:location.href,title:document.title,
-      handle:Array.from(document.querySelectorAll('a')).filter(a=>a.href.includes('/profile/')).map(a=>a.textContent.trim())[0],
-      text:document.body.innerText.slice(0,6000),
+      handle:Array.from(document.querySelectorAll('a')).filter(a=>a.href.includes('/profile/')).map(a=>a.textContent.trim())[0]||null,
+      text:(document.body?.innerText||'').slice(0,6000),
       rows:Array.from(document.querySelectorAll('tr[data-submission-id]')).map(r=>({submission_id:r.getAttribute('data-submission-id'),text:r.innerText}))})'''))
 
 
@@ -85,7 +85,7 @@ def main():
             r=json.loads(line);existing[r['id']]=r
     if (ROOT/'attempt_in_flight.json').exists():
         attempt=json.loads((ROOT/'attempt_in_flight.json').read_text())
-        if attempt['id'] not in existing:raise RuntimeError('Unresolved prior submission; reconcile manually before resuming')
+        if attempt['id'] not in existing and not attempt.get('reconciled'):raise RuntimeError('Unresolved prior submission; reconcile manually before resuming')
     last_submit=time.time()
     try:
         with journal.open('a',encoding='utf-8') as sink:
