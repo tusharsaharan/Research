@@ -4,10 +4,12 @@ import json
 from pathlib import Path
 import re
 import time
+import sys
 from codeforces_browser import evaluate
 
 DATA=Path('backend/data/bench/codeforces700_20261116')
-ROOT=DATA/'official_codeforces_v1'
+ALTERNATE='--alternate' in sys.argv
+ROOT=DATA/('alternate_languages_v1' if ALTERNATE else 'official_codeforces_v1')
 HANDLE='research_test_acc'
 
 
@@ -17,7 +19,8 @@ def atomic(name,obj):
 
 def code_from(text):
     candidates=[]
-    for m in re.finditer(r'```(?:cpp|c\+\+|cxx)[^\n]*\n',text,re.I):
+    pattern=r'```(?:kotlin|kt)[^\n]*\n' if ALTERNATE else r'```(?:cpp|c\+\+|cxx)[^\n]*\n'
+    for m in re.finditer(pattern,text,re.I):
         end=text.find('```',m.end());code=text[m.end():end if end>=0 else len(text)]
         if re.search(r'\bmain\s*\(',code):candidates.append(code)
     return candidates[-1] if candidates else None
@@ -68,8 +71,11 @@ def main():
     jobs=[]
     for split in ('train','test'):
         problems={r['id']:r for r in map(json.loads,(DATA/f'{split}_problems.jsonl').open(encoding='utf-8'))}
-        for line in (DATA/'qwen_answers_v1'/f'{split}_responses.jsonl').open(encoding='utf-8'):
-            row=json.loads(line);jobs.append((split,problems[row['id']],row))
+        source=ROOT/'responses.jsonl' if ALTERNATE else DATA/'qwen_answers_v1'/f'{split}_responses.jsonl'
+        for line in source.open(encoding='utf-8'):
+            row=json.loads(line)
+            if ALTERNATE and row['split']!=split:continue
+            jobs.append((split,problems[row['id']],row))
     state={'status':'preparing','started':time.time(),'processed':0}
     atomic('state.json',state)
     journal=ROOT/'submission_journal.jsonl'
@@ -85,6 +91,7 @@ def main():
         with journal.open('a',encoding='utf-8') as sink:
             for split,problem,row in jobs:
                 ident=row['id']
+                compiler_id=row.get('program_type_id','54')
                 if ident in existing:
                     state['processed']+=1;continue
                 if time.time()-state['started']>86400:raise TimeoutError('24h overall cap')
@@ -112,7 +119,7 @@ def main():
                             continue
                         raise RuntimeError('Unexpected submission URL')
                     languages=evaluate("Array.from(document.querySelector('select[name=programTypeId]').options).map(o=>({id:o.value,name:o.text}))")
-                    if not any(lang['id']=='54' for lang in languages):
+                    if not any(lang['id']==compiler_id for lang in languages):
                         record.update(status='not_submitted',reason='Frozen GNU G++17 compiler unavailable for this problem; source not translated or retried',available_languages=languages)
                         sink.write(json.dumps(record,ensure_ascii=False)+'\n');sink.flush()
                         existing[ident]=record
@@ -124,14 +131,14 @@ def main():
                       if(!source)throw Error('No source field');source.value=CODE;
                       const cm=document.querySelector('.CodeMirror');if(cm&&cm.CodeMirror)cm.CodeMirror.setValue(CODE);
                       const lang=document.querySelector('select[name=programTypeId]');
-                      if(!Array.from(lang.options).some(o=>o.value==='54'))throw Error('C++17 unavailable');
-                      lang.value='54';lang.dispatchEvent(new Event('change',{bubbles:true}));
-                      return {length:source.value.length,language:lang.value};})()'''.replace('CODE',json.dumps(code))
+                      if(!Array.from(lang.options).some(o=>o.value===COMPILER))throw Error('Selected compiler unavailable');
+                      lang.value=COMPILER;lang.dispatchEvent(new Event('change',{bubbles:true}));
+                      return {length:source.value.length,language:lang.value};})()'''.replace('COMPILER',json.dumps(compiler_id)).replace('CODE',json.dumps(code))
                     prepared=evaluate(fill)
-                    assert prepared['length']==len(code) and prepared['language']=='54'
+                    assert prepared['length']==len(code) and prepared['language']==compiler_id
                     if not wait_verified():raise RuntimeError('ANTI_BOT_VERIFICATION_REQUIRED: verification did not finish within 3min; no click issued')
                     record['code_sha256']=hashlib.sha256(code.encode()).hexdigest()
-                    record['language']='GNU G++17 7.3.0'
+                    record['language']=row.get('language','GNU G++17 7.3.0')
                     atomic('attempt_in_flight.json',record)
                     evaluate('document.querySelector("textarea[name=source]").form.querySelector("input[type=submit]").click(); "clicked"')
                     last_submit=time.time();time.sleep(8)
