@@ -295,3 +295,4 @@
 - 2026-11-20 RESUMED after203: Chrome HTTP2 protocol error during65/B; authenticated latest history confirms no65/B receipt. Interrupted attempt archived/reconciled before user-requested resume. Null-body snapshot loading handled; no completed records repeated; external stop watcher restarted.
 - RESUMED after206: 65/D verification stop; restored saved Qwen code in ready form, confirmed submission399200160. Foreground73645, external Telegram watcher restarted.
 - RESUMED after207: old runner exited without updating state; 65/D Accepted and 65/E compile error reconciled. Foreground8508 starts at 592/A, external watcher checked.
+- RESUMED: contest 1212 official page confirms Kotlin only; C++ journal records eight unsupported items pending alternate-language judging. Main foreground89107 at254/700; external watcher reactivated.

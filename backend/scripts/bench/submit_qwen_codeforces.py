@@ -97,7 +97,12 @@ def main():
                 if time.time()-state['started']>86400:raise TimeoutError('24h overall cap')
                 code=code_from(row['raw']['message']['content'])
                 record={'id':ident,'split':split,'handle':HANDLE,'label':None}
-                if not code:
+                if compiler_id == '54' and ident.startswith('1212/'):
+                    record.update(status='not_submitted',
+                                  reason='Frozen GNU G++17 compiler unavailable per official contest language notice',
+                                  observed_url='https://codeforces.com/contest/1212/problem/A',
+                                  advertised_languages=['Kotlin 1.7.20', 'Kotlin 1.9.21', 'Kotlin 2.2.0'])
+                elif not code:
                     record.update(status='not_submitted',reason='no extractable C++ main; not an official verdict')
                 elif not problem.get('input_format'):
                     record.update(status='not_submitted',reason='nonstandard interface needs review')
