@@ -17,7 +17,7 @@ def evaluate(expression):
         if tab is None:raise RuntimeError('Dedicated submission tab was closed; restore explicitly, never switch to another user tab')
     else:
         tab=next(t for t in tabs if t.get('type')=='page' and 'codeforces.com' in t.get('url',''))
-    ws=websocket.create_connection(tab['webSocketDebuggerUrl'],timeout=210,suppress_origin=True)
+    ws=websocket.create_connection(tab['webSocketDebuggerUrl'],timeout=330,suppress_origin=True)
     ws.send(json.dumps({'id':1,'method':'Runtime.evaluate','params':{
         'expression':expression,'returnByValue':True,'awaitPromise':True}}))
     try:

@@ -40,7 +40,7 @@ def wait_verified():
         const b=document.querySelector('textarea[name=source]')?.form.querySelector('input[type=submit]');
         return !!b&&!b.disabled&&(!document.querySelector('.cf-turnstile,.turnstile-container')||(!!t&&!!t.value));};
       if(ready()){resolve(true);return;}const timer=setInterval(()=>{if(ready()){clearInterval(timer);clearTimeout(deadline);resolve(true);}},500);
-      const deadline=setTimeout(()=>{clearInterval(timer);resolve(false);},180000);
+      const deadline=setTimeout(()=>{clearInterval(timer);resolve(false);},300000);
     })''')
 
 
@@ -104,8 +104,10 @@ def main():
                 else:
                     # This explicit cooldown caps submission traffic, never retries errors.
                     time.sleep(max(0,60-(time.time()-last_submit)))
-                    evaluate('location.href='+json.dumps('https://codeforces.com/problemset/submit/'+ident)+'; "navigating"')
-                    time.sleep(6)
+                    current=snapshot()
+                    if '/problemset/submit/'+ident not in current['url']:
+                        evaluate('location.href='+json.dumps('https://codeforces.com/problemset/submit/'+ident)+'; "navigating"')
+                        time.sleep(6)
                     page=snapshot()
                     # A navigation can still be loading, or the old document can
                     # briefly remain visible. Observe only; do not navigate/click again.
@@ -142,7 +144,7 @@ def main():
                       return {length:source.value.length,language:lang.value};})()'''.replace('COMPILER',json.dumps(compiler_id)).replace('CODE',json.dumps(code))
                     prepared=evaluate(fill)
                     assert prepared['length']==len(code) and prepared['language']==compiler_id
-                    if not wait_verified():raise RuntimeError('ANTI_BOT_VERIFICATION_REQUIRED: verification did not finish within 3min; no click issued')
+                    if not wait_verified():raise RuntimeError('ANTI_BOT_VERIFICATION_REQUIRED: verification did not finish within 5min; no click issued')
                     record['code_sha256']=hashlib.sha256(code.encode()).hexdigest()
                     record['language']=row.get('language','GNU G++17 7.3.0')
                     atomic('attempt_in_flight.json',record)
