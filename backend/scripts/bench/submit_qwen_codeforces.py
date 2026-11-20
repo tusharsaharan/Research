@@ -107,6 +107,12 @@ def main():
                     evaluate('location.href='+json.dumps('https://codeforces.com/problemset/submit/'+ident)+'; "navigating"')
                     time.sleep(6)
                     page=snapshot()
+                    # A navigation can still be loading, or the old document can
+                    # briefly remain visible. Observe only; do not navigate/click again.
+                    deadline=time.time()+45
+                    while '/problemset/submit/'+ident not in page['url'] and page['url']!='https://codeforces.com/problemset/status?my=on' and time.time()<deadline:
+                        time.sleep(2)
+                        page=snapshot()
                     if page['handle']!=HANDLE:raise RuntimeError('Login/account changed or challenge encountered')
                     if '/problemset/submit/'+ident not in page['url']:
                         if page['url']=='https://codeforces.com/problemset/status?my=on':
