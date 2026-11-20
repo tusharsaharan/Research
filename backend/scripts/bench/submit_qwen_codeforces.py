@@ -51,6 +51,18 @@ def status_receipt(ident,existing):
     return next((r for r in result['rows'] if ident.replace('/','')+' - ' in r['text'] and r['submission_id'] not in old),None)
 
 
+def wait_receipt_navigation(expression):
+    try:
+        return evaluate(expression)
+    except RuntimeError as exc:
+        if 'Inspected target navigated or closed' not in str(exc) and 'Execution context was destroyed' not in str(exc):
+            raise
+        # The status-page navigation may destroy the observer's old context.
+        # Reconnect read-only; never click Submit again because of this event.
+        time.sleep(5)
+        return None
+
+
 def main():
     ROOT.mkdir(exist_ok=True)
     jobs=[]
@@ -114,7 +126,7 @@ def main():
                     atomic('attempt_in_flight.json',record)
                     evaluate('document.querySelector("textarea[name=source]").form.querySelector("input[type=submit]").click(); "clicked"')
                     last_submit=time.time();time.sleep(8)
-                    evaluate('''new Promise(resolve=>{
+                    wait_receipt_navigation('''new Promise(resolve=>{
                       const ready=()=>!!document.querySelector('tr[data-submission-id]');
                       if(ready()){resolve(true);return;}
                       const observer=new MutationObserver(()=>{if(ready()){observer.disconnect();resolve(true);}});
