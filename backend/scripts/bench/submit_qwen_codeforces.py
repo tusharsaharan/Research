@@ -111,6 +111,15 @@ def main():
                             print(json.dumps({'processed':state['processed'],'id':ident,'status':record['status'],'reason':record['reason']}),flush=True)
                             continue
                         raise RuntimeError('Unexpected submission URL')
+                    languages=evaluate("Array.from(document.querySelector('select[name=programTypeId]').options).map(o=>({id:o.value,name:o.text}))")
+                    if not any(lang['id']=='54' for lang in languages):
+                        record.update(status='not_submitted',reason='Frozen GNU G++17 compiler unavailable for this problem; source not translated or retried',available_languages=languages)
+                        sink.write(json.dumps(record,ensure_ascii=False)+'\n');sink.flush()
+                        existing[ident]=record
+                        state.update(status='running',processed=state['processed']+1,last_id=ident,updated=time.time())
+                        atomic('state.json',state)
+                        print(json.dumps({'processed':state['processed'],'id':ident,'status':record['status'],'reason':record['reason']}),flush=True)
+                        continue
                     fill='''(()=>{const source=document.querySelector('textarea[name=source]');
                       if(!source)throw Error('No source field');source.value=CODE;
                       const cm=document.querySelector('.CodeMirror');if(cm&&cm.CodeMirror)cm.CodeMirror.setValue(CODE);

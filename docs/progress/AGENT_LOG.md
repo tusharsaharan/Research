@@ -286,3 +286,4 @@
 - 2026-11-20 FIXED submission readiness: observe normal turnstile completion up to3min before click; if first click triggers verification, reconcile authenticated status before one post-verification click. No token solving/alteration/logging. User explicitly requested this correction.
 - RESUMED foreground49446: item1081796/F399182414 Compilation error recorded after normal verification; no duplicates. Telegram watcher restarted outside repo.
 - 2026-11-20 RESUMED foreground23900:128th720/D399183223 WRONG reconciled after browser context destroyed by normal navigation; observer now reconnects read-only rather than treating navigation as failure.129th720/E no code; stop watcher reactivated outside repo.
+- 2026-11-20 RESUMED after179processed:1958/A page offers Kotlin1.7/1.9 only. Runner now journals frozen compiler unavailable as not_submitted, not WRONG, continues without changing source/compiler. Stop watcher reactivated externally.
