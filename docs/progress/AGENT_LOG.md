@@ -304,3 +304,4 @@
 - REVIEWED: 49 lack a C++ main (41 output-cap stops), 25 compiler-restricted, 19 route issues, 7 nonstandard. Eight Kotlin retries already judged; 17 compiler-restricted cases have no alternate.
 - BLOCKED at 1197/E: no receipt in prior account history. Browser is on a different account after quota stop. Main queue remains 431/700; resume with the prior account after quota clears.
 - Evidence: official_codeforces_v1/{api_verdict_sync,skip_review_after_sync,pending_receipt_check,skip_contest_route_probe,first_source_provenance_check}.json.
+- 2026-11-21 COMPLETE: supervisor README and four evidence screenshots saved in docs/research/codeforces-progress; local evidence links verified. Official checkpoint remains 431/700.
