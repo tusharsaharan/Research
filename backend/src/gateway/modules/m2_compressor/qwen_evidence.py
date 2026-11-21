@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 
 from gateway.modules.m2_compressor.budgeted import _WORD, bm25_scores
 from gateway.modules.m2_compressor.hinglish_budget import _CLAUSE, strict_prefix
@@ -68,9 +69,11 @@ def lexical_order(units, question):
     return sorted(range(len(units)), key=lambda i: (-scores[i], i))
 
 
-def pack_ranked(passage, units, order, target, count):
+def pack_ranked(passage, units, order, target, count, *, fallback_policy="word_prefix"):
     if not math.isfinite(target) or not 0 < target <= 1:
         raise ValueError('target must be in (0, 1]')
+    if fallback_policy not in {"word_prefix", "empty"}:
+        raise ValueError('fallback_policy must be word_prefix or empty')
     validate_ranking(json.dumps(dict(ranking=order)), len(units))
     # Prevent model-generated wording entering the compressor's output.
     if units != source_units(passage):
@@ -79,17 +82,26 @@ def pack_ranked(passage, units, order, target, count):
     budget = max(1, math.floor(original * target)) if original else 0
     selected = []
     for index in order:
+        if fallback_policy == "empty" and not re.search(r"[^\W_]", units[index]):
+            continue
         trial = sorted([*selected, index])
         if count('\n'.join(units[i] for i in trial)) <= budget:
             selected = trial
     text = '\n'.join(units[i] for i in selected)
-    clipped = not selected and bool(units)
-    if clipped:
+    fallback_used = not selected and bool(units)
+    fallback = "none"
+    if fallback_used and fallback_policy == "word_prefix":
         text = strict_prefix(units[order[0]], budget, count)
+        fallback = "word_prefix"
+    elif fallback_used:
+        text = ""
+        fallback = "no_complete_unit_fits"
     if target == 1:
-        text, clipped = passage, False
+        text, fallback_used, fallback = passage, False, "none"
+    detail = dict(selected_ids=selected, ranking=order, budget_enforced=fallback_used,
+                  evidence_feasible=not fallback_used)
+    if fallback_policy == "empty":
+        detail["fallback"] = fallback
     return dict(text=text, original_tokens=original, actual_tokens=count(text),
                 target_tokens=budget, budget_met=count(text) <= budget,
-                kept_ratio=count(text) / max(1, original),
-                detail=dict(selected_ids=selected, ranking=order, budget_enforced=clipped,
-                            evidence_feasible=not clipped))
+                kept_ratio=count(text) / max(1, original), detail=detail)

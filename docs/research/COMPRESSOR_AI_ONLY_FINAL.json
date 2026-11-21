@@ -1,0 +1,38 @@
+{
+  "status": "complete",
+  "scope": "AI-only exploratory Hinglish compressor implementation and development study",
+  "owner_scope_decision_date": "2026-11-16",
+  "human_input_required": false,
+  "human_validation_performed": false,
+  "scientific_quality_target_met": false,
+  "confirmatory_claim_supported": false,
+  "serving_defaults_changed": false,
+  "qa_records": {
+    "qwen": 2196,
+    "native_combined": 3294
+  },
+  "comparisons": {
+    "qwen": 6,
+    "native_combined": 24
+  },
+  "ai_annotation_rows": 500,
+  "changed_annotation_rows": 286,
+  "native_cap_violations": 0,
+  "native_capped_answers": 12,
+  "native_invalid_answers": 14,
+  "frozen_checkpoint_sha256": "81825356b671e63914aaaa8931ced87c65c7c1af635fa8740305a3958d79ad93",
+  "ai_label_manifest_sha256": "45da06c221e8bdbeda8fdf42b1a11bbc4aa59d0e85e577773d4136370794601c",
+  "sources": {
+    "qwen_report": "815482eee5d0732cc76b8268bdc0f0d33595ad9806af29d8c4232e10402e97e3",
+    "native_report": "0546b68d4a8c3450764eba337a6a009fded89920a2c582dac527f802f465bedb",
+    "native_token_audit": "6fe5447f6f84f6d94732f8bd4999e54da2df87bda6f7f9d62f0e9865cf00759d",
+    "annotation_report": "c418fef007fc1dfc92bbbb414ba4cbe127e72266b08d460312b2cd27a2ca1127"
+  },
+  "script_sha256": "bdbe53d0e5ed0bb1be745dbc57dd4ed6959fc4a450c692c80453217e7bc64986",
+  "limitations": [
+    "AI labels are working judgments, not guaranteed correct or human-validated.",
+    "All existing Belebele examples are exposed development data.",
+    "Both student candidates failed to establish a baseline quality or latency advantage.",
+    "Fresh sealed confirmation and a superiority claim are outside this completed AI-only scope."
+  ]
+}

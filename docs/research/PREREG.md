@@ -118,6 +118,183 @@ Interim runs on partial data are allowed for debugging and are labelled
 - 2026-10-21 (pre-registered before any out-of-domain result): hybrid settings FROZEN from HotpotQA - target 0.5 -> hybrid-s0.7, 0.33 -> hybrid-t-heavy (s=0.6), 0.25 -> hybrid-s0.5, 0.2 -> hybrid-s0.45 (backend/scripts/bench/longqa.py FROZEN). Evaluated unchanged on MuSiQue, 2WikiMultiHopQA, SQuAD v2 (answerable), MeetingBank-QA (<=2,500-token meetings), 400 questions each, Qwen2.5-3B, F1, paired Wilcoxon vs LLMLingua-2 at each budget. Claim succeeds only if the hybrid beats LLMLingua-2 at matched-or-fewer tokens on most datasets.
 - 2026-10-24: exploratory router v2 evaluation extended to pair 2 using paired GSM8K scorer_train rows only (router_train.py); existing candidate families, item-grouped five-fold CV and selection margin retained. Pilot/certification rows excluded from selection. CPU shards and Kaggle GPU embedding parity are engineering checks; primary R1 settings and gateway model pair remain unchanged. Any selected candidate requires separate model-bound certification through certify.py before serving.
 
+- 2026-11-09 (CPU-only no-prefix fallback diagnostic; prepared, not executed): preserve the historical `bqwen35b_span` and its prefix fallback unchanged. Add a separately selectable packing policy that emits only complete ranked source spans; when none fits, return an empty, explicitly infeasible result rather than a word-prefix fragment. Do not split protected literals or invent an unvalidated grammar-based sub-clause. This is a surface/budget diagnostic, not QA accuracy or semantic preservation. If raw diagnostic inputs are restored, use only the frozen 10,000 stress items, their saved rank order, and budgets 0.25/0.33/0.50/0.75; preserve original-Roman and derived-romanization strata and raw outputs. Expected SHA-256: stress_inputs.jsonl `3dcb60f1d744e0f653d1ec997f24c86bf91c709f128bf1bdb1017e546874392`; stress_variants.jsonl `10888d73571a79978abb627a786377da362ef608f130f700074d497b73e27e36`; stress_rankings.jsonl `eab87e953ee95113e0a43d551e205faf364e6f192957a1f16d38f72c2597d4c7`. Current checkout lacks these three JSONL files, so no aggregate stress rerun or result selection is authorized. No GPU, model calls, answer labels, or serving-default change.
+- 2026-11-09 (CPU-only spelling-normalization diagnostic; prepared, not executed): preserve the current raw-token retrieval candidate as the default and add a separately selectable scoring-only path that applies the existing `phonetic.normalize_chars` abbreviation map to question/span terms. Output must remain exact original source substrings. Compare only retrieval mechanics on pinned development examples; record false matches and exact-source checks. Do not expand the equivalence dictionary or promote the path without bilingual review of the applicable equivalence groups. This diagnostic is not answer accuracy or semantic preservation. No GPU, model calls, answer labels, or serving-default change.
+- 2026-11-09 (single-human-review annotation workflow; frozen before owner review): the owner is the sole human reviewer. The owner first annotates all 500 historically exposed rows in reviewer-A fields without viewing the separate AI suggestions where feasible; if the owner has already seen them, disclose that the first pass was not blind to AI recommendations. A deterministic 50-row sample (seed `single-review-repeat-20261109`) is assigned for the same owner to repeat after at least seven days in reviewer-B fields. Report this only as intra-rater stability; do not call it inter-annotator agreement or use it to claim independent validation. Eligibility/exclusion decisions remain pending and must be dated before filtering. If the delayed repeat is not completed, report agreement as unavailable.
+
+## 2026-11-16: compressor continuation before new computations
+
+The owner authorizes GPU access and completion of the compressor implementation.
+Restore the 7 November public evidence release into a separate directory and
+verify every restored file against its archived SHA-256 before use. Preserve raw
+outputs and prior reports. Existing Belebele remains exposed development data;
+AI annotation suggestions are excluded from human-validation claims and from
+student input features. The router study is unaffected.
+
+1. **Fallback diagnostic:** replay all 10,000 frozen stress inputs at 0.25,
+   0.33, 0.50, and 0.75 with the saved teacher order and matched BM25 order.
+   Compare historical prefix packing to an opt-in complete-span policy that
+   excludes punctuation-only spans. An oversized complete span produces an
+   explicit empty/infeasible output. Report all strata, empty outputs, literal
+   loss, punctuation-only output, and budget misses. This measures mechanics,
+   not semantic preservation. No new ranker calls or retries.
+2. **Student development:** build ordinal teacher-order supervision from all
+   valid saved 35B rankings, excluding explicit teacher failures/fallbacks.
+   Assign exact source-passage groups by SHA-256 of
+   `20261116|passage_group`: first 80% of the hash range for training, remainder
+   for development. All related questions share a group. Never call either
+   partition fresh or sealed. Preserve full teacher provenance; ranks are
+   ordinal positions, not invented probabilities. Gold/options and downstream
+   answers are not scorer inputs. A first compact candidate is a fixed
+   pairwise logistic ranker over lexical/character/length/position/causal
+   features, L2 C=1, no hyperparameter search, seed 20261116, maximum 50,000
+   directed training pairs and 1,000 optimizer iterations. Keep negative
+   findings. Report held-out teacher NDCG@3, top-1 agreement, and rank
+   correlation separately from downstream accuracy, which requires answer runs.
+3. **Power planning:** estimate empirical paired passage difference/cluster
+   sizes from archived development answers only. Target +0.03 accuracy,
+   80% power, two-sided family alpha 0.05 conservatively split across the two
+   baseline comparisons. Primary planning cell is qwen3.5:4b at 0.50; other
+   cells are sensitivity analyses, never model selection. Use 10,000 seeded
+   cluster resamples at 100/200/400/800/1200/2000/3000 independent passages,
+   weighted by question count with a cluster-robust normal approximation.
+   Include null rejection rate and Monte Carlo standard error. These are
+   planning assumptions, not a guarantee about a future source distribution.
+4. **Execution limits:** CPU preparation/replay is bounded to 30 minutes per
+   command. Any GPU run must first confirm the host, free memory, current jobs,
+   and cooperative lock. Freeze an exact run manifest with model/tokenizer
+   digests, rendered prompts, source hashes, candidate names, primary budget,
+   and failure policy before inference. Maximum 4 hours for the next GPU
+   development stage; no paid providers or automatic failed-run retries.
+5. **Completion gates:** report software, development measurements, human
+   validation, fresh-data confirmation, independent-family results, and total
+   efficiency separately. Missing gates stay open. A negative result is valid;
+   neither token savings nor rank imitation establishes answer preservation.
+
+### 2026-11-16: GPU annotation assistance
+
+At the owner's explicit request, obtain a second AI review of every row in the
+500-row translation sheet using installed digest-pinned qwen3.6:35b. It sees
+both language versions and gold for annotation, and is blind to prior Codex
+labels. This is distinct from the question-only compressor input policy.
+Freeze the review prompt/schema before launch. Store raw replies and English
+and Hinglish supported-option judgments. Temperature 0, seed 20261116, 512-token
+output cap, 8,192 context tokens, 180-second request timeout, two-hour wall cap.
+Do not automatically retry failures or fill missing labels. Report disagreement
+with the earlier AI labels and keep human-review columns untouched. Corrected
+AI judgments remain provisional, exposed development annotations; their
+agreement is not independent human validation or inter-annotator kappa.
+
+### 2026-11-16: next answer campaign preparation, before answers
+
+Prepare all 183 student-development questions from 97 exact source passages;
+never choose a subset based on model outcomes. Freeze original and no-context,
+plus saved teacher-prefix, complete-span teacher, compact student, matched BM25,
+and question-independent shuffled-span controls at 0.50 and 0.33. The first
+software bundle uses the fingerprinted Qwen2.5 reference tokenizer for identical
+fixed-text transfer to Qwen3.5-4B and Gemma4-26B. This does not satisfy the later
+native-serving-budget gate. Missing XProvence/LLMLingua arms remain openly
+pending; this bundle is not a final baseline comparison. Persist all raw
+replies, errors, usage, model hashes and exact-prompt reuse. Compare only after
+complete paired coverage, with passage-clustered bootstrap intervals and Holm
+adjustment over every disclosed comparison. Record missing usage as missing,
+never as free inference. Four-hour answer-run cap, no automatic failed-run
+retry. GPU lock contention is not permission to stop another study.
+
+### 2026-11-16: independent-family native-token development, before answers
+
+The Gemma4-26B pull failed at the college proxy with HTTP 503 before any model
+weights or answers were obtained. Preserve that failure. Use the already
+installed Mistral-7B-Instruct-v0.3 snapshot
+`c170c708c41dac9275d15a8fff4eca08d52bab71` as the independent answer family;
+this decision uses availability only, before observing its QA outputs.
+Evaluate every frozen student-development item (183 questions, 97 passages).
+Count and pack with that snapshot's own tokenizer, and serve the same local
+weights using its exact chat template. Freeze all model/tokenizer file hashes
+before compression or generation. Use greedy decoding, seed 42, 128 new tokens,
+no prompt truncation, and a four-hour campaign cap under the GPU lock.
+
+Compare original/no-context and teacher prefix, teacher complete-span, compact
+student, matched BM25, shuffled controls, LLMLingua-2 large, and XProvence at
+0.50/0.33. The latter uses pinned revision
+`f2798d357213c40164bdd79557d6d2e43ca7d8d2`, published threshold 0.3 and no
+forced first sentence, then explicit word-boundary native-cap clipping.
+LLMLingua-2 uses its previously frozen large revision and the same explicit cap.
+Preserve pruner failures and empty evidence. Do not tune thresholds after QA.
+Report classifier setup separately, per-query packing/scoring and generation,
+and historical teacher-ranker cost separately from current packing. Cache exact
+rendered prompts only; disclose reuse and output usage. Compare only complete
+paired cells; show all 18 candidate/baseline comparisons with passage-clustered
+intervals and Holm-adjusted cluster-robust tests. Primary is student 0.50 against
+the three baselines. This is independent-family **development** evidence and
+does not replace fresh human-validated sealed confirmation.
+
+- Preflight correction on 2026-11-16, before any new QA answers: the initial
+  prepared Qwen model pin had one duplicated character (65 rather than 64 hex
+  digits). No run used that invalid pin. Read the full digest from the verified
+  original manifest instead and reject wrong-length digests. Prepare Qwen4B
+  alone at the same 183 items/methods in a new manifest; independent-family
+  evaluation uses the separate native Mistral protocol above. Reuse archived
+  replies only with verified raw-answer hash, identical model digest/options,
+  thinking setting, and exact system-plus-prompt hash. Preserve reuse provenance;
+  historical timing is not a fresh serving measurement.
+
+- Engineering preflight, 2026-11-16: the first native Mistral attempt stopped
+  before creating results or QA replies because protobuf was absent. Install
+  protobuf and verify the cached tokenizer on CPU. The first XProvence asset
+  download reached its 1,800-second cap with a reusable partial weight file;
+  allow one explicitly bounded 1,800-second continuation, only after verifying
+  its downloader has exited. A separately named native attempt may proceed
+  only after pinned assets and dependencies pass preflight. Methods, inputs,
+  decoding, budgets, and analysis remain frozen. Preserve both setup failures.
+  Before the new attempt, add a synthetic, unlabelled compressor API readiness
+  check, environment versions, CUDA-synchronized compression timing, explicit
+  full-prompt token counts, and separate unique-call versus reused timing
+  accounting. These are engineering/measurement checks, not method selection.
+
+### 2026-11-16: one bounded neural teacher-imitation candidate
+
+After observing the six-weight student's Qwen development failure, implement
+the originally planned neural student as a separate exploratory candidate.
+This is development adaptation, not a preregistered confirmation or an excuse
+to discard the lexical student's negative result. Do not search architectures,
+seeds, epochs, or hyperparameters until a score improves.
+
+Reuse the cached LLMLingua-2 XLM-R large base encoder at revision
+`ebaba9b0e874dadd3003ffcff828e4397e568089`. It is about 0.56B parameters,
+smaller than the 35B teacher but not a tiny encoder. Remove its token-classifier
+head, add a linear CLS ranking head, and update only the last transformer block
+and this head. Inputs are question/span pairs only. Use all ordinal winner/loser
+pairs from the frozen 717-question/391-passage train split, two fixed epochs,
+seed 42, 16 pairs per minibatch, maximum 192 pair tokens, AdamW, encoder LR
+1e-5 / head LR 1e-3, weight decay .01, gradient norm cap 1.0, BF16 autocast with
+FP32 parameters, and a 1,800-second training cap. No early stopping or checkpoint
+selection from development scores. Save the final changed tensors as safetensors
+plus full base-asset hashes and training configuration before evaluation.
+
+Report teacher-imitation metrics on all 183 development items. Pack full
+original source spans under native Mistral caps at .50/.33 with the same
+empty-if-no-unit-fits policy. Reuse the completed native campaign's baseline
+answers unchanged and generate only the two added neural-student cells, with
+the same Mistral checkpoint/template/greedy 128-token decoder and no prompt
+truncation. Persist failures and exact-prompt reuse. Compare all four candidate
+types against all three baselines at both budgets; disclose 24 comparisons and
+Holm-adjust across all 24 in a separately named combined report. Original
+reports remain immutable. No serving-default change follows automatically.
+
+### 2026-11-16: owner-approved AI-only closeout, after results
+
+The owner explicitly requests no human review and accepts the existing AI
+judgments as the working labels. Close this delivery as an AI-only exploratory
+implementation/development study. This is a scope decision after results,
+not prospective registration of a successful outcome. Freeze the reviewed-label
+CSV and its provenance; do not claim human validation, assume a measured win,
+filter inconvenient QA rows, change gold, promote the failed students, or turn
+exposed examples into a sealed test. No new inference is needed for closeout.
+Human annotation/agreement and fresh sealed confirmation are outside this
+delivery. Finalize the report, machine-readable evidence checks and internal
+archive; no human input remains required for this scope.
+
 - 2026-11-16: User-authorized separate GSM8K raw-response collection (English, not Hinglish compressor evidence). openai/gsm8k main train+test, all 8792 rows, pinned HF revision/file hashes before inference; installed qwen3.6:35b digest pinned in manifest. Zero-shot question-only, system prompt in gsm8k_ollama_full.py, thinking false, temperature 0, seed 42, context 8192, output 2048 tokens, sequential local Ollama requests. No selection, no automatic retries, failures halt, 72-hour invocation cap, shared GPU lock. Preserve raw outputs/token counts/truncations; no accuracy claim or router certification use.
 
 - 2026-11-16: User switches dataset to open-r1/codeforces; download only, no inference/training authorized by this step. Freeze default revision fbe3f6e903ee854eec2e69e9d96d0306cde59baf, first eligible 500 native train then 200 native test in source order; global ID/alias/normalized-statement deduplication, exclude exposed 852/A and 852/B. Preserve full records separately from problem-only fields; no rating/outcome filtering, no claim of contest-disjointness or model freshness. Hash source files and selected outputs before evaluation.

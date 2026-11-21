@@ -5,7 +5,41 @@ compression. A language-conditional model router and web gateway form a separate
 supporting track. Research results, prototype behavior and historical pilots are
 not interchangeable.
 
-## Current evidence — 7 November 2026
+## Read the project explanation
+
+The current report explains the datasets, baselines, implementation, training,
+results, failures, limitations and conclusions in plain English:
+
+- [Project report (PDF)](output/pdf/Hinglish-Compressor-Explained.pdf)
+- [Editable report (Markdown)](outputs/01a1bfe0-4611-7052-8d83-ed5711b41950/Hinglish-Compressor-Explained.md)
+
+The implementation and fixed AI-only study are complete. The original goal of
+establishing a better, faster compressor was not achieved. Raw run data, model
+patches and internal evidence ZIPs are retained locally; they are not included
+in this repository push. Their checksums remain in the research receipts.
+
+## Current continuation — 16 November 2026
+
+**AI-only delivery finalized:** the owner has chosen to proceed without human
+review. No manual review or file editing is required for this delivery.
+See the [final report](docs/research/COMPRESSOR_AI_ONLY_FINAL.md) and
+[machine-readable closeout](docs/research/COMPRESSOR_AI_ONLY_FINAL.json).
+The completed experiments do not establish a student-quality or speed advantage.
+
+The 500-row GPU-assisted AI review is complete:
+[current AI labels](docs/annotation/belebele_cm_ai_reviewed.csv),
+[corrected workbook](outputs/01a1bfe0-4611-7052-8d83-ed5711b41950/belebele_ai_review_corrected.xlsx),
+and the final report above.
+Human-review fields remain distinct from AI judgments.
+
+Native-token Mistral development evaluation, XProvence/LLMLingua-2 baselines,
+negative controls, and a fixed neural distillation run are complete. Both tested
+students underperform their baselines; no end-to-end speedup or fresh-test
+superiority is established. The original serving defaults are unchanged.
+See [complete results and task ledger](docs/research/COMPRESSOR_STATUS_20261116.md)
+for counts, confidence intervals, timing limits, failures, and remaining gates.
+
+## Historical full-pool evidence — 7 November 2026
 
 The strongest completed compressor is an **opt-in Qwen3.6-35B evidence ranker**:
 question + numbered source spans -> ranked span IDs -> original-text packing.
@@ -48,17 +82,16 @@ The 500-row Belebele annotation sheet and 3,491-row router verification sheet
 have no completed human-verification fields in the saved copies. Recover any
 external annotations before treating either corpus as human-validated.
 
-## Next research priorities
+## Future research beyond the closed AI-only delivery
 
 1. Build the annotation protocol and fresh source-family-disjoint data; reserve
    a sealed test before further selection. Start a small development annotation
    pilot and determine final test size by passage-clustered power simulation.
-2. Restore SSH access and inspect shared GPU occupancy. Saved setup evidence
-   confirms a 32 GB RTX 5000 Ada and four GPU-tested Qwen models; the bounded
-   7 November SSH check timed out, so live availability is unknown.
-3. Validate an independent answer family and the pinned XProvence baseline on
-   development data. Gemma/XProvence asset pins exist; no completed independent
-   family evaluation was found. Use native-token caps for the new comparison.
+2. Reuse the completed GPU evidence and shared-lock tooling. The 32 GB RTX 5000
+   Ada continuation is complete; do not duplicate finished campaigns.
+3. Interpret the completed native-token Mistral/strong-baseline comparison
+   conservatively. It is exposed development and does not replace sealed
+   confirmation; the Gemma download was unavailable at the proxy.
 4. Repair evidence-unit selection and prefix fallback; test retrieval versus
    relational-span preservation separately. Evaluate a cheap student ranker
    against the existing 35B teacher, strong baselines and identical packing.

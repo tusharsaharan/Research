@@ -68,12 +68,18 @@ def sensitive(data: bytes, depth: int = 0) -> bool:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--source", type=Path, action="append",
+                        help="Repository-relative file/directory to archive; repeat to narrow the default full research snapshot.")
+    parser.add_argument("--scope-note", default="Raw research snapshot, not a new evaluation. Original dataset licenses remain applicable.")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[3]
     output = args.output.resolve()
     if output.exists() or output.with_suffix(".manifest.json").exists():
         raise SystemExit("Output already exists; choose a new snapshot path.")
-    sources = [root / "backend/data/bench", root / "backend/data/router_track"]
+    sources = ([root / "backend/data/bench", root / "backend/data/router_track"]
+               if not args.source else [(root / source).resolve() for source in args.source])
+    if any(not source.is_relative_to(root) or not source.exists() for source in sources):
+        raise SystemExit("Every source must exist inside the repository.")
     if any(output.is_relative_to(source) for source in sources):
         raise SystemExit("Write the snapshot outside its input directories.")
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -83,15 +89,19 @@ def main() -> None:
         "scope": [source.relative_to(root).as_posix() for source in sources],
         "files": [],
         "excluded": [],
-        "note": "Raw research snapshot, not a new evaluation. Original dataset licenses remain applicable.",
+        "note": args.scope_note,
     }
     temporary = output.with_suffix(".zip.partial")
     with zipfile.ZipFile(temporary, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
+        included = set()
         for source in sources:
-            for path in sorted(source.rglob("*")):
+            for path in ([source] if source.is_file() else sorted(source.rglob("*"))):
                 if not path.is_file():
                     continue
                 relative = path.relative_to(root)
+                if relative in included:
+                    continue
+                included.add(relative)
                 reason = "symlink" if path.is_symlink() else exclusion(relative)
                 if reason:
                     manifest["excluded"].append({"path": relative.as_posix(), "reason": reason})

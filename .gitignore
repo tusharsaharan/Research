@@ -44,6 +44,13 @@ data/*.sqlite
 data/*.sqlite-shm
 data/*.sqlite-wal
 .mcp.json
+/tmp/gpu*/
+/tmp/gpu*
+/tmp/start_annotation.sh
+/tmp/start_independent_assets.sh
+/tmp/evidence_restore_20261116/
+/tmp/pytest-compressor-20261116/
+/backend/data/training/compressor_distill_20261116/
 /mcp.json
 !.vscode/mcp.json
 .env

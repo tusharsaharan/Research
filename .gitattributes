@@ -1,0 +1,2 @@
+# Preserve generated PDF bytes across platforms and line-ending settings.
+*.pdf binary

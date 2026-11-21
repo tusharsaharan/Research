@@ -255,6 +255,61 @@
 - PLANNED: fresh human annotation/source splits, independent-family native budgets + XProvence, cheap evidence-preserving ranker, sealed evaluation; router certification remains separate.
 - COMPLETE: initial whole-upload timeout recovered using 14 parts; evidence-2026-11-07 release published with all 17 asset sizes/server SHA-256s verified (836 research files).
 - Evidence: backend/data/bench/evidence_release_20261107.json; restore instructions in README/release. Backup finished; next research priorities above, SSH availability still unconfirmed.
+- 2026-11-09: audited untracked `to-do.md` against repo status, README, roadmap, and evidence; central fresh-data, human-review, independent-family, native-budget, student-efficiency, and sealed-eval gates remain open.
+- COMPLETE: wrote `TO-DO-EXECUTION-PLAN.md` (3,485 lines); marks existing campaign/archive complete, A.4/A.5 partial, and adds source-family, power, licensing, and freeze prerequisites.
+- NEXT: owner decisions and human annotation/source acquisition are required before a confirmatory run; GPU availability remains unverified after the 7 Nov SSH timeout.
+- 2026-11-09: CPU-only annotation guide, dual-review template/agree script, and strict source-family splitter added; template generated for 500 exposed development items.
+- COMPLETE: tooling scaffolds only; no human labels or fresh-data splits created. No GPU work and no tests run.
+- NEXT: owner assigns bilingual reviewers/overlap and approves eligibility; source owner supplies licensed fresh records, family groups, split policy, and power assumptions.
+- 2026-11-09: AI pre-review completed for all 500 exposed Belebele items in `docs/annotation/belebele_cm_ai_suggestions.csv`; original template preserved.
+- COMPLETE: 307 same / 150 partly / 43 no meaning judgments; gold remains answerable on 444 and not on 56. Suggestions are AI-only, not human-verified or confirmatory evidence.
+- 2026-11-09: Added opt-in no-fragment Qwen packing and phonetic scoring-only normalization; defaults and historical outputs preserved.
+- VERIFIED: targeted suites 50 passed; one existing pytest config warning. No model/GPU calls.
+- COMPLETE: 500 known-exposed rows quarantined to development across 372 exact-passage groups; train=0, sealed=0. Near-duplicate/license audit remains open.
+- NEXT: owner single-review annotation + delayed 50-row repeat, eligibility decision, fresh licensed sources; raw stress JSONL absent, aggregate rerun pending.
+- COMPLETE: created compressor-specific data card and primary-source related-work memo; router paper/chapter left separate.
+- NEXT: actual owner labels/thresholds, near-duplicate and license audit, fresh source acquisition; no confirmatory or GPU work started.
+- 2026-11-16: Restored/hash-verified archived evidence; reproduced 75,600 QA / 80,000 stress records in restored_audit_20261116.
+- COMPLETE: full atomic replay exposes many empties; compact student and passage power planning saved under backend/data/bench/; negative findings retained.
+- RUNNING: GPU 500-row second AI review, tmux gpu-annotation-20261116-v2; log /home/user/hinglish-research/logs/gpu-annotation-20261116-v2.log; prior lock failure processed zero rows.
+- VERIFIED: 29 focused tests plus four native-analysis checks; 183-question/97-passage development bundle frozen. Native Mistral/strong-baseline scripts committed e75bfc6.
+- PREPARING: pinned XProvence download/dependencies. Gemma pull failed proxy HTTP 503; cached Mistral7B selected before QA. No human validation or fresh test claimed.
+- NEXT: retrieve all GPU annotations, adjudicate failures/proposed corrections, export workbook; run native-token independent-family development under shared lock.
+
+- 2026-11-16 / source 3d77578: COMPLETE GPU AI review 500 rows; 286 revised; current CSV and workbook saved; human fields preserved.
+- COMPLETE: Qwen 2,196 / native Mistral 3,294 paired records; both students underperform; all native caps/prompts independently verified.
+- COMPLETE: fixed neural RankNet candidate, 2 epochs / 1,718 steps; checkpoint and raw outputs in backend/data/bench/neural_student_20261116/.
+- VERIFIED: 48 focused checks covered; offline replay matches all 30 contrasts; 293-file archive receipt docs/research/COMPRESSOR_EVIDENCE_20261116.json.
+- RUNNING: no compressor jobs; GPU released. Evidence ZIP 53,012,076 bytes, SHA e5cd704d98efc5b31542bf4be983cf08841dd68069bfcfba4c7af596ab343bb9.
+- NEXT: new method development plus licensed human-validated source pool before sealed confirmation; exact files in COMPRESSOR_HUMAN_INPUT_20261116.md. No default change/push.
+
+- 2026-11-16 / source 1d5efdc: COMPLETE owner-approved AI-only closeout; no human review or input required for this delivery.
+- VERIFIED: 500 accepted working AI labels; 2,196 Qwen and 3,294 native records; checkpoint, raw hashes and exact native token audit checked.
+- COMPLETE: final report docs/research/COMPRESSOR_AI_ONLY_FINAL.md and machine-readable closeout; measured quality/speed target remains unmet.
+- VERIFIED: two additional closeout tests reject edited raw data and duplicate coverage; prior 48 targeted checks retained.
+- ARCHIVED: 298 files, 53,024,257 bytes; SHA 615513079a4c9a1f8800f99d189b831ae10cf09b3a4484afe582c833bf5ba322; receipt COMPRESSOR_AI_ONLY_ARCHIVE.json.
+- RUNNING: none. No defaults changed or push. Fresh confirmation is outside this closed scope; no manual review assigned.
+
+- 2026-11-16 / 6e84a4b: COMPLETE presentation guide with 12-slide outline, exact results, speaker notes and Q&A.
+- VERIFIED: native 24-comparison minimum Holm p=.1384; no adjusted p<.05; historical teacher-over-BM25 gains approximately 4.8–7.3 points.
+- EVIDENCE: docs/research/COMPRESSOR_PRESENTATION_FINAL.md; no new inference or metric changes. AI-only scope unchanged.
+
+- 2026-11-16: VERIFIED native original prompt mean 266.60 tokens from saved report; long-document performance is untested.
+- UPDATED: presentation guide distinguishes completed study/artifacts from unmet quality/efficiency objective; timing explanations remain hypotheses.
+- No new inference, labels, metric changes or serving changes.
+
+- 2026-11-16: COMPLETE presentation-content PDF, 39 pages; output/pdf/Hinglish-Compressor-Presentation-Content.pdf.
+- VERIFIED: full tables, core numeric values, source hash, rendered page layouts and zero out-of-margin characters; no new inference or PPT edits.
+- COMMIT BLOCKED: automatic approval review hit usage limit; no bypass/retry. PDF ready; receipt backend/data/bench/presentation_pdf_20261116/validation.json.
+
+- 2026-11-16: COMPLETE plain-English replacement report, 21 PDF pages / 6,546-word Markdown; no slide instructions.
+- CONTENT: goal, methods, datasets/splits, baselines/configs, training, results interpreted as counts, failures, timing, limitations and conclusions.
+- VERIFIED: source hashes/core values, rendered layouts, chapter/table formatting and zero margin violations; no new inference.
+- OUTPUT: output/pdf/Hinglish-Compressor-Explained.pdf; editable MD in outputs/01a1bfe0-4611-7052-8d83-ed5711b41950/. Git commit remains blocked by prior review-service limit.
+
+- 2026-11-16 / 4736ba2: COMPLETE authorized GitHub main push; remote verified at 4736ba2 after normal fast-forward publication.
+- VERIFIED: report PDF bytes preserved; outgoing credential scan clear; repo-local college proxy fixed GitHub access. Earlier commit block resolved.
+- PUBLISHED: compressor source, research records, reviewed workbook, readable report PDF/Markdown. Internal archives, GPU access files and caches remain local.
 
 - 2026-11-16 RUNNING: user-authorized full GSM8K main train+test Qwen3.6:35b collection; first check 11/8792, GPU residency 22796 MiB.
 - Evidence remote: /home/user/hinglish-research/gsm8k_20261116/{manifest.json,state.json,responses.jsonl,run.log}; 72h cap, shared GPU lock, no retries.
